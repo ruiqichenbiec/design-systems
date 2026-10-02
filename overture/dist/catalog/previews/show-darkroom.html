@@ -1,0 +1,61 @@
+<!doctype html><html data-theme="stage"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/bundle.css">
+<script src="../assets/bundle.js"></script>
+<style>html,body{margin:0;background:transparent}html{overflow:hidden}body{padding:0;font-family:var(--font-sans)}</style>
+<script>
+addEventListener('message',e=>{if(e.data&&e.data.dsTheme)document.documentElement.dataset.theme=e.data.dsTheme;});
+(function(){try{var t=new URLSearchParams(location.search).get('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}})();
+addEventListener('load',function(){var post=function(){parent.postMessage({dsFrame:"show-darkroom",h:Math.ceil(Math.max(document.documentElement.scrollHeight,document.body.scrollHeight))},'*');};post();try{new ResizeObserver(post).observe(document.body);}catch(e){}});
+addEventListener('error',function(e){parent.postMessage({dsFrame:"show-darkroom",err:String(e.message||e)},'*');});
+</script></head><body>
+<style>
+.dk{display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,.9fr);gap:44px;padding:40px 36px;background:var(--ov-bg);color:var(--ov-text)}
+.dk__print{position:relative;background:#f1ebdf;padding:16px 16px 54px;box-shadow:var(--ov-print-shadow);transform:rotate(-1.2deg);align-self:start;color:#211a16}
+.dk__print img{display:block;width:100%;aspect-ratio:1;object-fit:cover;transition:filter var(--ov-time),opacity var(--ov-time)}
+.dk__print figcaption{position:absolute;left:18px;right:18px;bottom:16px;display:flex;justify-content:space-between;align-items:baseline;font-size:11px;letter-spacing:.12em}
+.dk__print figcaption strong{font:400 22px var(--font-display);letter-spacing:0}
+.dk__print.is-exposing:after{content:"";position:absolute;inset:0;background:#fff;animation:dk-flash .6s var(--ov-ease) forwards;pointer-events:none}
+@keyframes dk-flash{from{opacity:.9}to{opacity:0}}
+.dk__controls{display:grid;gap:26px;align-content:start}
+.dk__tray{display:flex;gap:10px;min-height:74px;padding-top:14px;border-top:1px dashed var(--ov-line);flex-wrap:wrap}
+.dk__tray img{width:62px;height:62px;object-fit:cover;background:#f1ebdf;padding:4px;box-shadow:var(--ov-print-shadow);animation:ov-unfold .5s var(--ov-ease)}
+.dk__tray span{font-size:11px;color:var(--ov-muted);letter-spacing:.1em;align-self:center}
+@media(max-width:760px){.dk{grid-template-columns:1fr;padding:24px 16px}}
+</style>
+<div class="ov dk">
+  <figure class="dk__print" id="print"><img id="img" src="../assets/photos/red-silk.png" alt="正在冲印的相纸"><figcaption><strong id="title">形与色</strong><span>No. <b id="no">07</b></span></figcaption></figure>
+  <div class="dk__controls">
+    <div id="tabs"></div>
+    <div id="range"></div>
+    <div style="display:flex;gap:28px;flex-wrap:wrap"><div id="mono"></div><div id="stepper"></div></div>
+    <div id="field"></div>
+    <div id="cue"></div>
+    <div class="dk__tray" id="tray"><span>纸托 · 冲印结果</span></div>
+  </div>
+</div>
+<script>
+Overture.configure({assetBase: '../assets/'});
+const O = Overture, img = document.getElementById('img'), print = document.getElementById('print');
+const films = [['red-silk.png', '形与色'], ['stage-bow.jpg', '谢幕'], ['runway.jpg', '行走的光']];
+const state = {ev: 0, mono: false, no: 7, title: '形与色', film: 0};
+const paint = () => { img.style.filter = `brightness(${(1 + state.ev * 0.18).toFixed(2)}) ${state.mono ? 'grayscale(1) contrast(1.08)' : ''}`; document.getElementById('no').textContent = String(state.no).padStart(2, '0'); document.getElementById('title').textContent = state.title || '无题'; };
+O.mount('StageTabs', '#tabs', {items: films.map(f => f[1]), panels: ['红色衣料与追光', '一整排演员的谢幕', 'T 台上的光'], onChange: d => { if (d.index === undefined) return; state.film = d.index; img.src = '../assets/photos/' + films[d.index][0]; state.title = films[d.index][1]; paint(); }});
+O.mount('Range', '#range', {label: '曝光', min: -3, max: 3, step: .3, value: 0, unit: ' EV', onChange: d => { state.ev = +d.value; paint(); }});
+O.mount('Switch', '#mono', {label: '黑白', onChange: d => { state.mono = !!d.value; paint(); }});
+O.mount('Stepper', '#stepper', {label: '编号', min: 1, max: 36, value: 7, onChange: d => { state.no = +d.value; paint(); }});
+O.mount('TextField', '#field', {label: '题名', value: '形与色', onChange: d => { if (d.value !== undefined) { state.title = d.value; paint(); } }});
+O.mount('CueButton', '#cue', {label: '冲印 1200 × 1200 PNG', onActivate: async () => {
+  print.classList.remove('is-exposing'); void print.offsetWidth; print.classList.add('is-exposing');
+  const c = document.createElement('canvas'); c.width = c.height = 1200; const g = c.getContext('2d');
+  g.fillStyle = '#f1ebdf'; g.fillRect(0, 0, 1200, 1200); g.filter = img.style.filter || 'none';
+  const s = Math.max(1080 / img.naturalWidth, 960 / img.naturalHeight), w = img.naturalWidth * s, h = img.naturalHeight * s;
+  g.save(); g.beginPath(); g.rect(60, 60, 1080, 960); g.clip(); g.drawImage(img, 60 + (1080 - w) / 2, 60 + (960 - h) / 2, w, h); g.restore(); g.filter = 'none';
+  g.fillStyle = '#211a16'; g.font = '400 54px "Bodoni Moda", serif'; g.fillText(state.title || '无题', 66, 1120); g.font = '600 22px Manrope, sans-serif'; g.textAlign = 'right'; g.fillText('No. ' + String(state.no).padStart(2, '0') + ' · OVERTURE', 1134, 1120);
+  const blob = await new Promise(r => c.toBlob(r, 'image/png'));
+  if (blob) { const t = document.createElement('img'); t.src = URL.createObjectURL(blob); t.alt = '冲印缩略图'; document.getElementById('tray').append(t); O.download(blob, `overture-print-${String(state.no).padStart(2, '0')}.png`); }
+}});
+paint();
+</script>
+
+</body></html>

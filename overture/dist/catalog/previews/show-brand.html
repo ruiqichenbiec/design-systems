@@ -1,0 +1,21 @@
+<!doctype html><html data-theme="stage"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/bundle.css">
+<script src="../assets/bundle.js"></script>
+<style>html,body{margin:0;background:transparent}html{overflow:hidden}body{padding:0;font-family:var(--font-sans)}</style>
+<script>
+addEventListener('message',e=>{if(e.data&&e.data.dsTheme)document.documentElement.dataset.theme=e.data.dsTheme;});
+(function(){try{var t=new URLSearchParams(location.search).get('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}})();
+addEventListener('load',function(){var post=function(){parent.postMessage({dsFrame:"show-brand",h:Math.ceil(Math.max(document.documentElement.scrollHeight,document.body.scrollHeight))},'*');};post();try{new ResizeObserver(post).observe(document.body);}catch(e){}});
+addEventListener('error',function(e){parent.postMessage({dsFrame:"show-brand",err:String(e.message||e)},'*');});
+</script></head><body>
+<style>.brand{padding:36px;background:var(--ov-bg);color:var(--ov-text)}@media(max-width:760px){.brand{padding:20px 16px}}</style>
+<div class="ov brand"><div id="composer"></div></div>
+<script>
+Overture.configure({assetBase: '../assets/'});
+const c = Overture.mount('BrandComposer', '#composer', {});
+const mode = document.querySelector('#composer [data-field=mode]');
+if (mode) { mode.value = 'nocturne'; mode.dispatchEvent(new Event('input', {bubbles: true})); }
+</script>
+
+</body></html>

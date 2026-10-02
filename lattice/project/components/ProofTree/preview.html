@@ -1,0 +1,21 @@
+<!-- @dsCard group="Signature" height=640 subtitle="A proof grows from its conclusion to its axioms" -->
+<section id="s" data-stage style="height:640px"></section>
+<canvas class="lx-stage" id="c"></canvas>
+<div style="position:absolute;left:20px;top:18px;z-index:3;display:flex;flex-wrap:wrap;gap:8px" id="pick"></div>
+<p id="status" class="matrix" style="position:absolute;left:20px;bottom:16px;z-index:3;margin:0;font-size:15px;color:var(--text)"></p>
+<script>
+(function(){
+  var L = window.Lattice;
+  function stage(stations){ return new L.Stage(document.getElementById('c'), stations, L.WORLDS.night); }
+  var st = stage([{id:'tree', el:'#s', pos:[0, 3.3, 13.5], look:[0, 2.8, 0]}]);
+  var tree = new L.ProofTree({ byId: L.byId });
+  st.add(tree);
+  var labels = new L.LabelLayer();
+  var box = document.getElementById('pick');
+  ['picard','taylor','heineborel','peano'].forEach(function(id){ var b = document.createElement('button'); b.className = 'lx-btn lx-btn--ghost'; b.style.minHeight = '34px'; b.style.fontSize = '13px'; b.textContent = L.byId.get(id).en; b.onclick = function(){ grow(id); }; box.appendChild(b); });
+  function grow(id){ var tr = tree.grow(id); labels.clear(); tr.nodes.forEach(function(n){ labels.get(n.i, (n.ref ? '↺ ' : '') + n.t.en, n.depth === 0 ? 'is-root' : n.ref ? 'is-ref' : ''); }); }
+  tree.addEventListener('frame', function(e){ if (!e.detail) return; var tr = e.detail.tree, done = 0; e.detail.proj.forEach(function(p, i){ var n = tr.nodes[i], age = tr.clock - n.bloom; if (age > 0) done++; var show = n.depth <= 1 || (n.leaf && !n.ref); labels.place(i, p.x + 6, p.y - 7, p.visible && age > 0 && show ? Math.min(1, age / 0.5) * 0.9 : 0); }); document.getElementById('status').textContent = done < tr.nodes.length ? 'GROWING · ' + done + ' / ' + tr.nodes.length : '∎ ' + L.byId.get(tr.root.tid).en.toUpperCase(); });
+  tree.addEventListener('pick', function(e){ grow(e.detail); });
+  grow('picard');
+})();
+</script>

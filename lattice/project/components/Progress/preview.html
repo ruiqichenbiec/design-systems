@@ -1,0 +1,7 @@
+<!-- @dsCard group="Feedback" height=190 subtitle="New progress is built from the gas: points converge and lock" -->
+<div class="lx-pv"><div class="lx-progress" id="p" data-value="0.62" aria-label="Demo progress"></div><div class="lx-progress" data-indeterminate aria-label="Working" style="margin-top:8px"></div><div class="pv-row" style="margin-top:12px"><button class="lx-btn lx-btn--ghost" id="a">Empty</button><button class="lx-btn lx-btn--ghost" id="b">Fill</button></div></div>
+<script>
+(function(){
+  var L = window.Lattice; var p = L.mountProgress(document.getElementById('p')); document.querySelectorAll('[data-indeterminate]').forEach(L.mountProgress); var manual = false; document.getElementById('a').onclick = function(){ manual = true; p.set(0); }; document.getElementById('b').onclick = function(){ manual = true; p.set(1); }; (function tick(){ if (!manual) { var v = p.value >= 1 ? 0 : Math.min(1, p.value + 0.07 + Math.random() * 0.09); p.set(v); } setTimeout(tick, p.value >= 1 ? 2600 : p.value === 0 ? 1400 : 1050); })();
+})();
+</script>

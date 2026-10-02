@@ -1,0 +1,27 @@
+<!-- @dsCard group="Signature" height=520 subtitle="65,536 GPU points that pour from set to set" -->
+<section id="s" data-stage style="height:520px"></section>
+<canvas class="lx-stage" id="c"></canvas>
+<div style="position:absolute;left:24px;right:24px;bottom:22px;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px">
+  <p id="cap" class="matrix" style="margin:0;font-size:15px;color:var(--text)"></p>
+  <button class="lx-btn lx-btn--primary" id="next">Next set</button>
+</div>
+<script>
+(function(){
+  var L = window.Lattice;
+  function stage(stations){ return new L.Stage(document.getElementById('c'), stations, L.WORLDS.night); }
+  var st = stage([{id:'hero', el:'#s', pos:[0,0,10], look:[0,0,0]}]);
+  var f = new L.Field(st, {}); f.useSets(L.sets); st.add(f); f.onResize(st);
+  var N = f.N, R = 1.7, i = -1;
+  var SETS = [
+    ['POINT · 5x7 MATRIX', function(Lt){ var m = L.sets.matrixText('POINT', 2); return Lt.lit([{map:m, col:Math.floor((Lt.cols-m.w)/2), row:Math.floor(Lt.rows*0.25)}]); }, {sweep:[1,0,0], span:9, dur:1.5, lit:1.6, flow:2.4, alpha:0.42}],
+    ['LORENZ · σ = 10, ρ = 28, β = 8/3', function(Lt){ return Lt.shape(L.sets.lorenz(N, R)); }, {is3d:true, sweep:[0,-1,0], span:5, dur:1.7, lit:1, flow:3.2, alpha:0.22}],
+    ['TREFOIL · (2, 3) TORUS KNOT', function(Lt){ return Lt.shape(L.sets.torusKnot(N, 2, 3, R)); }, {is3d:true, sweep:[0,-1,0], span:5, dur:1.7, lit:1, flow:3.2, alpha:0.22}],
+    ['FCC CRYSTAL', function(Lt){ return Lt.shape(L.sets.crystal(N, R)); }, {is3d:true, sweep:[0,-1,0], span:5, dur:1.7, lit:1, flow:3.2, alpha:0.22}]
+  ];
+  function next(){ i = (i + 1) % SETS.length; f.keep(SETS[i][1], SETS[i][2]); document.getElementById('cap').textContent = SETS[i][0]; }
+  f.keep(function(Lt){ return Lt.rest(); }, {dur:0.001});
+  setTimeout(next, 400);
+  document.getElementById('next').addEventListener('click', next);
+  f.addEventListener('release', function(e){ if (e.detail.melted) next(); });
+})();
+</script>

@@ -1,0 +1,19 @@
+<!doctype html><html data-theme="night"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/bundle.css">
+<script src="../assets/bundle.js"></script>
+<style>html,body{margin:0;background:transparent}html{overflow:hidden}body{padding:0;font-family:system-ui,sans-serif}</style>
+<script>
+addEventListener('message',e=>{if(e.data&&e.data.dsTheme)document.documentElement.dataset.theme=e.data.dsTheme;});
+(function(){try{var t=new URLSearchParams(location.search).get('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}})();
+addEventListener('load',function(){var post=function(){parent.postMessage({dsFrame:"TextField",h:Math.ceil(Math.max(document.documentElement.scrollHeight,document.body.scrollHeight))},'*');};post();try{new ResizeObserver(post).observe(document.body);}catch(e){}});
+addEventListener('error',function(e){parent.postMessage({dsFrame:"TextField",err:String(e.message||e)},'*');});
+</script></head><body>
+<div class="lx-pv"><form class="lx-field" id="f" novalidate><label for="e">Email</label><input id="e" type="email" placeholder="you@example.com" required><p class="lx-field__msg" id="m">Press Enter to check the format.</p></form></div>
+<script>
+(function(){
+  var f = document.getElementById('f'), e = document.getElementById('e'); f.addEventListener('submit', function(ev){ ev.preventDefault(); var ok = e.checkValidity(); f.toggleAttribute('data-invalid', !ok); document.getElementById('m').textContent = ok ? 'Looks right.' : 'That is not an email address yet: it needs a name, an @ and a domain.'; });
+})();
+</script>
+
+</body></html>

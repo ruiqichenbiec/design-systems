@@ -1,0 +1,34 @@
+{
+  "v": 3,
+  "layout": "files",
+  "createdOnFiles": {
+    "v": 1,
+    "at": "2026-10-02T18:08:05Z"
+  },
+  "title": "点阵 Lattice",
+  "namespace": "Lattice",
+  "libraries": [],
+  "sections": {},
+  "groups": [
+    "Signature",
+    "Interaction",
+    "Controls",
+    "Feedback",
+    "Type",
+    "Overlays"
+  ],
+  "assetGroups": {},
+  "blobs": {},
+  "docs": {
+    "readme": "project/README.md",
+    "sections": [
+      "project/design.md"
+    ]
+  },
+  "lastChange": {
+    "by": "Claude",
+    "via": "Claude Code",
+    "at": "2026-10-02T18:08:05Z",
+    "note": "点阵 Lattice 0.1: Night world, GPU point field, theorem waterfall, proof tree, 11 controls."
+  }
+}

@@ -1,0 +1,33 @@
+/* Cold light (1.2): the second light temperature. Blue marks where light and attention fall —
+   focus, hover, framing, information — while vermilion keeps meaning "act / selected / proof". */
+.ov ::selection{color:var(--ov-bg);background:var(--ov-cold)}
+.ov-button{--cold-glow:color-mix(in srgb,var(--ov-cold) 45%,transparent)}
+.ov-button:hover,.ov-button:focus-visible{box-shadow:0 0 0 1px var(--ov-cold),0 14px 34px -16px var(--cold-glow)}
+.ov-icon-button:hover{box-shadow:0 0 0 1px var(--ov-cold)}
+.ov-text-link:hover{border-color:var(--ov-cold)}.ov-text-link:hover .ov-icon{color:var(--ov-cold)}
+.ov-tabs [role=tab]:hover:not([aria-selected=true]){color:var(--ov-cold)}
+.ov-chapters button:hover:not([aria-current=step]){border-color:var(--ov-cold);color:var(--ov-text)}
+.ov-field input:focus,.ov-field textarea:focus,.ov-field select:focus{border-color:var(--ov-cold)}
+.ov-field__control:after{border-color:var(--ov-cold)}.ov-field__control:focus-within>.ov-icon{color:var(--ov-cold)}
+.ov-field input[aria-invalid=true]{border-color:var(--ov-accent)}
+.ov-range__ticks>i:nth-child(11){background:var(--ov-cold);height:24px}
+.ov-switch__track:before{background:linear-gradient(90deg,transparent 55%,var(--ov-cold) 55%);opacity:.5}
+.ov-switch[aria-checked=true] .ov-switch__track:before{background:linear-gradient(90deg,var(--ov-accent) 45%,transparent 45%);opacity:1}
+.ov-drop__target:hover,.ov-drop__target.is-dragging{border-color:var(--ov-cold)}.ov-drop__target:after{border-color:var(--ov-cold)}
+.ov-loading__iris{border-color:var(--ov-cold);color:var(--ov-cold)}
+.ov-loading__lines i{background:color-mix(in srgb,var(--ov-cold) 28%,var(--ov-line-soft))}
+.ov-notice--info{border-top-color:var(--ov-cold)}.ov-notice--info>.ov-icon{color:var(--ov-cold)}
+.ov-timeline li:nth-child(even)>div:before{background:var(--ov-cold)}
+.ov-tag:focus-visible{border-color:var(--ov-cold)}
+.ov-command__list button:hover{box-shadow:inset 3px 0 0 var(--ov-cold)}
+/* Framing: hover corners are cold light, a chosen frame turns vermilion. */
+.ov-focus-corners{color:var(--ov-cold)}
+.ov-film__frame:hover:not([aria-pressed=true]){border-color:var(--ov-cold)}
+.ov-film__track .ov-film__frame:hover:not(.is-selected){outline:1px solid var(--ov-cold);outline-offset:6px}
+/* Light instruments: the beam edge and reticles carry the cold rim. */
+.ov-light-fallback{background:radial-gradient(ellipse var(--light-radius) var(--light-ry,var(--light-radius)) at var(--light-x) var(--light-y),transparent 36%,#8fb1ff26 44%,#15100980 72%,#090706f4 100%)}
+.ov-flashlight__reticle{background:linear-gradient(#9dbcffb0,#9dbcffb0) center/1px 100% no-repeat,linear-gradient(#9dbcffb0,#9dbcffb0) center/100% 1px no-repeat}
+.ov-wall__detents i:first-child{background:linear-gradient(90deg,#8fb1ff calc(var(--wheel-half,0) * 100%),#6e6049 0)}
+.ov-wall__map button:hover{color:#c9d8ff}
+/* Indigo silk: the curtain alternates oxblood and indigo between acts. */
+.ov-curtain__veil{background:var(--veil,#601018)}

@@ -1,0 +1,11 @@
+<!doctype html><html lang="zh-CN" data-theme="paper"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>最小接入 · Overture</title><link rel="stylesheet" href="overture.css"><style>body{margin:0;background:var(--ov-bg)}main{max-width:1000px;margin:auto;padding:48px 6vw}h1{font:72px/.95 var(--font-display);font-weight:400}p{color:var(--ov-muted);line-height:1.9}section{margin:45px 0}code{font-size:12px}pre{white-space:pre-wrap;border-top:1px solid var(--ov-line);padding:25px 0}</style></head><body class="ov"><main><a href="components.html">返回组件库</a><h1>A new opening.</h1><p>一个 CSS 文件、一个 JS 文件、一个素材目录。直接将下方结构用于你的原生网页。</p><section id="button"></section><section id="tabs"></section><section id="range"></section><pre><code>&lt;link rel="stylesheet" href="overture.css"&gt;
+&lt;script src="overture.js"&gt;&lt;/script&gt;
+&lt;div id="host"&gt;&lt;/div&gt;
+&lt;script&gt;
+Overture.configure({ assetBase: 'assets/' });
+const instance = Overture.mount('Range', '#host', {
+  label: '曝光', value: 42,
+  onChange: ({value}) =&gt; console.log(value)
+});
+// 在页面卸载或切换时调用 instance.destroy()
+&lt;/script&gt;</code></pre></main><script src="overture.js"></script><script>Overture.configure({assetBase:'assets/'});Overture.mount('CueButton','#button',{label:'开始创作'});Overture.mount('StageTabs','#tabs');Overture.mount('Range','#range',{label:'曝光',value:42});</script></body></html>

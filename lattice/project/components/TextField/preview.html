@@ -1,0 +1,7 @@
+<!-- @dsCard group="Controls" height=180 subtitle="A dotted rule that flows while you type" -->
+<div class="lx-pv"><form class="lx-field" id="f" novalidate><label for="e">Email</label><input id="e" type="email" placeholder="you@example.com" required><p class="lx-field__msg" id="m">Press Enter to check the format.</p></form></div>
+<script>
+(function(){
+  var f = document.getElementById('f'), e = document.getElementById('e'); f.addEventListener('submit', function(ev){ ev.preventDefault(); var ok = e.checkValidity(); f.toggleAttribute('data-invalid', !ok); document.getElementById('m').textContent = ok ? 'Looks right.' : 'That is not an email address yet: it needs a name, an @ and a domain.'; });
+})();
+</script>

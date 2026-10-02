@@ -1,0 +1,28 @@
+<!-- @dsShowcase title="三个动作语法" eyebrow="01 · GRAMMAR" lede="整个体系只用三种动作：开幕／遮挡、聚焦／显影、张力／凝住。每个组件都由它们组合而成。下面三个都是可以直接操作的真实组件。" height=1400 gl -->
+<style>
+.gram{background:var(--ov-bg);color:var(--ov-text)}
+.gram__act{display:grid;grid-template-columns:minmax(220px,.8fr) minmax(0,2fr);gap:40px;align-items:center;padding:40px 36px;border-bottom:1px solid var(--ov-line-soft)}
+.gram__act:last-child{border-bottom:0}
+.gram__no{font:400 88px/.8 var(--font-display);letter-spacing:-.04em;color:var(--ov-text)}
+.gram__no small{display:block;font:600 11px var(--font-sans);letter-spacing:.24em;color:var(--ov-muted);margin-top:18px}
+.gram h3{font:400 34px/1.05 var(--font-display);margin:26px 0 12px}
+.gram p{color:var(--ov-muted);font-size:13px;line-height:1.8;margin:0 0 14px;max-width:34ch}
+.gram__try{display:flex;gap:10px;align-items:center;font-size:11px;letter-spacing:.14em;color:var(--ov-cold)}
+.gram__try:before{content:"";width:28px;height:1px;background:currentColor}
+.gram__demo{min-width:0}
+.gram__demo .ov-aperture,.gram__demo .ov-aperture__scene{min-height:360px}
+.gram__demo .ov-silk__scene{height:360px}
+.gram__demo .ov-develop{height:360px}
+@media(max-width:760px){.gram__act{grid-template-columns:1fr;gap:20px;padding:28px 18px}.gram__no{font-size:64px}}
+</style>
+<div class="ov gram">
+  <section class="gram__act"><div><div class="gram__no">I.<small>OPEN / OCCLUDE</small></div><h3>开幕 · 遮挡</h3><p>光圈与幕布控制看见多少。进入、退回和转场都是一次开合；静止时，遮挡本身也构成画面。</p><span class="gram__try">拖动开度，点击 ENTER</span></div><div class="gram__demo" id="aperture"></div></section>
+  <section class="gram__act"><div><div class="gram__no">II.<small>FOCUS / DEVELOP</small></div><h3>聚焦 · 显影</h3><p>目光落在哪里，哪里就从黑白显出颜色。悬停是冷光的取景角，选中后锁定为朱红。</p><span class="gram__try">移动指针，点击选中</span></div><div class="gram__demo" id="develop"></div></section>
+  <section class="gram__act"><div><div class="gram__no">III.<small>TENSION / FREEZE</small></div><h3>张力 · 凝住</h3><p>拖动衣料改变张力，形态随之共振；一次点击凝住这一瞬，并可以导出。</p><span class="gram__try">拖动衣料，调整张力，暂停</span></div><div class="gram__demo" id="silk"></div></section>
+</div>
+<script>
+Overture.configure({assetBase: '../assets/'});
+Overture.mount('ApertureStage', '#aperture', {});
+Overture.mount('DevelopImage', '#develop', {caption: 'FORM / 003'});
+Overture.mount('SilkResonance', '#silk', {value: 58});
+</script>

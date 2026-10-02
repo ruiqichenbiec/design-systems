@@ -1,0 +1,67 @@
+<!doctype html><html data-theme="stage"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/bundle.css">
+<script src="../assets/bundle.js"></script>
+<style>html,body{margin:0;background:transparent}html{overflow:hidden}body{padding:0;font-family:var(--font-sans)}</style>
+<script>
+addEventListener('message',e=>{if(e.data&&e.data.dsTheme)document.documentElement.dataset.theme=e.data.dsTheme;});
+(function(){try{var t=new URLSearchParams(location.search).get('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}})();
+addEventListener('load',function(){var post=function(){parent.postMessage({dsFrame:"show-film",h:Math.ceil(Math.max(document.documentElement.scrollHeight,document.body.scrollHeight))},'*');};post();try{new ResizeObserver(post).observe(document.body);}catch(e){}});
+addEventListener('error',function(e){parent.postMessage({dsFrame:"show-film",err:String(e.message||e)},'*');});
+</script></head><body>
+<style>
+.reel{background:#090706;color:#f1ebdf;padding:0 0 28px}
+.reel__screen{position:relative;aspect-ratio:16/9;background:#000;overflow:hidden;cursor:pointer}
+.reel__screen video{display:block;width:100%;height:100%;object-fit:cover}
+.reel__veil{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(ellipse at 50% 55%,#0000 30%,#0009);transition:opacity var(--ov-time)}
+.reel.is-playing .reel__veil{opacity:0;pointer-events:none}
+.reel__veil .ov-button{color:#f1ebdf;border-color:#f1ebdf99;backdrop-filter:blur(3px)}
+.reel__bar{display:flex;align-items:center;gap:20px;padding:18px 28px 0}
+.reel__track{position:relative;flex:1;height:3px;background:#3d312a;cursor:pointer}
+.reel__track i{position:absolute;inset:0;background:var(--ov-accent);transform-origin:left;transform:scaleX(var(--p,0))}
+.reel__track b{position:absolute;top:-4px;width:1px;height:11px;background:#8fb1ff}
+.reel__time{font:22px var(--font-display);min-width:108px;text-align:right;font-variant-numeric:tabular-nums}
+.reel__chapters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px;margin:18px 28px 0;border-top:1px solid #3d312a}
+.reel__chapters button{background:none;border:0;border-top:2px solid transparent;margin-top:-1px;padding:14px 4px 4px;text-align:left;color:#b9ada0;display:grid;gap:4px;font-size:11px;letter-spacing:.12em}
+.reel__chapters button span{font:24px var(--font-display);letter-spacing:0;color:#f1ebdf}
+.reel__chapters button[aria-current=true]{border-top-color:var(--ov-accent);color:#f1ebdf}
+.reel__chapters button:hover:not([aria-current=true]){border-top-color:#8fb1ff}
+@media(max-width:700px){.reel__chapters{grid-template-columns:repeat(3,1fr)}.reel__bar{padding:14px 16px 0}.reel__chapters{margin:14px 16px 0}}
+</style>
+<div class="ov reel">
+  <div class="reel__screen"><video src="../assets/files/video/overture-promo-15s.mp4" playsinline preload="metadata" aria-label="Overture 15 秒宣传片，配乐 A"></video>
+    <div class="reel__veil"><button type="button" class="ov-button ov-button--circle" id="play"><span>PLAY</span></button></div></div>
+  <div class="reel__bar"><button type="button" class="ov-icon-button" id="toggle" aria-label="播放"></button><button type="button" class="ov-icon-button" id="sound" aria-pressed="false" aria-label="静音"></button><div class="reel__track" id="track" role="slider" tabindex="0" aria-label="播放位置" aria-valuemin="0" aria-valuemax="15" aria-valuenow="0"><i></i></div><span class="reel__time" id="time">00.0 / 15.0</span></div>
+  <nav class="reel__chapters" aria-label="章节" id="chapters"></nav>
+</div>
+<script>
+(() => {
+  const acts = [[0, '01', 'OPEN · 开幕'], [3.75, '02', 'FOCUS · 聚焦'], [6.8, '03', 'DEVELOP · 显影'], [8.44, '04', 'RESONATE · 张力'], [10.2, '05', 'CAPTURE · 凝住'], [12.19, '—', 'FINALE · 字标']];
+  const root = document.querySelector('.reel'), v = root.querySelector('video'), track = document.getElementById('track'), time = document.getElementById('time'), nav = document.getElementById('chapters'), toggle = document.getElementById('toggle'), sound = document.getElementById('sound');
+  nav.innerHTML = acts.map(([t, n, l]) => `<button type="button" data-t="${t}"><span>${n}</span>${l}</button>`).join('');
+  track.insertAdjacentHTML('beforeend', acts.slice(1).map(([t]) => `<b style="left:${t / 15 * 100}%"></b>`).join(''));
+  const play = () => v.play().catch(() => {});
+  const sync = () => {
+    const t = v.currentTime || 0, d = v.duration || 15;
+    track.style.setProperty('--p', t / d); track.setAttribute('aria-valuenow', t.toFixed(1));
+    time.textContent = `${t.toFixed(1).padStart(4, '0')} / ${d.toFixed(1)}`;
+    const i = acts.reduce((k, a, j) => (t >= a[0] ? j : k), 0);
+    nav.querySelectorAll('button').forEach((b, j) => b.setAttribute('aria-current', String(j === i)));
+    root.classList.toggle('is-playing', !v.paused); toggle.innerHTML = Overture.icon(v.paused ? 'play' : 'pause'); toggle.setAttribute('aria-label', v.paused ? '播放' : '暂停');
+  };
+  ['timeupdate', 'play', 'pause', 'loadedmetadata', 'seeked'].forEach(e => v.addEventListener(e, sync));
+  let raf = 0; const tick = () => { sync(); if (!v.paused) raf = requestAnimationFrame(tick); }; v.addEventListener('play', () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(tick); });
+  document.getElementById('play').addEventListener('click', play);
+  root.querySelector('.reel__screen').addEventListener('click', e => { if (!e.target.closest('button')) v.paused ? play() : v.pause(); });
+  toggle.addEventListener('click', () => (v.paused ? play() : v.pause()));
+  sound.addEventListener('click', () => { v.muted = !v.muted; sound.setAttribute('aria-pressed', String(v.muted)); sound.setAttribute('aria-label', v.muted ? '取消静音' : '静音'); sound.style.opacity = v.muted ? .45 : 1; });
+  const seek = x => { const r = track.getBoundingClientRect(); v.currentTime = Math.max(0, Math.min(1, (x - r.left) / r.width)) * (v.duration || 15); };
+  track.addEventListener('click', e => seek(e.clientX));
+  track.addEventListener('keydown', e => { const d = { ArrowRight: 1, ArrowLeft: -1 }[e.key]; if (d) { e.preventDefault(); v.currentTime = Math.max(0, Math.min(v.duration || 15, v.currentTime + d)); } });
+  nav.addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; v.currentTime = +b.dataset.t; play(); });
+  sound.innerHTML = Overture.icon('sound');
+  sync();
+})();
+</script>
+
+</body></html>

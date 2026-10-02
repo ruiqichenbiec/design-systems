@@ -1,0 +1,7 @@
+<!-- @dsCard group="Overlays" height=190 subtitle="Messages with a dot-matrix tag" -->
+<div class="lx-pv"><div class="pv-row"><button class="lx-btn lx-btn--ghost" id="t">Send a message</button></div></div>
+<script>
+(function(){
+  var L = window.Lattice; L.toast('Proof checked: no gaps found.', { tag: 'OK', ms: 600000 }); document.getElementById('t').onclick = function(){ L.toast('A lemma was saved to the ledger.', { tag: 'SAVED' }); };
+})();
+</script>

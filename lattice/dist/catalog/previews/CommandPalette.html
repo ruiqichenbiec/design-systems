@@ -1,0 +1,19 @@
+<!doctype html><html data-theme="night"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/bundle.css">
+<script src="../assets/bundle.js"></script>
+<style>html,body{margin:0;background:transparent}html{overflow:hidden}body{padding:0;font-family:system-ui,sans-serif}</style>
+<script>
+addEventListener('message',e=>{if(e.data&&e.data.dsTheme)document.documentElement.dataset.theme=e.data.dsTheme;});
+(function(){try{var t=new URLSearchParams(location.search).get('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}})();
+addEventListener('load',function(){var post=function(){parent.postMessage({dsFrame:"CommandPalette",h:Math.ceil(Math.max(document.documentElement.scrollHeight,document.body.scrollHeight))},'*');};post();try{new ResizeObserver(post).observe(document.body);}catch(e){}});
+addEventListener('error',function(e){parent.postMessage({dsFrame:"CommandPalette",err:String(e.message||e)},'*');});
+</script></head><body>
+<div class="lx-pv"><p class="pv-note">Opens as a modal dialog. Try ⌘K / Ctrl+K inside this card, or the button.</p><div class="pv-row"><button class="lx-btn lx-btn--primary" id="o">Open commands</button></div><p class="pv-note" id="r"></p></div>
+<script>
+(function(){
+  var c = window.Lattice.mountCommands([{id:'a', key:'下', en:'Next set', run:function(){ document.getElementById('r').textContent = 'Ran: Next set'; }}, {id:'b', key:'树', en:'Grow the proof of Picard–Lindelöf', run:function(){ document.getElementById('r').textContent = 'Ran: Grow a proof'; }}, {id:'c', key:'声', en:'Toggle sound', run:function(){ document.getElementById('r').textContent = 'Ran: Toggle sound'; }}]); document.getElementById('o').onclick = c.open;
+})();
+</script>
+
+</body></html>

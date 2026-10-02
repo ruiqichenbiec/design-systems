@@ -1,0 +1,12 @@
+{
+  "name": "overture-design-system",
+  "version": "1.3.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node tools/build.mjs",
+    "start": "node tools/serve.mjs",
+    "test": "node tests/model.test.mjs",
+    "verify": "node tools/verify.mjs"
+  }
+}

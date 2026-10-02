@@ -1,0 +1,136 @@
+{
+  "note": "Compressed copies embedded by dist/overture-showcase.html. Regenerate with tools/prepare-embed.py.",
+  "files": [
+    {
+      "name": "photos/overture-art.png",
+      "file": "photos/overture-art.webp",
+      "type": "image/webp",
+      "width": 1586,
+      "height": 992,
+      "alpha": false,
+      "bytes": 154264,
+      "source_sha256": "6f4aa0e5231bff61c9930210d0e81785c6e8dae6aa55e4a615dc1ac6fc994f39",
+      "sha256": "392c04966f887df501fc5c6b0a6034aaa3c4d43397e86faa5d838c6f8354ab2a"
+    },
+    {
+      "name": "photos/red-silk.png",
+      "file": "photos/red-silk.webp",
+      "type": "image/webp",
+      "width": 1586,
+      "height": 992,
+      "alpha": false,
+      "bytes": 110934,
+      "source_sha256": "24046c9616face63e2858af878cfde3511e1b1aeabefaa5d7f05723b82483b14",
+      "sha256": "bc1859cee69e9534a6480ef15ef0ab2dace4432887588730eae916e20173b7b0"
+    },
+    {
+      "name": "photos/resonance-silk.png",
+      "file": "photos/resonance-silk.webp",
+      "type": "image/webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": true,
+      "bytes": 293410,
+      "source_sha256": "9cc80ca431929a4c14c24fee19f7d3d50e7637f6842f60d4b467af58458a0f47",
+      "sha256": "cca97af38dcc6ff9ce14a1ca8251aa353277a9f3b524f58144f66aef5c2da513"
+    },
+    {
+      "name": "photos/textile-panorama.png",
+      "file": "photos/textile-panorama.webp",
+      "type": "image/webp",
+      "width": 1600,
+      "height": 548,
+      "alpha": false,
+      "bytes": 146728,
+      "source_sha256": "e208b20fa0aa26099af6c47c903e8621b360428038d29131fab332bbd27b86ae",
+      "sha256": "01e14c6b633da83f85e3e4d96ff96fff0044c2d6b4c96716e3038b3a80f8f271"
+    },
+    {
+      "name": "photos/brass-pin.png",
+      "file": "photos/brass-pin.webp",
+      "type": "image/webp",
+      "width": 96,
+      "height": 96,
+      "alpha": true,
+      "bytes": 4588,
+      "source_sha256": "422a6183f0d4767a24b4c0d8c7aefdd977b785fe05ff34fe2753b288b02b5030",
+      "sha256": "0738338261d418585eb2e6c0a50fdfbc3c49deb19ecef0828d3c85abfdedf003"
+    },
+    {
+      "name": "photos/hero-backstage.jpg",
+      "file": "photos/hero-backstage.webp",
+      "type": "image/webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": false,
+      "bytes": 51536,
+      "source_sha256": "bde2a958f4c11af30f16124b22b6a1307fe45a42fc109d4d6241ca39b7c22f27",
+      "sha256": "553718bf30573707e71f002d9e2438dbafaf0acb22ca6aa779f2fb9c1c6e9fad"
+    },
+    {
+      "name": "photos/stage-bow.jpg",
+      "file": "photos/stage-bow.webp",
+      "type": "image/webp",
+      "width": 1122,
+      "height": 1402,
+      "alpha": false,
+      "bytes": 90384,
+      "source_sha256": "f80c4a64d27ac26da32477b3750ec2ff93fceceb5931c046324218026f5cf0ab",
+      "sha256": "1c0ba579f493310783dac1e9017290c2cd4826c291aa7555b30079ed99e45bbd"
+    },
+    {
+      "name": "photos/runway.jpg",
+      "file": "photos/runway.webp",
+      "type": "image/webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": false,
+      "bytes": 53208,
+      "source_sha256": "cea96a1f7329912e0c1594c7f76b0d45b454fe74156544d47725a82ae421d2a0",
+      "sha256": "8270f3fa2f1544f39093acd1aad728210016c384452d41652bdafd919dacb9ae"
+    },
+    {
+      "name": "photos/camera-hands.jpg",
+      "file": "photos/camera-hands.webp",
+      "type": "image/webp",
+      "width": 1122,
+      "height": 1402,
+      "alpha": false,
+      "bytes": 53358,
+      "source_sha256": "d95243d08bae597e158d7efe5c143d9cc5412ee7a830bc7b38b0d3a816174b1f",
+      "sha256": "bc1800b7b65631f3364b2e2d8717506faee0b23abdc06a9daf4abb0513e34424"
+    },
+    {
+      "name": "photos/backstage-mirror.jpg",
+      "file": "photos/backstage-mirror.webp",
+      "type": "image/webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": false,
+      "bytes": 67524,
+      "source_sha256": "c89b1ddf97fca3d7a12b9def704bb1e475cf936da01972b5cd6534153b830d90",
+      "sha256": "5b3c32686bf5ecca9d09b65410e4ad188f5c6a09fff1e82d9686fa1fafdbefcb"
+    },
+    {
+      "name": "photos/dance-stage.jpg",
+      "file": "photos/dance-stage.webp",
+      "type": "image/webp",
+      "width": 1536,
+      "height": 1024,
+      "alpha": false,
+      "bytes": 32714,
+      "source_sha256": "6a4b767d571fc1457f0f9df161022f45bea2005a30374583f18e34eeaf505baa",
+      "sha256": "f67ac860df12d9ba77b78ab9d7a9e2a08013ff4bacd43d4682335f65b2b4cb14"
+    },
+    {
+      "name": "video/overture-promo-15s.mp4",
+      "file": "video/overture-promo-15s-720p.mp4",
+      "type": "video/mp4",
+      "width": 1280,
+      "height": 720,
+      "bytes": 3001927,
+      "source_sha256": "013fdcbfd058cb72fa4fc24ba52de59da0d07dedacdd1530fbe14ba23a04c3bc",
+      "sha256": "db21d3b38d35cb6941afe0065fb1a251750e6386368011d3fa1c067843720a60"
+    }
+  ]
+}

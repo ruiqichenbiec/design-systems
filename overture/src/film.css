@@ -1,0 +1,41 @@
+/* FilmCanister: a 3D cartridge, a pulled strip and a table for prints. Film stock colours are physical, UI colours are tokens. */
+.ov-roll{position:relative;padding:22px 0 0;--roll-h:430px;--frame-w:220px;user-select:none}
+.ov-roll__meta{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:baseline;padding:0 32px;font-size:11px;letter-spacing:.18em;color:var(--ov-muted)}
+.ov-roll__meta>span:first-child{color:var(--ov-text)}
+.ov-roll__table-label{margin-left:auto;display:flex;align-items:center;gap:8px;color:var(--ov-cold)}.ov-roll__table-label .ov-icon{width:14px;height:14px}
+.ov-roll__bench{position:relative;height:var(--roll-h);overflow:hidden}
+.ov-gpu.ov-roll__canister{position:absolute;left:0;top:0;bottom:0;width:min(36%,380px);min-height:0;z-index:3;background:transparent;pointer-events:auto}
+.ov-roll__canister .ov-gpu-canvas{filter:drop-shadow(18px 26px 22px rgb(0 0 0 / .45))}
+.ov-roll__can{position:absolute;left:20%;top:13%;bottom:13%;width:50%;display:grid;place-items:center;overflow:hidden;border-radius:14px/8px;background:linear-gradient(90deg,#000a,#0000 28%,#fff4 44%,#0000 58%,#000b),linear-gradient(#1f4a8f 0 17%,#efe4cf 17% 83%,#23386b 83%);box-shadow:inset 0 16px 0 #2b2622,inset 0 -16px 0 #2b2622,0 30px 40px -20px #000;transition:opacity var(--ov-time)}
+.ov-roll__label{display:grid;gap:4px;text-align:center;color:#1b1410;transform:translateX(calc(var(--turn,0) * -40%))}
+.ov-roll__label b{font:400 21px var(--font-display);color:#c03a2b;letter-spacing:.02em}.ov-roll__label strong{font:400 62px/1 var(--font-display)}.ov-roll__label small{font-size:8px;letter-spacing:.16em}
+.ov-roll__canister.is-gpu-ready:not([data-renderer=static])>.ov-roll__can{opacity:0}
+.ov-roll__strip{position:absolute;left:min(18%,190px);right:0;top:50%;height:calc(var(--frame-w) * .6667 + 72px);transform:translateY(-50%);overflow:hidden;cursor:grab;touch-action:pan-y;z-index:2;-webkit-mask:linear-gradient(90deg,#000 86%,#0000);mask:linear-gradient(90deg,#000 86%,#0000)}
+.ov-roll__strip:active{cursor:grabbing}.ov-roll__strip:focus-visible{outline:2px solid var(--ov-focus);outline-offset:-4px}
+.ov-roll__track{position:absolute;left:0;top:0;bottom:0;display:flex;flex-direction:row-reverse;align-items:center;column-gap:26px;padding:0 26px 0 60px;background:#17120f;will-change:transform;box-shadow:inset 0 1px 0 #3a2f26,inset 0 -1px 0 #3a2f26}
+.ov-roll__track:before,.ov-roll__track:after{content:"";position:absolute;left:0;right:0;height:13px;background:repeating-linear-gradient(90deg,transparent 0 9px,#d9cfbd 9px 22px,transparent 22px 34px);opacity:.52;border-radius:2px;pointer-events:none}
+.ov-roll__track:before{top:10px}.ov-roll__track:after{bottom:10px}
+.ov-roll__frame{position:relative;flex:0 0 var(--frame-w);height:calc(var(--frame-w) * .6667);padding:0;border:0;background:#2b221b;color:#e7dac3;touch-action:pan-y}
+.ov-roll__frame img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.06) brightness(.86);transition:filter var(--ov-time),opacity var(--ov-fast)}
+.ov-roll__frame:hover img,.ov-roll__frame:focus-visible img{filter:none}
+.ov-roll__frame .ov-focus-corners{inset:-8px;color:var(--ov-cold)}
+.ov-roll__frame:hover .ov-focus-corners,.ov-roll__frame:focus-visible .ov-focus-corners{opacity:1;transform:none}
+.ov-roll__frame:focus-visible{outline:0}
+.ov-roll__frame.is-out{background:linear-gradient(135deg,#3b2f2466,#58463766),#241c16}.ov-roll__frame.is-out img{opacity:0}
+.ov-roll__frame.is-out:after{content:"";position:absolute;inset:0;border:1px dashed #8d7c6a80}
+.ov-roll__edge{position:absolute;top:-27px;left:0;font-size:9px;letter-spacing:.24em;color:#e3955880;white-space:nowrap;pointer-events:none}
+.ov-roll__no{position:absolute;bottom:-26px;left:6px;font-size:10px;letter-spacing:.12em;color:#e7dac3a6;pointer-events:none}
+.ov-roll__table{position:relative;z-index:4;height:300px;margin:0 32px;border-top:1px dashed var(--ov-line);background:radial-gradient(ellipse 70% 90% at 50% 0,color-mix(in srgb,var(--ov-cold) 9%,transparent),transparent 72%);transition:border-color var(--ov-fast),background var(--ov-time)}
+.ov-roll__table.is-target{border-top:1px solid var(--ov-cold);background:radial-gradient(ellipse 70% 90% at 50% 0,color-mix(in srgb,var(--ov-cold) 20%,transparent),transparent 72%)}
+.ov-roll__empty{position:absolute;inset:0;display:grid;place-items:center;color:var(--ov-muted);font-size:11px;letter-spacing:.18em;pointer-events:none}
+.ov-roll__print{position:absolute;left:0;top:0;width:calc(var(--frame-w) + 16px);padding:8px 8px 32px;border:0;background:#f1ebdf;color:#211a16;text-align:left;box-shadow:var(--ov-print-shadow);transform:translate(var(--x,0),var(--y,0)) rotate(var(--r,0deg)) scale(var(--s,1));transition:transform var(--ov-fast),box-shadow var(--ov-time);cursor:grab;touch-action:none;z-index:5}
+.ov-roll__print img{width:100%;aspect-ratio:3/2;object-fit:cover;pointer-events:none}
+.ov-roll__print>span{position:absolute;left:10px;right:10px;bottom:9px;display:flex;justify-content:space-between;align-items:baseline;font-size:10px;letter-spacing:.12em}.ov-roll__print b{font:400 16px var(--font-display)}.ov-roll__print em{font-style:normal}
+.ov-roll__print.is-flying,.ov-roll__print.is-lifted{transition:none;cursor:grabbing;box-shadow:0 34px 60px rgb(0 0 0 / .5),0 0 0 1px color-mix(in srgb,var(--ov-cold) 60%,transparent)}
+.ov-roll__print.is-flying{z-index:30}
+.ov-roll__print.is-developing img{animation:ov-roll-develop 1.3s var(--ov-ease)}
+.ov-roll__print:focus-visible{outline:2px solid var(--ov-focus);outline-offset:4px}
+@keyframes ov-roll-develop{0%{filter:grayscale(1) brightness(1.9) contrast(.5);opacity:.35}45%{filter:grayscale(.7) brightness(1.2) contrast(.8)}100%{filter:none;opacity:1}}
+@media(max-width:650px){.ov-roll{--roll-h:330px;--frame-w:160px}.ov-roll__meta{padding:0 18px;letter-spacing:.12em}.ov-roll__table-label{margin-left:0}.ov-gpu.ov-roll__canister{width:44%}.ov-roll__strip{left:22%}.ov-roll__table{margin:0 18px;height:260px}}
+[data-motion=reduce] .ov-roll__print.is-developing img{animation:none}
+@media(prefers-reduced-motion:reduce){html:not([data-motion=full]) .ov-roll__print.is-developing img{animation:none}}

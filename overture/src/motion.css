@@ -1,0 +1,112 @@
+/* Light is a viewing instrument: DOM photographs remain available under the GPU mask. */
+.ov-light-mask{position:absolute;inset:0;z-index:3;pointer-events:none;overflow:hidden;--light-x:50%;--light-y:50%;--light-radius:350px}
+.ov-light-mask .ov-gpu-canvas{position:absolute;inset:0;width:100%;height:100%}
+.ov-light-fallback{position:absolute;inset:0;background:radial-gradient(ellipse var(--light-radius) var(--light-ry,var(--light-radius)) at var(--light-x) var(--light-y),transparent 38%,#15100980 72%,#090706f4 100%)}
+.ov-light-mask.is-gpu-ready:not([data-renderer=static]) .ov-light-fallback{display:none}
+.ov-flashlight{--flashlight-height:620px;background:#100d0a;color:#eee7d8}
+.ov-flashlight__scroller{height:var(--flashlight-height);overflow:visible}
+.ov-flashlight__scroller:focus-visible{outline-offset:-6px}
+.ov-flashlight__journey{position:relative;height:var(--flashlight-height)}
+.ov-flashlight__stage{position:relative;isolation:isolate;height:var(--flashlight-height);overflow:clip;touch-action:pan-y}
+.ov-flashlight--page{--flashlight-height:100svh}.ov-flashlight--page .ov-flashlight__scroller{height:auto;overflow:visible}
+.ov-flashlight__word{position:absolute;left:4%;top:4%;font:clamp(65px,13vw,170px)/.79 var(--font-display);letter-spacing:-.04em;color:#aaa18e;pointer-events:none}
+.ov-flashlight__word em{font-weight:400;font-size:.72em}
+.ov-flashlight__photos{position:absolute;inset:14% 8% 19%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:minmax(0,1fr);gap:12% 8%;align-items:stretch}
+.ov-flashlight__photos figure{position:relative;min-width:0;min-height:0;background:#c9bfa9;padding:8px 8px 25px;transform:rotate(var(--photo-turn));box-shadow:12px 24px 30px #0009}
+.ov-flashlight__photos figure>img{width:100%;height:100%;object-fit:cover;filter:grayscale(.85);transition:filter .7s}
+.ov-flashlight__photos .is-lit>img{filter:grayscale(0)}
+.ov-flashlight__photos figcaption{position:absolute;bottom:7px;left:10px;color:#292119;font-size:8px;letter-spacing:.14em}
+.ov-flashlight__caption{position:absolute;z-index:4;bottom:35px;left:4%;display:flex;align-items:baseline;gap:28px;pointer-events:none}
+.ov-flashlight__caption>span{font-size:12px;color:#b9ad9a}.ov-flashlight__caption strong{font-family:var(--font-display);font-size:29px;font-weight:400}
+.ov-flashlight__hint{position:absolute;bottom:39px;right:4%;z-index:4;font-size:11px;color:#d7cdb9;pointer-events:none}
+.ov-flashlight__reticle{position:absolute;z-index:4;width:36px;height:36px;transform:translate(-50%,-50%);pointer-events:none;background:linear-gradient(#ebddc280,#ebddc280) center/1px 100% no-repeat,linear-gradient(#ebddc280,#ebddc280) center/100% 1px no-repeat}
+.ov-flashlight__progress{position:absolute;bottom:0;left:0;right:0;height:2px;background:#70604440;z-index:4}.ov-flashlight__progress i{display:block;height:100%;background:#c14c37;transform:scaleX(0);transform-origin:left}
+.ov-light-tools{display:flex;align-items:center;gap:22px;min-height:85px;padding:15px 4%;border-top:1px solid #63533c66}
+.ov-light-tools label{display:flex;align-items:center;gap:15px;font-size:11px;flex:1;max-width:480px}.ov-light-tools input{flex:1;min-width:40px}.ov-light-tools output{min-width:34px;font-variant-numeric:tabular-nums}.ov-light-tools>.ov-help{color:#b6ab97}
+.ov-wall{--wall-height:620px;background:#14100c;color:#f1e9d9}
+.ov-wall__scroller{height:var(--wall-height);overflow:auto;scrollbar-width:thin;scrollbar-color:#9d3c30 #1c1711}
+.ov-wall__journey{position:relative;height:calc(var(--wall-height) * var(--wall-length,6))}
+.ov-wall__viewport{position:sticky;top:0;height:var(--wall-height);overflow:clip;isolation:isolate;background:#282219}
+.ov-wall--page{--wall-height:100svh}.ov-wall--page .ov-wall__scroller{height:auto;overflow:visible}
+.ov-wall__world{position:absolute;left:0;top:0;width:4600px;height:1500px;transform-origin:0 0;will-change:transform}
+.ov-wall__threads{position:absolute;left:0;top:0;overflow:visible;filter:drop-shadow(0 3px 2px #0009)}
+.ov-wall__threads path{stroke:#b34632;stroke-width:2.5;fill:none}
+.ov-wall__type{position:absolute;top:170px;left:60px;font:120px/.94 var(--font-display);letter-spacing:-.035em;color:#655743;white-space:nowrap;transform:rotate(-6deg)}
+.ov-wall__photo{position:absolute;width:520px;padding:17px 17px 50px;background:#d9ceba;color:#292016;transform:translate(-50%,-50%) rotate(var(--turn));box-shadow:9px 25px 30px #0009}
+.ov-wall__photo>img{width:100%;height:375px;object-fit:cover;filter:grayscale(.95);transition:filter .8s}
+.ov-wall__photo.is-current>img{filter:grayscale(0)}
+.ov-wall__photo figcaption{position:absolute;bottom:15px;left:20px;right:20px;display:flex;align-items:baseline;justify-content:space-between;gap:15px}
+.ov-wall__photo figcaption>span:first-child{font-size:19px}.ov-wall__photo figcaption>span:last-child{font-size:9px;letter-spacing:.12em}
+.ov-wall__pin{position:absolute;left:50%;top:-1px;transform:translateX(-50%);width:28px;height:28px;z-index:2;filter:drop-shadow(4px 7px 4px #0008)}
+.ov-wall__pin img{width:100%;height:100%;object-fit:contain}
+.ov-wall__fixed{position:absolute;inset:0;z-index:4;pointer-events:none}
+.ov-wall__fixed h3{position:absolute;left:4%;top:38px;font-size:clamp(20px,2.6vw,37px);font-weight:300;line-height:1.55;letter-spacing:.06em}
+.ov-wall__instruction{position:absolute;right:4%;top:43px;font-size:10px;letter-spacing:.1em;display:flex;align-items:center;gap:20px;color:#c6bba5}
+.ov-wall__instruction i{width:1px;height:40px;background:linear-gradient(#c6bba5,transparent)}
+.ov-wall--step .ov-wall__scroller{overflow:visible}.ov-wall--step .ov-wall__journey{height:var(--wall-height)}.ov-wall--step .ov-wall__viewport{position:relative}
+.ov-wall--step .ov-wall__instruction{display:grid;grid-template-columns:1fr auto;gap:10px 16px}.ov-wall--step .ov-wall__instruction>span:first-child{grid-column:1/-1}
+.ov-wall__detents{display:flex;gap:7px}.ov-wall__detents i{width:27px;height:3px;background:#6e6049}.ov-wall__detents i:first-child{background:linear-gradient(90deg,#d3a47c calc(var(--wheel-half,0) * 100%),#6e6049 0)}
+.ov-wall[data-moving=true] .ov-wall__detents i{background:#c14c37}.ov-wall__wheel-status{font-variant-numeric:tabular-nums;font-size:10px}
+.ov-wall__caption{position:absolute;left:4%;bottom:43px;display:flex;gap:24px;align-items:center}
+.ov-wall__count{font:52px/1 var(--font-display);color:#b54b39}
+.ov-wall__caption>div{display:grid;gap:6px}.ov-wall__caption strong{font-size:19px;font-weight:400}.ov-wall__caption>div>span{font-size:10px;color:#bcb09b}
+.ov-wall__navigation{position:absolute;right:4%;bottom:45px;display:flex;gap:14px;pointer-events:auto}
+.ov-wall__navigation button{border-color:#6e6049;background:#15110bbb;color:#e6dcc8}
+.ov-wall__progress{position:absolute;bottom:0;left:0;right:0;height:2px;background:#70604440}.ov-wall__progress i{display:block;height:100%;background:#c14c37;transform:scaleX(0);transform-origin:left}
+.ov-wall__map{display:flex;gap:25px;padding:23px 4%;overflow:auto;border-top:1px solid #61533e;scrollbar-width:thin}
+.ov-wall__map button{border:0;background:none;color:#b7aa94;white-space:nowrap;font-size:11px;display:flex;align-items:center;gap:13px;padding:10px 0}
+.ov-wall__map button>span{font:22px var(--font-display);color:#9b8b73}.ov-wall__map button[aria-current=true]{color:#f4e9d3}.ov-wall__map button[aria-current=true]>span{color:#c1553d}
+/* The loop is a moving film carrier, not an independently drifting decoration. */
+.ov-contact .ov-film{display:block;overflow:hidden;touch-action:pan-y;padding-left:0;padding-right:0;cursor:grab}
+.ov-contact .ov-film:active{cursor:grabbing}
+.ov-film__track{position:relative;display:flex;gap:20px;will-change:transform;width:max-content}
+.ov-contact .ov-film:before,.ov-contact .ov-film:after{display:none}
+.ov-film__track:before,.ov-film__track:after{content:"";position:absolute;left:0;width:100%;height:7px;background:repeating-linear-gradient(90deg,#a49b8d 0 9px,transparent 9px 23px);opacity:.45;pointer-events:none}.ov-film__track:before{top:-16px}.ov-film__track:after{bottom:-19px}
+.ov-film__track .ov-film__frame{flex:0 0 175px;width:175px;display:block;user-select:none}
+.ov-film__track .ov-film__frame.is-selected img{filter:none}.ov-film__track .ov-film__frame.is-selected{outline:1px solid #b64736;outline-offset:6px}
+.ov-film__track .ov-film__frame>span{display:block}
+.ov-contact__print{position:relative;height:300px;overflow:hidden;background:#18130e;isolation:isolate}
+.ov-contact__print>img{width:100%;height:100%;object-fit:cover}
+.ov-contact__stack{position:relative;min-width:0;isolation:isolate}.ov-contact__selected .ov-contact__sheet{position:relative;width:100%;transform-origin:50% 75%}
+.ov-contact__selected .ov-contact__incoming-sheet{position:absolute;inset:0;opacity:0;z-index:1;pointer-events:none}
+.ov-contact__transport{position:relative;display:flex;align-items:center;gap:12px;padding:0 40px 22px;z-index:4}
+.ov-contact__play{display:flex;align-items:center;gap:10px;min-height:44px;min-width:125px;justify-content:center;border:0;background:none;font-size:11px}
+.ov-contact__play .ov-play-icon,.ov-contact__play[aria-pressed=true] .ov-pause-icon{display:none}.ov-contact__play[aria-pressed=true] .ov-play-icon{display:block}
+.ov-contact__timer{height:1px;background:var(--ov-line-soft);width:100px;margin-left:14px;overflow:hidden}.ov-contact__timer i{display:block;height:100%;background:var(--ov-accent);transform-origin:left;transform:scaleX(0)}
+.ov-contact__status{position:absolute;width:1px;height:1px;clip-path:inset(50%);overflow:hidden}
+/* Operative details: exposure ruler, moving focus frame, shutter and film counter. */
+.ov-tabs [role=tablist]{isolation:isolate}.ov-tabs [role=tab]{z-index:1}
+.ov-tabs__line{height:calc(100% - 12px);top:6px;bottom:auto;left:0;background:linear-gradient(var(--ov-accent),var(--ov-accent)) left top/12px 1px no-repeat,linear-gradient(var(--ov-accent),var(--ov-accent)) left top/1px 12px no-repeat,linear-gradient(var(--ov-accent),var(--ov-accent)) right bottom/12px 1px no-repeat,linear-gradient(var(--ov-accent),var(--ov-accent)) right bottom/1px 12px no-repeat;transform:translateX(calc(var(--tab,0) * 100%));transition:transform .48s cubic-bezier(.16,1,.3,1);pointer-events:none}
+.ov-tabs [role=tabpanel]:not([hidden]){animation:ov-panel-enter .45s cubic-bezier(.16,1,.3,1)}
+@keyframes ov-panel-enter{from{clip-path:inset(0 100% 0 0);transform:translateX(12px)}to{clip-path:inset(0);transform:none}}
+.ov-range{position:relative;gap:12px}.ov-range__ruler{height:42px;grid-column:1/-1;position:relative;overflow:hidden;border-bottom:1px solid var(--ov-line);margin-top:4px;isolation:isolate}
+.ov-range__ticks{position:absolute;inset:7px 0 0;display:flex;justify-content:space-between;color:var(--ov-muted)}
+.ov-range__ticks>i{height:10px;width:1px;background:var(--ov-line);position:relative;font-style:normal}.ov-range__ticks>i:nth-child(5n+1){height:19px;background:var(--ov-muted)}
+.ov-range__ticks small{font:8px var(--font-sans);position:absolute;top:21px;left:50%;transform:translateX(-50%)}
+.ov-range__needle{position:absolute;top:0;bottom:0;width:1px;background:var(--ov-accent);left:var(--exposure,42%);transition:left 80ms linear}
+.ov-range__needle:before{content:"";position:absolute;width:5px;height:5px;background:var(--ov-accent);left:-2px;transform:rotate(45deg)}
+.ov-range input{height:30px!important;margin-top:-12px;z-index:1;opacity:1}.ov-range input:focus-visible{outline-offset:3px}
+.ov-range__ticks>i:first-child small{left:0;transform:none}.ov-range__ticks>i:last-child small{left:auto;right:0;transform:none}
+.ov-range output{font-variant-numeric:tabular-nums;color:var(--ov-text)}
+.ov-switch__track{width:66px;height:30px;border-radius:2px;background:var(--ov-surface);overflow:hidden}
+.ov-switch__track:before{content:"";position:absolute;inset:5px;background:linear-gradient(90deg,var(--ov-accent) 45%,transparent 45%);opacity:.35;transition:opacity .35s}
+.ov-switch__track:after{content:"I  O";position:absolute;inset:2px 0;text-align:center;word-spacing:24px;font-size:9px;line-height:24px;pointer-events:none;color:var(--ov-muted)}
+.ov-switch__track i{width:26px;height:24px;left:2px;top:2px;border-radius:1px;background:var(--ov-text);z-index:1;box-shadow:2px 3px 4px #0003}
+.ov-switch__track i:after{content:"";position:absolute;left:9px;top:6px;width:6px;height:12px;border-left:1px solid var(--ov-bg);border-right:1px solid var(--ov-bg);opacity:.45}
+.ov-switch[aria-checked=true] .ov-switch__track i{transform:translateX(34px);background:var(--ov-text)}.ov-switch[aria-checked=true] .ov-switch__track:before{opacity:1}
+.ov-field__control:after{content:"";position:absolute;inset:4px -6px;pointer-events:none;border:1px solid var(--ov-accent);clip-path:polygon(0 0,10px 0,10px 1px,1px 1px,1px 10px,0 10px,0 0,100% 100%,calc(100% - 10px) 100%,calc(100% - 10px) calc(100% - 1px),calc(100% - 1px) calc(100% - 1px),calc(100% - 1px) calc(100% - 10px),100% calc(100% - 10px));opacity:0;transform:scaleX(.94);transition:opacity .25s,transform .4s}
+.ov-field__control:focus-within:after{opacity:1;transform:none}.ov-field__control:focus-within>.ov-icon{color:var(--ov-accent);transform:rotate(90deg);transition:transform .45s}
+.ov-check__box{border-color:var(--ov-accent);transform:rotate(-5deg);transition:transform .25s,background .25s}.ov-check input:checked+.ov-check__box{transform:rotate(0);background:var(--ov-accent);border-color:var(--ov-accent);color:var(--ov-bg)}
+.ov-stepper output{position:relative;border-top:1px solid var(--ov-line);border-bottom:1px solid var(--ov-line);padding:10px 8px;min-width:52px;font-variant-numeric:tabular-nums;perspective:300px}
+.ov-cue-shutter:after{content:"";position:absolute;inset:0;background:var(--ov-accent);clip-path:inset(0 50%);z-index:3;pointer-events:none}.ov-cue-shutter.is-exposing:after{animation:ov-shutter .65s cubic-bezier(.16,1,.3,1)}
+@keyframes ov-shutter{0%{clip-path:inset(0 50%)}28%{clip-path:inset(0)}100%{clip-path:inset(0 50%)}}
+.ov-cue-shutter.is-exposing .ov-icon{animation:none}
+.ov-choices span:before{content:"";width:10px;height:10px;border:1px solid currentColor;margin-right:12px;transform:rotate(-45deg);transition:transform .35s,background .35s}.ov-choices input:checked+span:before{transform:rotate(0);background:var(--ov-accent);border-color:var(--ov-accent)}
+.ov-drop__target:after{content:"";position:absolute;inset:14px;border:1px solid var(--ov-accent);clip-path:polygon(0 0,20% 0,20% 1px,1px 1px,1px 20%,0 20%,0 0,100% 100%,80% 100%,80% calc(100% - 1px),calc(100% - 1px) calc(100% - 1px),calc(100% - 1px) 80%,100% 80%);opacity:.4;transition:transform .45s,opacity .35s;pointer-events:none}.ov-drop__target.is-dragging:after,.ov-drop__target:focus-within:after{transform:scale(.96);opacity:1}
+@media(max-width:650px){
+  .ov-flashlight{--flashlight-height:600px}.ov-flashlight--page{--flashlight-height:100svh}.ov-flashlight__word{font-size:24vw;top:5%}.ov-flashlight__photos{inset:14% 9% 22%;grid-template-columns:repeat(2,minmax(0,1fr));gap:9% 14%}.ov-flashlight__photos figure{padding:6px 6px 23px}.ov-flashlight__photos figcaption{font-size:6px}.ov-flashlight__hint{bottom:22px;left:5%;right:auto;font-size:10px}.ov-flashlight__caption{bottom:55px;left:5%;gap:20px}.ov-flashlight__caption strong{font-size:23px}.ov-light-tools{flex-wrap:wrap;gap:6px 14px;padding:14px 5%}.ov-light-tools label{flex:1;min-width:190px}.ov-light-tools>.ov-help{flex-basis:100%;font-size:10px}.ov-wall{--wall-height:560px}.ov-wall--page{--wall-height:100svh}.ov-wall__fixed h3{top:25px;font-size:23px}.ov-wall__instruction{top:30px;max-width:115px;font-size:9px}.ov-wall__caption{bottom:35px;gap:15px}.ov-wall__count{font-size:40px}.ov-wall__caption strong{font-size:17px}.ov-wall__caption>div>span{font-size:9px}.ov-wall__navigation{right:4%;bottom:34px;gap:7px}.ov-wall__map{gap:22px}.ov-contact__print{height:260px}.ov-contact__transport{padding:0 14px 22px;gap:5px}.ov-contact__timer{flex:1;min-width:25px;margin-left:8px}.ov-contact__play{min-width:115px}
+}
+@media(prefers-reduced-motion:reduce){.ov-tabs [role=tabpanel]:not([hidden]),.ov-cue-shutter.is-exposing:after{animation:none}}
+[data-motion=reduce] .ov-tabs [role=tabpanel]:not([hidden]),[data-motion=reduce] .ov-cue-shutter.is-exposing:after{animation:none}
+[data-motion=reduce] .ov-wall__photo>img,[data-motion=reduce] .ov-tabs__line{transition:none}
+

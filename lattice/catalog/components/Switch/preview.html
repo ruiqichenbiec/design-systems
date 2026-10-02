@@ -1,0 +1,7 @@
+<!-- @dsCard group="Controls" height=250 subtitle="Off: free-floating gas. On: the points converge and lock" -->
+<div class="lx-pv"><div class="pv-col"><button class="lx-switch lx-switch--lg" id="demo" aria-checked="false"><span class="lx-switch__track"></span><span>Phase<small>flips itself until you press it</small></span></button><button class="lx-switch" aria-checked="false"><span class="lx-switch__track"></span><span>Sound<small>synthesized, quiet</small></span></button><button class="lx-switch" aria-checked="true"><span class="lx-switch__track"></span><span>Auto-advance<small>after 11 s without input</small></span></button></div></div>
+<script>
+(function(){
+  document.querySelectorAll('.lx-switch').forEach(window.Lattice.mountSwitch); var d = document.getElementById('demo'); setInterval(function(){ if (!d._touched) d._switch.set(!d._switch.on, { quiet: true }); }, 2600);
+})();
+</script>

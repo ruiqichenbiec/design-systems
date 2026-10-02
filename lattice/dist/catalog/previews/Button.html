@@ -1,0 +1,18 @@
+<!doctype html><html data-theme="night"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/bundle.css">
+<script src="../assets/bundle.js"></script>
+<style>html,body{margin:0;background:transparent}html{overflow:hidden}body{padding:0;font-family:system-ui,sans-serif}</style>
+<script>
+addEventListener('message',e=>{if(e.data&&e.data.dsTheme)document.documentElement.dataset.theme=e.data.dsTheme;});
+(function(){try{var t=new URLSearchParams(location.search).get('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}})();
+addEventListener('load',function(){var post=function(){parent.postMessage({dsFrame:"Button",h:Math.ceil(Math.max(document.documentElement.scrollHeight,document.body.scrollHeight))},'*');};post();try{new ResizeObserver(post).observe(document.body);}catch(e){}});
+addEventListener('error',function(e){parent.postMessage({dsFrame:"Button",err:String(e.message||e)},'*');});
+</script></head><body>
+<div class="lx-pv"><div class="pv-row"><button class="lx-btn lx-btn--primary">Grow a proof</button><button class="lx-btn lx-btn--accent">Next set</button><button class="lx-btn lx-btn--ghost">Read the notes</button><button class="lx-btn" disabled>Not yet proved</button></div></div>
+<script>
+(function(){
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,24 @@
+{
+  "v": 3,
+  "layout": "files",
+  "title": "序曲 · Overture",
+  "namespace": "Overture",
+  "libraries": [],
+  "groups": [],
+  "assetGroups": {
+    "photos": {
+      "tile": "m"
+    },
+    "references": {
+      "tile": "l"
+    },
+    "brand": {
+      "tile": "m"
+    }
+  },
+  "lastChange": {
+    "by": "Claude",
+    "at": "2026-09-30",
+    "note": "1.3.0: motion kernel Overture.motion (iris, develop, flip, count, spring presets snap/settle/stage/resonance/swing; CSS linear() springs --ov-spring/--ov-settle), optional synthesized interaction sounds (Overture.sound), enter/exit for every overlay, sprung cameras and controls; single-file showcase dist/overture-showcase.html. 46 native components."
+  }
+}

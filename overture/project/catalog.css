@@ -1,0 +1,67 @@
+/* Overture skin for the ds-viewer catalog page. Uses the system's own tokens, so the sidebar theme
+   switch (Stage / Paper / Nocturne) restyles the whole page, not only the previews. */
+:root:root{
+  --v-paper:var(--ov-bg);--v-surface:var(--ov-surface);--v-sunken:color-mix(in srgb,var(--ov-bg) 70%,var(--ov-surface));
+  --v-ink:var(--ov-text);--v-muted:var(--ov-muted);--v-line:var(--ov-line-soft);
+  --v-accent:var(--ov-accent);--v-accent-ink:var(--ov-bg);--v-focus:var(--ov-focus);--v-code:var(--ov-surface);
+  --v-sans:var(--font-sans);--v-r:0px;--v-side:272px;color-scheme:dark;
+}
+:root[data-theme="paper"]{color-scheme:light}
+body{font-family:var(--font-sans);-webkit-font-smoothing:antialiased;transition:background var(--ov-time),color var(--ov-time)}
+::selection{background:var(--ov-cold);color:var(--ov-bg)}
+main{max-width:1360px}
+
+/* sidebar */
+.side{background:var(--ov-bg);border-right-color:var(--ov-line-soft)}
+.brand-kicker{letter-spacing:.24em;font-size:10px}
+.brand strong{font:400 30px/1 var(--font-display);letter-spacing:-.03em;margin-top:6px}
+.ns{font-size:11px}
+.themes{border-radius:0;background:transparent;border:1px solid var(--ov-line);padding:2px;flex-direction:column}
+.themes button{border-radius:0;font-size:12px;letter-spacing:.06em;padding:7px 10px;text-align:left}
+.themes button[aria-checked=true]{background:var(--ov-text);color:var(--ov-bg);box-shadow:none}
+.side nav a{border-radius:0;font-size:13px}
+.side nav .lv0>a{font-weight:600;letter-spacing:.06em;font-size:12px;text-transform:uppercase}
+.side nav a:hover{background:transparent;color:var(--ov-cold)}
+.side nav a.on,.side nav .lv0>a.on{background:transparent;color:var(--ov-text);box-shadow:inset 2px 0 0 var(--ov-accent)}
+
+/* headings and prose */
+.sec{border-bottom-color:var(--ov-line-soft);padding-block:36px 56px}
+.sec-title{font:400 clamp(36px,4.6vw,64px)/1 var(--font-display);letter-spacing:-.035em;margin-bottom:22px}
+.eyebrow{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ov-cold)}
+.eyebrow code{letter-spacing:0;text-transform:none;color:var(--ov-muted);background:none}
+.lede{font-size:14px;line-height:1.85;max-width:72ch}
+.band-title{letter-spacing:.2em;font-size:11px}
+.prose h2{font:400 30px/1.1 var(--font-display);letter-spacing:-.02em}
+.prose h3{font-weight:600;letter-spacing:.02em}
+.prose code{border-radius:0}
+.prose blockquote{border-left-color:var(--ov-accent)}
+.prose a{text-decoration-color:var(--ov-cold);text-underline-offset:4px}
+.table-wrap,th{border-radius:0}
+
+/* cover and showcase stages */
+.cover{border:0;border-radius:0;margin:-40px calc(-1 * clamp(16px,4vw,56px)) 40px;width:auto;background:#090706}
+.show{padding-block:48px 64px}
+.show-stage{border:1px solid var(--ov-line-soft);border-radius:0;background:var(--ov-bg)}
+
+/* tokens */
+.swatch,.fam,.type-list,.scale,.comp,.asset,.table-wrap{border-radius:0;border-color:var(--ov-line-soft)}
+.chips{height:84px}
+.swatch:hover{border-color:var(--ov-cold)}
+.type-sample{color:var(--ov-text)}
+.bar{background:var(--ov-accent);opacity:1;border-radius:0}
+.rad{border-color:var(--ov-text)}
+.shd{background:var(--ov-surface);border-radius:0}
+
+/* components */
+.toolbar input{border-radius:0;border:0;border-bottom:1px solid var(--ov-line);background:transparent;padding-left:0}
+.toolbar input:focus{outline:0;border-bottom-color:var(--ov-cold)}
+.comp-head h4{font:400 20px var(--font-display);letter-spacing:-.01em}
+.comp:hover{border-color:var(--ov-line)}
+.stage{background:var(--ov-bg);border-color:var(--ov-line-soft)}
+.comp-more summary:hover{color:var(--ov-cold)}
+.asset img{background:#090706}
+
+@media (max-width:860px){.cover{margin:-40px -16px 32px}.brand strong{font-size:28px}}
+
+/* Frames keep the document colour scheme, so the browser paints no opaque backdrop behind them. */
+.cover iframe,.stage iframe,.show-stage iframe{color-scheme:normal}

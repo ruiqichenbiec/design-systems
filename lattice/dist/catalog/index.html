@@ -1,0 +1,580 @@
+<!doctype html>
+<html lang="zh" data-ds-theme="night">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>点阵 Lattice · Design System</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<style>/* DS Viewer chrome. Own tokens use --v-*; the system's tokens.css is loaded alongside. */
+:root{
+  --v-paper:#f5f6f7;--v-surface:#ffffff;--v-sunken:#eceef1;--v-ink:#1a1d21;--v-muted:#5e6570;--v-line:#dfe2e6;
+  --v-accent:#1a1d21;--v-accent-ink:#ffffff;--v-focus:#2f6fdd;--v-code:#f0f1f3;
+  --v-sans:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --v-mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  --v-r:10px;--v-side:264px;color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --v-paper:#131518;--v-surface:#1b1e22;--v-sunken:#23272c;--v-ink:#eceef1;--v-muted:#9aa2ad;--v-line:#2e3339;
+  --v-accent:#eceef1;--v-accent-ink:#131518;--v-focus:#7fa8f5;--v-code:#23272c;color-scheme:dark}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--v-paper);color:var(--v-ink);font:15px/1.6 var(--v-sans)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--v-focus);outline-offset:2px;border-radius:4px}
+code,.mono{font-family:var(--v-mono);font-size:.86em}
+.muted{color:var(--v-muted)}
+.skip{position:absolute;left:-999px}.skip:focus{left:16px;top:16px;z-index:9;background:var(--v-surface);padding:8px 12px}
+
+.shell{display:grid;grid-template-columns:var(--v-side) minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column;gap:20px;padding:24px 16px;border-right:1px solid var(--v-line);background:var(--v-surface)}
+.brand{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+.brand-kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--v-muted)}
+.brand strong{font-size:20px;line-height:1.2;text-wrap:balance}
+.ns{color:var(--v-muted);margin-top:4px}
+.themes{display:flex;gap:4px;padding:3px;background:var(--v-sunken);border-radius:999px;margin:0 8px}
+.themes button{flex:1;border:0;background:transparent;color:var(--v-muted);font:inherit;font-size:13px;padding:4px 10px;border-radius:999px;cursor:pointer}
+.themes button[aria-checked=true]{background:var(--v-surface);color:var(--v-ink);box-shadow:0 1px 2px #0002}
+.side nav ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.side nav a{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:8px;text-decoration:none;font-size:14px;color:var(--v-muted)}
+.side nav a:hover{background:var(--v-sunken);color:var(--v-ink)}
+.side nav a.on{background:var(--v-accent);color:var(--v-accent-ink)}
+.side nav .lv0{margin-top:6px}.side nav .lv0:first-child{margin-top:0}
+.side nav .lv0>a{color:var(--v-ink);font-weight:600}
+.side nav .lv0>a.on{color:var(--v-accent-ink)}
+.side nav .lv1 a{padding-left:20px}
+.side nav .n{font-variant-numeric:tabular-nums;font-weight:400;opacity:.7;font-size:12px}
+.side-foot{margin-top:auto;font-size:12px;color:var(--v-muted);padding:0 8px}
+.side-foot p{margin:6px 0}
+
+main{min-width:0;padding:40px clamp(16px,4vw,56px) 96px;max-width:1180px;width:100%}
+.sec{padding-block:24px 40px;border-bottom:1px solid var(--v-line)}
+.sec:last-child{border-bottom:0}
+.sec-title{font-size:26px;line-height:1.2;margin:0 0 16px;letter-spacing:-.01em}
+.eyebrow{margin:0 0 4px;font-size:12px;color:var(--v-muted)}
+.lede{color:var(--v-muted);margin:-8px 0 20px;max-width:70ch}
+.band-title{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--v-muted);margin:28px 0 12px}
+
+.cover{position:relative;width:100%;overflow:hidden;border-radius:var(--v-r);border:1px solid var(--v-line);margin-bottom:32px;background:var(--v-surface)}
+.cover iframe{position:absolute;left:0;top:0;width:960px;border:0;transform-origin:0 0}
+
+.cover.fluid iframe{position:static;width:100%;height:100%;transform:none}
+.show-stage{border:1px solid var(--v-line);border-radius:var(--v-r);overflow:hidden;background:var(--v-sunken)}
+.show-stage iframe{display:block;width:100%;border:0;background:transparent}
+.prose{max-width:78ch}
+.prose.readme{max-width:none}.prose.readme>*:not(.table-wrap):not(pre){max-width:78ch}
+.prose h2{font-size:22px;margin:36px 0 10px;line-height:1.25}
+.prose h3{font-size:17px;margin:28px 0 8px}
+.prose h4,.prose h5{font-size:15px;margin:20px 0 6px}
+.prose p,.prose ul,.prose ol{margin:0 0 12px}
+.prose ul,.prose ol{padding-left:22px}
+.prose li{margin:3px 0}
+.prose code{background:var(--v-code);padding:1px 5px;border-radius:5px}
+.prose pre.code{background:var(--v-code);padding:14px 16px;border-radius:var(--v-r);overflow-x:auto;font-size:13px;line-height:1.55}
+.prose pre code{background:none;padding:0}
+.prose blockquote{margin:0 0 12px;padding:4px 16px;border-left:3px solid var(--v-line);color:var(--v-muted)}
+.table-wrap{overflow-x:auto;margin:0 0 16px;border:1px solid var(--v-line);border-radius:var(--v-r);background:var(--v-surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--v-line);vertical-align:top}
+th{background:var(--v-sunken);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+.tok{font-weight:600}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.swatch{display:flex;flex-direction:column;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r);overflow:hidden;cursor:copy}
+.chips{display:flex;height:72px}
+.chip{flex:1;border-bottom:1px solid var(--v-line)}
+.chip+.chip{border-left:1px solid #0000001a}
+.sw-meta{padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.sw-meta .tok{overflow-wrap:anywhere}
+.vals{display:flex;flex-wrap:wrap;gap:0 10px;font-family:var(--v-mono);font-size:12px;color:var(--v-muted)}
+.vals i{font-style:normal;opacity:.7}
+.usage{margin:4px 0 0;font-size:13px;color:var(--v-muted);line-height:1.45}
+.swatch.copied{outline:2px solid var(--v-focus)}
+
+.families{display:grid;gap:8px;margin-bottom:8px}
+.fam{display:grid;grid-template-columns:160px 160px minmax(0,1fr);gap:16px;align-items:baseline;padding:12px 16px;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r)}
+.fam-sample{font-size:24px}
+.fam .mono{font-size:12px;overflow-wrap:anywhere}
+.type-list{display:flex;flex-direction:column;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r)}
+.type-row{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;padding:16px;border-bottom:1px solid var(--v-line);align-items:center}
+.type-row:last-child{border-bottom:0}
+.type-meta{display:flex;flex-direction:column;gap:2px;font-size:12px}
+.type-sample{overflow-wrap:anywhere;color:var(--v-ink)}
+
+.scale{display:flex;flex-direction:column;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r)}
+.scale-row{display:grid;grid-template-columns:180px 150px minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--v-line)}
+.scale-row:last-child{border-bottom:0}
+.scale-row .val{color:var(--v-muted);overflow-wrap:anywhere}
+.scale-row .usage{margin:0}
+.bar{display:block;height:12px;background:var(--v-ink);border-radius:2px;opacity:.8}
+.rad{display:block;width:72px;height:48px;border:2px solid var(--v-ink);border-top-color:var(--v-ink)}
+.shd{display:block;width:88px;height:48px;border-radius:12px;background:#f7f8fa}
+
+.toolbar{display:flex;gap:12px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.toolbar input{font:inherit;padding:8px 12px;border:1px solid var(--v-line);border-radius:999px;background:var(--v-surface);color:var(--v-ink);min-width:0;width:min(320px,100%)}
+.cgroup{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:16px;align-items:start}
+.cgroup>.band-title{grid-column:1/-1;margin-bottom:0}
+.comp{background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r);overflow:hidden;display:flex;flex-direction:column}
+.comp-head{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:12px 16px}
+.comp-head h4{margin:0;font-size:15px}
+.comp-head h4 a{text-decoration:none}
+.comp-head .muted{font-size:13px}
+.stage{background:var(--lg-color-page, var(--v-sunken));border-block:1px solid var(--v-line)}
+.stage iframe,.stage.empty{display:block;width:100%;border:0;background:transparent}
+.stage.empty{padding:24px;color:var(--v-muted);text-align:center}
+.comp-sum{padding:12px 16px 4px;font-size:14px}
+.comp-more{padding:0 16px 12px;font-size:14px}
+.comp-more summary{cursor:pointer;color:var(--v-muted);padding:4px 0}
+.comp[hidden]{display:none}
+
+.assets{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.assets.tile-l{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.assets.tile-s,.assets.tile-xs{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+.asset{margin:0;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r);overflow:hidden}
+.asset img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--v-sunken);padding:12px}
+.asset video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.asset-missing{aspect-ratio:4/3;display:grid;place-items:center;background:var(--v-sunken);color:var(--v-muted);font-size:12px;text-align:center;padding:8px}
+.asset figcaption{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;font-size:12px}
+.notes li{color:var(--v-muted)}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--v-line)}
+  .side nav ul{flex-direction:row;flex-wrap:wrap}.side nav .lv1{display:none}.side nav .lv0{margin-top:0}
+  .side-foot{display:none}
+  .fam,.type-row,.scale-row{grid-template-columns:1fr;gap:6px}
+}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+<aside class="side" aria-label="Design system navigation">
+  <div class="brand"><span class="brand-kicker">Design system</span><strong>点阵 Lattice</strong><code class="ns">window.Lattice</code></div>
+  
+  <nav><ul><li class="lv0"><a href="#overview">Overview</a></li><li class="lv1"><a href="#section-1">Design System: 点阵 Lattice</a></li><li class="lv0"><a href="#colors">Colors<span class="n">11</span></a></li><li class="lv0"><a href="#type">Typography<span class="n">8</span></a></li><li class="lv0"><a href="#space">Spacing<span class="n">9</span></a></li><li class="lv0"><a href="#radius">Radius<span class="n">3</span></a></li><li class="lv0"><a href="#duration">Duration<span class="n">3</span></a></li><li class="lv0"><a href="#easing">Easing<span class="n">2</span></a></li><li class="lv0"><a href="#dotPitch">Dot Pitch<span class="n">1</span></a></li><li class="lv0"><a href="#components">Components<span class="n">14</span></a></li><li class="lv1"><a href="#group-signature">Signature<span class="n">3</span></a></li><li class="lv1"><a href="#group-interaction">Interaction<span class="n">1</span></a></li><li class="lv1"><a href="#group-controls">Controls<span class="n">5</span></a></li><li class="lv1"><a href="#group-feedback">Feedback<span class="n">2</span></a></li><li class="lv1"><a href="#group-type">Type<span class="n">1</span></a></li><li class="lv1"><a href="#group-overlays">Overlays<span class="n">2</span></a></li></ul></nav>
+  <div class="side-foot"><p>Last change · 2026-10-02<br>点阵 Lattice 0.1: Night world, GPU point field, theorem waterfall, proof tree, 11 controls.</p><p>Built 2026-10-02 18:08 by <code>ds-viewer</code></p></div>
+</aside>
+<main id="main">
+<section id="overview" class="sec">
+<div class="cover" data-h="540"><iframe title="Cover" src="previews/Cover.html" data-frame="Cover" style="height:540px" loading="eager"></iframe></div>
+<div class="prose readme"><p>万物皆点集，交互即映射。给个人网站与公开发布的 WebGL 动画使用的设计系统：页面底下是一张点阵，名字、模型、定理、证明全部由点组成，所有交互都是从一个点集到另一个点集的映射。世界为 <strong>夜 Night</strong>。</p>
+<ul><li><strong>直接打开</strong>：<a href="../../dist/lattice-showcase.html">dist/lattice-showcase.html</a>（单文件 659 KB，three.js 已打包；仅字体走 Google Fonts，离线时回退系统字体）</li><li><strong>本地查看页</strong>：<a href="../../dist/catalog/index.html">dist/catalog/index.html</a>（ds-viewer 生成：令牌、字体、封面与 14 张可交互组件卡）</li><li><strong>设计规格</strong>：<a href="../../DESIGN.md">DESIGN.md</a> · <strong>产品背景</strong>：<a href="../../PRODUCT.md">PRODUCT.md</a> · <strong>验证记录</strong>：<a href="../../VERIFICATION.md">VERIFICATION.md</a></li></ul>
+<h3>包含什么</h3>
+<div class="table-wrap"><table><thead><tr><th>部件</th><th>文件</th><th>说明</th></tr></thead><tbody><tr><td>点场 Field（签名）</td><td><code>src/gl/field.js</code></td><td>GPU 模拟 65,536 点（手机 25,600）；弹簧入集、ABC 流过渡、指针场、按住熔化、点击冲击波、拖拽旋转 3D 集</td></tr><tr><td>点集 Sets</td><td><code>src/gl/sets.js</code></td><td>点阵、5×7 点阵字、洛伦兹吸引子、三叶结、面心立方晶体、克莱因瓶、斐波那契球</td></tr><tr><td>定理之瀑 Cascade（签名）</td><td><code>src/gl/cascade.js</code></td><td>依赖 DAG 以瀑布倾泻；悬停显示上游（橙）与下游（冰蓝）；点击生长证明树。展示页有两个版本：自由探索（小而透明的说明）与巡游（随滚动按依赖顺序逐个悬停 16 个关键结果，每两格滚轮一个，无侧栏）</td></tr><tr><td>证明树 ProofTree（签名）</td><td><code>src/gl/prooftree.js</code></td><td>把 DAG 展开成以结论为根、公理为叶的证明树；相机到达时开始生长，旁边进度条同步结晶；<code>swap(id)</code> 旋转转场，展示页用它随滚动连播 6 棵证明树</td></tr><tr><td>舞台 Stage</td><td><code>src/gl/stage.js</code></td><td>单一 WebGL 上下文、滚动驱动的相机站点、辉光、自适应分辨率、不可见时停机</td></tr><tr><td>光标光环</td><td><code>src/dom/cursor.js</code></td><td>光标的点集在可操作控件轮廓上重组，兼作键盘焦点指示</td></tr><tr><td>控件</td><td><code>src/dom/controls.js</code></td><td>标签页（点群指示器）、开关（气态/晶态）、滑块（点列）、进度（结晶）</td></tr><tr><td>点阵字与加载器</td><td><code>src/dom/dottext.js</code></td><td>字符串之间逐点重排；洛伦兹轨迹加载器</td></tr><tr><td>命令面板与消息</td><td><code>src/dom/command.js</code></td><td>⌘K / Ctrl+K；消息带点阵标签</td></tr><tr><td>声音</td><td><code>src/core/sound.js</code></td><td>合成音色，默认关闭</td></tr><tr><td>数据</td><td><code>src/data/analysis.js</code></td><td>43 条实分析结果的依赖图（ZFC → Picard–Lindelöf / Peano）</td></tr><tr><td>令牌与样式</td><td><code>src/tokens.css</code> · <code>src/components.css</code></td><td>颜色、字体、间距、组件样式</td></tr></tbody></table></div>
+<h3>开发与构建</h3>
+<pre class="code" data-lang="powershell"><code>Set-Location lattice
+npm install
+node serve.mjs 4187        # http://127.0.0.1:4187/showcase/
+node build.mjs             # 生成 dist/lattice-showcase.html，并刷新 project/ 与 dist/catalog/</code></pre>
+<p>依赖只在本目录：<code>three@0.186.1</code>（运行时，被打包进单文件）、<code>esbuild</code>、<code>playwright-core</code>（仅截图与测试，使用本机 Chrome/Edge）。</p>
+<h3>接入示例</h3>
+<pre class="code" data-lang="js"><code>import { Stage } from &quot;./src/gl/stage.js&quot;;
+import { Field } from &quot;./src/gl/field.js&quot;;
+import * as SETS from &quot;./src/gl/sets.js&quot;;
+import { WORLDS } from &quot;./src/core/theme.js&quot;;
+
+const stage = new Stage(canvas, [{ id: &quot;hero&quot;, el: &quot;.hero&quot;, pos: [0, 0, 10], look: [0, 0, 0] }], WORLDS.night);
+const field = new Field(stage);
+field.useSets(SETS);
+stage.add(field);
+field.onResize(stage);
+// 任意点集：返回 N×4 的 Float32Array（xyz + 类别 w：0 隐藏 · 0.35 点阵 · 1 点亮）
+field.keep((L) =&gt; L.lit([{ map: SETS.matrixText(&quot;HELLO&quot;, 2), col: 10, row: 12 }]), { dur: 1.5 });
+field.keep((L) =&gt; L.shape(SETS.lorenz(field.N, 2)), { is3d: true, alpha: 0.22 });</code></pre>
+<p>依赖图数据只需 <code>{ id, en, zh, st, deps, kind, topic, leaf? }</code>：<code>new Cascade({ theorems, depth, topicOrder })</code>、<code>new ProofTree({ byId }).grow(id)</code>。换成自己的主题图（课程、项目、因子）即可复用两个签名页面。</p>
+<p>DOM 控件保留原生语义，只在上面画点：<code>mountTabs(el)</code>、<code>mountSwitch(btn)</code>、<code>mountSlider(input)</code>、<code>mountProgress(el).set(0.4)</code>、<code>mountDotText(el).set(&quot;QED&quot;)</code>、<code>mountLoader(el)</code>、<code>mountCommands([...])</code>、<code>toast(&quot;…&quot;, { tag: &quot;OK&quot; })</code>、<code>mountCursor()</code>。</p>
+<h3>工具</h3>
+<div class="table-wrap"><table><thead><tr><th>脚本</th><th>作用</th></tr></thead><tbody><tr><td><code>tools/build-project.mjs</code></td><td>从源码生成 <code>project/</code>（令牌解析自 <code>src/tokens.css</code>、<code>window.Lattice</code> 经典脚本包、组件预览来自 <code>catalog/</code>），再调用 ds-viewer</td></tr><tr><td><code>tools/author-catalog.py</code></td><td>组件卡的源文件（预览与说明）写入 <code>catalog/components/</code></td></tr><tr><td><code>tools/smoke.mjs</code></td><td>交互冒烟测试（30 项，含减少动态）</td></tr><tr><td><code>tools/check-dist.mjs</code> · <code>tools/check-catalog.mjs</code></td><td>单文件与查看页的无头检查</td></tr><tr><td><code>tools/capture.mjs</code></td><td>逐帧确定的截图与对比图</td></tr></tbody></table></div>
+<p><code>project/</code> 与 <code>dist/</code> 都是生成物，不要手改。</p>
+<h3>录制动画（配合 Video Gen）</h3>
+<p>在地址后加 <code>?record</code>，时间只由 <code>lattice.renderAt(t)</code> 推进，逐帧确定。<code>tools/capture.mjs</code> 是可直接改写的逐帧截图示例：</p>
+<pre class="code" data-lang="powershell"><code>node tools/capture.mjs              # 夜间世界的 6 个场景 + 对比图，输出到 outputs/captures/</code></pre>
+<h3>需要替换的内容</h3>
+<ul><li>联系按钮的 <code>mailto:you@example.com</code>（带 <code>data-placeholder</code>）。</li><li>「标签页」与「证明树」旁的项目简介为根据会话整理的示意文字，请改成正式文案与链接。</li><li>定理之瀑使用真实的实分析依赖数据；如需换成自己的课程或项目图，替换 <code>src/data/analysis.js</code>。</li></ul>
+<h3>已知限制</h3>
+<ul><li>字体来自 Google Fonts；完全离线时回退到系统字体（点阵字 5×7 位图不受影响）。</li><li>已在无头 Chrome（Intel Arc 140T，D3D11）上验证；尚未在 iPhone、Android 实机与 Safari 上验证。</li><li>声音未经人工试听验收；视觉由用户选定方向，最终视觉验收待用户确认。</li><li><code>?world=paper</code> / <code>?world=ultramarine</code> 仍可用于实验，但不是本系统的承诺世界。</li></ul></div>
+</section>
+<section id="section-1" class="sec"><p class="eyebrow">Guideline · <code>design.md</code></p><h2 class="sec-title">Design System: 点阵 Lattice</h2><div class="prose"><h3>Overview</h3>
+<p><strong>Creative North Star: &quot;The Living Lattice&quot;</strong></p>
+<p>Every page stands on one lattice of dots. Nothing is decoration: a name is a set of lit lattice sites, a theorem is a cluster of points, a dependency is a stream of points falling from a premise into what it proves, a proof is a tree of points growing from its conclusion up to its axioms. Interaction is always a map from one set to another. Points are released one by one into a divergence-free ABC flow and then pulled into their new set by springs, so every transition pours instead of cutting.</p>
+<p>The system was built for a personal site and for publishable WebGL clips. It speaks to professionals (quant, AI and agent engineering, mathematics, games) who judge depth quickly, so the spectacle always carries real content: the Lorenz attractor with its real parameters, a real dependency graph of real analysis, real proof trees. Night is the committed world: points of light on deep ink, with one warm signal and one cool signal.</p>
+<p>It rejects the dark dev-portfolio default (a floating blob, a neon accent, a grid of project cards) and the generic &quot;particles morph into random models&quot; demo. Two worlds were explored and set aside: the bronze luopan formation (符阵) and the paper and ultramarine renditions of this lattice.</p>
+<p><strong>Key Characteristics:</strong></p>
+<ul><li>One GPU point field under the hero; smaller canvases of the same physics inside every control.</li><li>Two signal colours with fixed meanings: orange for what a thing needs (and for action), ice blue for what it enables.</li><li>Dot-matrix lettering (5×7 matrix, Doto) against a hyperlegible reading face.</li><li>Real 3D: perspective camera stations, drag-to-rotate sets, depth-ordered streams.</li><li>Sound is synthesized, quiet and opt-in: clicks, pentatonic plucks, filtered-noise whooshes, a chord when a proof completes.</li></ul>
+<h3>Colors</h3>
+<p>Near-black ink carries points of warm bone light; two signal hues mark direction and never mix roles.</p>
+<h4>Primary</h4>
+<ul><li><strong>Signal Orange</strong> (#ff5a1f): the only action colour and the &quot;needs / upstream&quot; colour. Accent buttons, active tab swarms, crystallised progress, hot (fast or melting) points, premises lit on hover, the heat ring. 5.9:1 on Ink Night.</li></ul>
+<ul><li><strong>Signal Orange Hover</strong> (#ff7440): the accent button's hover state only.</li></ul>
+<h4>Secondary</h4>
+<ul><li><strong>Ice Blue</strong> (#7fd8ff): &quot;enables / downstream&quot; only: descendants in the waterfall, sap flowing down a finished proof tree. 11:1 on Ink Night.</li></ul>
+<h4>Neutral</h4>
+<ul><li><strong>Ink Night</strong> (#07080b): the page and the field's background.</li><li><strong>Raised Ink</strong> (#0d0f14): component specimens and the command palette surface.</li><li><strong>Bone Point</strong> (#ece7da): points at rest, headlines, primary button fill, body text.</li><li><strong>Dim Point</strong> (#9d988c): secondary text and leads (7:1 on Ink Night).</li><li><strong>Faint Point</strong> (#6c685f): disabled text and decoration only (3.6:1; never for body copy).</li><li><strong>Hover White</strong> (#ffffff): the primary button's hover state only (see The Bone-Not-White Rule).</li><li><strong>Shadow Black</strong> (#000000): only inside the two overlay shadows at 70–90% alpha, and as a mask colour.</li><li><strong>Hairline</strong> (rgb(236 231 218 / 0.14)) and <strong>Strong Hairline</strong> (/ 0.3): 1px insets on panels, ghost buttons, dotted rules.</li></ul>
+<h4>Named Rules</h4>
+<p><strong>The Two Directions Rule.</strong> Orange means &quot;needs&quot; (upstream, premise, action); ice blue means &quot;enables&quot; (downstream, consequence). Never swap them and never introduce a third signal hue.</p>
+<p><strong>The Bone-Not-White Rule.</strong> Points and text are warm bone (#ece7da), never #fff; pure white appears only as the primary button's hover.</p>
+<h3>Typography</h3>
+<p><strong>Matrix Font:</strong> Doto 900 (5×7-style dot-matrix face), and the system's own 5×7 bitmap for text drawn as points <strong>Body Font:</strong> Atkinson Hyperlegible Next (with Noto Sans SC, system-ui) <strong>Chinese:</strong> Noto Sans SC 700</p>
+<p><strong>Character:</strong> The dot-matrix voice is the lattice speaking: captions, counters, gesture names, status lines. The reading voice was chosen for legibility at 12 px over moving points (the waterfall and tree labels), not for fashion.</p>
+<h4>Hierarchy</h4>
+<ul><li><strong>Hero wordmark</strong> (drawn as a particle set, 5×7 matrix at ×2): the name only. It is not a font and is always backed by an <code>&lt;h1&gt;</code> in the DOM.</li><li><strong>Headline</strong> (600, clamp(28px, 3vw, 40px), 1.1, −0.02em): section titles, with the Chinese title above in Noto Sans SC 700 orange at 0.6em.</li><li><strong>Title</strong> (600, 21px, 1.3): component and card titles.</li><li><strong>Body</strong> (400, 17px, 1.6): leads and prose, max 60ch.</li><li><strong>UI</strong> (500, 15px, 1.2): buttons, tabs, switches, navigation.</li><li><strong>Note</strong> (400, 14px, 1.45): specimen notes, card statements, hints.</li><li><strong>Small</strong> (400, 13px, 1.4): legends, footers, secondary metadata.</li><li><strong>Label</strong> (500, 12px): labels pinned to 3D points.</li><li><strong>Matrix</strong> (Doto 900, 15–16px, 0.06em): captions, statuses, gesture names.</li></ul>
+<h4>Named Rules</h4>
+<p><strong>The Matrix Size Rule.</strong> Doto only at 15px and above. Below that, dot-matrix lettering turns to noise; use the body face.</p>
+<p><strong>The Text-in-DOM Rule.</strong> Text never lives only inside WebGL. Particle lettering is aria-hidden and mirrored by real text; 3D labels are DOM elements positioned over their points.</p>
+<p><strong>The No-Stray-Selection Rule.</strong> Dragging on the field never selects text: field sections are <code>user-select: none</code> and a drag the field claims cancels selection; panels and readable copy stay selectable.</p>
+<h3>Layout</h3>
+<p>Full-bleed field stations alternate with scrolling content. The hero is one viewport: particle wordmark in the upper third, thesis and gesture legend lower-left, set caption with a matrix index and &quot;Next set&quot; lower-right. While the hero scrolls away, its lattice scrolls 1:1 with the page (the camera follows the section), so the wordmark never slides under the text; only after that do its points rain down into the waterfall. The page then runs: waterfall to explore (300vh, a small transparent note on the left), the tour (16 landmark results, one per two wheel notches, about 200px of scroll), the proof tree (grows when the camera arrives, with a progress bar in its panel), the proof sequence (one tree per ~110vh, a half-turn between trees), the instruments and the close. 3D subjects are shifted right with a camera view offset (0.17–0.2 of the width) so text and subject never overlap. The instruments section is an opaque two-column bench (1200px container, 18px gaps) that hides the field (the GPU pauses whenever no field section is on screen).</p>
+<p>Spacing steps are 4, 8, 12, 16, 24, 32, 48, 64 and 96px, with more space above a heading than below. Below 760px: panels stop being sticky and scroll away so the waterfall and tree get the whole screen (the proof-sequence HUD stays sticky on a panel backing and the stand sits lower), the tour card moves below the node, the wordmark breaks onto two lines, the lattice is 46 columns and the field drops to 25,600 points.</p>
+<h3>Elevation &amp; Depth</h3>
+<p>Depth is spatial, not shadowed. It comes from the perspective camera, parallax on the pointer, points lifting off the lattice, and bloom on hot points (UnrealBloom, strength 0.55, threshold 0.62). Panels float on the field with a 1px hairline inset and a 10px backdrop blur. The only shadows are deep ambient ones under overlays (card: <code>0 18px 40px -20px rgb(0 0 0 / 0.7)</code>; command palette: <code>0 30px 80px -30px rgb(0 0 0 / 0.9)</code>).</p>
+<h4>Named Rules</h4>
+<p><strong>The Light-Is-Heat Rule.</strong> Glow is earned by energy: a point glows orange because it is fast, melting, lit or on a highlighted path, never as a resting decoration.</p>
+<h3>Shapes</h3>
+<p>Actions are pills (999px). Panels and specimens have gently rounded corners (12px); small targets 6px. Every mark inside the field is a round point; lines exist only as dotted strands of points (dependencies, branches, dotted rules under inputs). Nodes carry their kind in shape: foundations are square blocks of dots, definitions are rings, theorems are filled Fibonacci discs, axiom leaves are five-petal rosettes.</p>
+<h4>Named Rules</h4>
+<p><strong>The Point Rule.</strong> If it is visible, it is made of points. No gradients, blobs or solid strokes as decoration; a line is a sequence of dots.</p>
+<h3>Components</h3>
+<h4>The Field (signature)</h4>
+<ul><li><strong>What:</strong> 65,536 points (25,600 on phones) simulated on the GPU. Each has a target in the current set; morphs release points in a sweep into an ABC flow, then springs pull them into the new set.</li><li><strong>Sets:</strong> the resting lattice, lit sites (dot-matrix text as living swarms), and 3D sets (Lorenz attractor, trefoil knot, FCC crystal, Klein bottle); any Float32Array of targets works.</li><li><strong>Interaction:</strong> the pointer is a field (push, swirl, wake). Holding melts the points around it (the cursor ring heats); letting go after melting maps to the next set. A tap is a shockwave. Dragging turns a 3D set.</li></ul>
+<h4>Waterfall (signature)</h4>
+<ul><li>A dependency DAG laid out by longest-path depth, premises above consequences, topics as depth lanes. Each edge is a strand of static dots plus falling droplets; background mist keeps falling between streams.</li><li><strong>Hover:</strong> premises light orange, consequences ice blue, everything else dims; a card shows the statement. <strong>Click:</strong> grow that result's proof tree.</li></ul>
+<h4>Waterfall tour (signature)</h4>
+<ul><li>The same waterfall, no side panel. Scrolling walks 16 landmark results in dependency order (depth, then left to right), one per two wheel notches (about 200px): each is &quot;hovered&quot; once, its premises light orange and its consequences ice blue, the camera glides to it and a card beside it gives the statement. A matrix counter (01–16) marks the place.</li></ul>
+<h4>Proof tree (signature)</h4>
+<ul><li>The DAG unfolded into a proof tree from a chosen conclusion (root at the base) up to its axioms (leaves). Shared lemmas appear once; later uses are ↺ references.</li><li>Branch thickness is proportional to √leaves; growth runs by depth with bright tips; each bloom plucks a pentatonic note; when complete, sap runs back down in ice blue and a chord sounds. Drag to turn; click a node to re-root. It grows when the camera arrives (and again after you leave and return), and a progress bar beside it crystallises as the nodes bloom (<code>tree.progress()</code>).</li><li><strong>Proof sequence:</strong> in a scroll-driven section each scroll step shows the next theorem's proof with a rotation transition (<code>tree.swap(id)</code>): the stand turns half a revolution, the old tree falls as dust, the new one grows.</li></ul>
+<h4>Cursor halo</h4>
+<ul><li>A point with a set of 30 points around it. Over anything actionable (and on keyboard focus) the set re-forms along the control's rounded outline, which doubles as the focus indicator; pressing bursts it; holding on the field heats the ring. Fine pointers only; touch gets a plain ring for the heat.</li></ul>
+<h4>Buttons</h4>
+<ul><li><strong>Shape:</strong> pills (999px), 44px tall, 0 20px padding, 15px/600 label.</li><li><strong>Primary:</strong> Bone Point fill, Ink Night text; hover goes to white.</li><li><strong>Accent:</strong> Signal Orange fill, near-black text. One per view.</li><li><strong>Ghost:</strong> transparent with a strong hairline inset; hover strengthens the inset.</li><li><strong>Disabled:</strong> transparent, Faint Point text, plain hairline.</li><li><strong>Active:</strong> scale(0.96).</li></ul>
+<h4>Tabs</h4>
+<ul><li>Real <code>role=tab</code> buttons with arrow-key support. The indicator is a 14×2 swarm under the selected tab; on change it pours to the new tab with a stagger and a short burst of flow.</li></ul>
+<h4>Switch</h4>
+<ul><li><code>role=switch</code>. Off: 19 points float as a gas across the whole track, each on its own slow Lissajous path. On: they converge on the right and lock into an orange hexagonal crystal (each flashes as it locks), with an orange inset on the track. Turning off melts the crystal outward. A large variant (<code>.lx-switch--lg</code>, 136×54) is for demonstrations; <code>mountSwitch()</code> returns <code>{ set(on, { quiet }), on }</code>.</li></ul>
+<h4>Slider</h4>
+<ul><li>A native range input (invisible, on top) drawn as a row of dots: filled dots orange, unfilled dim, a seven-point orbiting thumb that pushes its neighbours aside.</li></ul>
+<h4>Progress</h4>
+<ul><li><code>role=progressbar</code>, three rows of dots. Unfinished work is a gas floating loosely around the bar (smooth Lissajous drift). Each newly finished part is built from it: its points converge, lock into the lattice with a white flash, and stay fixed in orange. Indeterminate: a band of order sweeps through. Completion plays a chord.</li></ul>
+<h4>Matrix text &amp; loader</h4>
+<ul><li>Matrix text reflows dot by dot between strings (shared strokes slide, the rest fly off or arrive). The loader is a single Lorenz trajectory drawn as a fading trail.</li></ul>
+<h4>Inputs / Fields</h4>
+<ul><li><strong>Style:</strong> no box; a dotted rule (1px dots every 9px) under the text.</li><li><strong>Focus:</strong> the dots turn orange and flow along the rule.</li><li><strong>Error:</strong> the dots tighten to a 5px pitch in orange and the message below turns orange and says what is missing.</li></ul>
+<h4>Cards / Panels</h4>
+<ul><li><strong>Corner Style:</strong> 12px. <strong>Background:</strong> Ink Night at 78% with a 10px backdrop blur. <strong>Border:</strong> 1px hairline inset. <strong>Padding:</strong> 26px (20px on phones).</li></ul>
+<h4>Command palette &amp; toast</h4>
+<ul><li>⌘K / Ctrl+K dialog on Raised Ink; the active row is marked by a small swarm that flows between rows. Toasts carry a dot-matrix tag that reflows into place.</li></ul>
+<h4>Navigation</h4>
+<ul><li>Fixed header: matrix monogram, section links with a Chinese character each (orange when current), sound and ⌘K ghost pills. It gains an ink gradient once the page scrolls; below 760px only the monogram and tools remain.</li></ul>
+<h3>Do's and Don'ts</h3>
+<h4>Do:</h4>
+<ul><li><strong>Do</strong> make every visible effect out of points, and every transition a map from one set to another (release, flow, spring).</li><li><strong>Do</strong> keep orange for &quot;needs / action&quot; and ice blue for &quot;enables&quot; (The Two Directions Rule).</li><li><strong>Do</strong> use real mathematics or real data for every set and graph, labelled with its parameters (σ = 10, ρ = 28, β = 8/3).</li><li><strong>Do</strong> mirror all particle text in the DOM and keep controls' native roles and keyboard behaviour.</li><li><strong>Do</strong> keep the GPU idle when no field section is visible, and respect <code>prefers-reduced-motion</code> (morphs snap, the pointer field and auto-advance stop).</li></ul>
+<h4>Don't:</h4>
+<ul><li><strong>Don't</strong> add decorative glow, gradients or blobs; glow is heat (The Light-Is-Heat Rule).</li><li><strong>Don't</strong> set Doto below 15px or use it for body copy.</li><li><strong>Don't</strong> use pure white for points or text.</li><li><strong>Don't</strong> put the reading text on top of the 3D subject; shift the subject with the camera view offset instead.</li><li><strong>Don't</strong> reintroduce the bronze formation or paper/ultramarine renditions as the default look; Night is the committed world.</li></ul></div></section>
+<section id="colors" class="sec"><h2 class="sec-title">Colors</h2>
+<p class="lede">11 tokens · Night. One committed world: points of light on deep ink. Orange means needs/action, ice blue means enables; never swap them.</p>
+<div class="band"><div class="swatches">
+<article class="swatch" data-copy="var(--bg)">
+  <div class="chips"><span class="chip" title="Night" style="background:#07080b"></span></div>
+  <div class="sw-meta"><code class="tok">bg</code>
+  <span class="vals"><span>#07080b</span></span>
+  <p class="usage">Ink Night · page and field background.</p></div>
+</article>
+<article class="swatch" data-copy="var(--bg-2)">
+  <div class="chips"><span class="chip" title="Night" style="background:#0d0f14"></span></div>
+  <div class="sw-meta"><code class="tok">bg-2</code>
+  <span class="vals"><span>#0d0f14</span></span>
+  <p class="usage">Raised Ink · component specimens and the command palette surface.</p></div>
+</article>
+<article class="swatch" data-copy="var(--ink)">
+  <div class="chips"><span class="chip" title="Night" style="background:#ece7da"></span></div>
+  <div class="sw-meta"><code class="tok">ink</code>
+  <span class="vals"><span>#ece7da</span></span>
+  <p class="usage">Bone Point · points at rest, the primary button fill.</p></div>
+</article>
+<article class="swatch" data-copy="var(--text)">
+  <div class="chips"><span class="chip" title="Night" style="background:#ece7da"></span></div>
+  <div class="sw-meta"><code class="tok">text</code>
+  <span class="vals"><span>#ece7da</span></span>
+  <p class="usage">Headlines and body text (≥ 12:1 on bg).</p></div>
+</article>
+<article class="swatch" data-copy="var(--text-dim)">
+  <div class="chips"><span class="chip" title="Night" style="background:#9d988c"></span></div>
+  <div class="sw-meta"><code class="tok">text-dim</code>
+  <span class="vals"><span>#9d988c</span></span>
+  <p class="usage">Leads, secondary text, labels (7:1 on bg).</p></div>
+</article>
+<article class="swatch" data-copy="var(--text-faint)">
+  <div class="chips"><span class="chip" title="Night" style="background:#6c685f"></span></div>
+  <div class="sw-meta"><code class="tok">text-faint</code>
+  <span class="vals"><span>#6c685f</span></span>
+  <p class="usage">Disabled text and decoration only (3.6:1, never body copy).</p></div>
+</article>
+<article class="swatch" data-copy="var(--hot)">
+  <div class="chips"><span class="chip" title="Night" style="background:#ff5a1f"></span></div>
+  <div class="sw-meta"><code class="tok">hot</code>
+  <span class="vals"><span>#ff5a1f</span></span>
+  <p class="usage">Signal Orange · action, and 'what it needs' (upstream). 5.9:1 on bg.</p></div>
+</article>
+<article class="swatch" data-copy="var(--hot-2)">
+  <div class="chips"><span class="chip" title="Night" style="background:#7fd8ff"></span></div>
+  <div class="sw-meta"><code class="tok">hot-2</code>
+  <span class="vals"><span>#7fd8ff</span></span>
+  <p class="usage">Ice Blue · 'what it enables' (downstream) only. 11:1 on bg.</p></div>
+</article>
+<article class="swatch" data-copy="var(--line)">
+  <div class="chips"><span class="chip" title="Night" style="background:rgb(236 231 218 / 0.14)"></span></div>
+  <div class="sw-meta"><code class="tok">line</code>
+  <span class="vals"><span>rgb(236 231 218 / 0.14)</span></span>
+  <p class="usage">Hairline · 1px insets on panels and specimens.</p></div>
+</article>
+<article class="swatch" data-copy="var(--line-strong)">
+  <div class="chips"><span class="chip" title="Night" style="background:rgb(236 231 218 / 0.3)"></span></div>
+  <div class="sw-meta"><code class="tok">line-strong</code>
+  <span class="vals"><span>rgb(236 231 218 / 0.3)</span></span>
+  <p class="usage">Strong hairline · ghost buttons, dotted rules, switch tracks.</p></div>
+</article>
+<article class="swatch" data-copy="var(--panel)">
+  <div class="chips"><span class="chip" title="Night" style="background:rgb(7 8 11 / 0.78)"></span></div>
+  <div class="sw-meta"><code class="tok">panel</code>
+  <span class="vals"><span>rgb(7 8 11 / 0.78)</span></span>
+  <p class="usage">Panel · ink at 78% under a 10px backdrop blur, over the field.</p></div>
+</article></div></div>
+</section>
+<section id="type" class="sec"><h2 class="sec-title">Typography</h2>
+<div class="families"><div class="fam"><code class="tok">--font-ui</code><span style="font-family:var(--font-ui)" class="fam-sample">Aa 永 123</span><span class="muted mono">&quot;Atkinson Hyperlegible Next&quot;, &quot;Noto Sans SC&quot;, system-ui, sans-serif</span></div><div class="fam"><code class="tok">--font-dot</code><span style="font-family:var(--font-dot)" class="fam-sample">Aa 永 123</span><span class="muted mono">&quot;Doto&quot;, &quot;Atkinson Hyperlegible Next&quot;, monospace</span></div><div class="fam"><code class="tok">--font-zh</code><span style="font-family:var(--font-zh)" class="fam-sample">Aa 永 123</span><span class="muted mono">&quot;Noto Sans SC&quot;, &quot;Microsoft YaHei&quot;, &quot;PingFang SC&quot;, sans-serif</span></div></div>
+<h3 class="band-title">Matrix</h3><div class="type-list">
+<div class="type-row"><div class="type-meta"><code class="tok">.matrix-caption</code><span class="muted mono">15px / 1.3 · 900</span><span class="usage">Captions, statuses, gesture names. Never below 15px.</span></div>
+<div class="type-sample matrix-caption">LORENZ ATTRACTOR · σ = 10</div></div></div><h3 class="band-title">Reading</h3><div class="type-list">
+<div class="type-row"><div class="type-meta"><code class="tok">.headline</code><span class="muted mono">clamp(28px, 3vw, 40px) / 1.1 · 600</span><span class="usage">Section titles, with the Chinese title inline before it.</span></div>
+<div class="type-sample headline">A waterfall of theorems</div></div>
+<div class="type-row"><div class="type-meta"><code class="tok">.title</code><span class="muted mono">21px / 1.3 · 600</span><span class="usage">Component and card titles.</span></div>
+<div class="type-sample title">Bolzano–Weierstrass</div></div>
+<div class="type-row"><div class="type-meta"><code class="tok">.body</code><span class="muted mono">17px / 1.6 · 400</span><span class="usage">Leads and prose, max 60ch.</span></div>
+<div class="type-sample body">Every bounded sequence of reals has a convergent subsequence.</div></div>
+<div class="type-row"><div class="type-meta"><code class="tok">.ui</code><span class="muted mono">15px / 1.2 · 500</span><span class="usage">Buttons, tabs, switches, navigation.</span></div>
+<div class="type-sample ui">Next set</div></div>
+<div class="type-row"><div class="type-meta"><code class="tok">.small</code><span class="muted mono">13px / 1.4 · 400</span><span class="usage">Legends, footers, metadata.</span></div>
+<div class="type-sample small">Illustrative summaries; replace with final copy.</div></div>
+<div class="type-row"><div class="type-meta"><code class="tok">.label</code><span class="muted mono">12px / 1 · 500</span><span class="usage">Labels pinned to 3D points.</span></div>
+<div class="type-sample label">Monotone convergence</div></div></div><h3 class="band-title">Chinese</h3><div class="type-list">
+<div class="type-row"><div class="type-meta"><code class="tok">.zh-title</code><span class="muted mono">clamp(24px, 2.4vw, 30px) / 1.3 · 700</span><span class="usage">Chinese titles and the thesis line.</span></div>
+<div class="type-sample zh-title">万物皆点集，交互即映射。</div></div></div>
+</section>
+<section id="space" class="sec"><h2 class="sec-title">Spacing</h2>
+<div class="scale"><div class="scale-row"><code class="tok">s-1</code><span class="mono val">4px</span><div class="viz"><span class="bar" style="width:min(100%,var(--s-1))"></span></div><span class="usage">Spacing step 1.</span></div><div class="scale-row"><code class="tok">s-2</code><span class="mono val">8px</span><div class="viz"><span class="bar" style="width:min(100%,var(--s-2))"></span></div><span class="usage">Spacing step 2.</span></div><div class="scale-row"><code class="tok">s-3</code><span class="mono val">12px</span><div class="viz"><span class="bar" style="width:min(100%,var(--s-3))"></span></div><span class="usage">Spacing step 3.</span></div><div class="scale-row"><code class="tok">s-4</code><span class="mono val">16px</span><div class="viz"><span class="bar" style="width:min(100%,var(--s-4))"></span></div><span class="usage">Spacing step 4.</span></div><div class="scale-row"><code class="tok">s-5</code><span class="mono val">24px</span><div class="viz"><span class="bar" style="width:min(100%,var(--s-5))"></span></div><span class="usage">Spacing step 5.</span></div><div class="scale-row"><code class="tok">s-6</code><span class="mono val">32px</span><div class="viz"><span class="bar" style="width:min(100%,var(--s-6))"></span></div><span class="usage">Spacing step 6.</span></div><div class="scale-row"><code class="tok">s-7</code><span class="mono val">48px</span><div class="viz"><span class="bar" style="width:min(100%,var(--s-7))"></span></div><span class="usage">Spacing step 7.</span></div><div class="scale-row"><code class="tok">s-8</code><span class="mono val">64px</span><div class="viz"><span class="bar" style="width:min(100%,var(--s-8))"></span></div><span class="usage">Spacing step 8.</span></div><div class="scale-row"><code class="tok">s-9</code><span class="mono val">96px</span><div class="viz"><span class="bar" style="width:min(100%,var(--s-9))"></span></div><span class="usage">Spacing step 9.</span></div></div></section>
+<section id="radius" class="sec"><h2 class="sec-title">Radius</h2>
+<div class="scale"><div class="scale-row"><code class="tok">r-1</code><span class="mono val">6px</span><div class="viz"><span class="rad" style="border-radius:var(--r-1)"></span></div><span class="usage">Small targets, focus outlines.</span></div><div class="scale-row"><code class="tok">r-2</code><span class="mono val">12px</span><div class="viz"><span class="rad" style="border-radius:var(--r-2)"></span></div><span class="usage">Panels, specimens, cards, command palette.</span></div><div class="scale-row"><code class="tok">r-pill</code><span class="mono val">999px</span><div class="viz"><span class="rad" style="border-radius:var(--r-pill)"></span></div><span class="usage">Buttons, switch tracks, chips.</span></div></div></section>
+<section id="duration" class="sec"><h2 class="sec-title">Duration</h2>
+<div class="scale"><div class="scale-row"><code class="tok">t-fast</code><span class="mono val">160ms</span><div class="viz"></div><span class="usage">CSS transitions; the field and dots run on the shared clock.</span></div><div class="scale-row"><code class="tok">t-mid</code><span class="mono val">320ms</span><div class="viz"></div><span class="usage">CSS transitions; the field and dots run on the shared clock.</span></div><div class="scale-row"><code class="tok">t-slow</code><span class="mono val">700ms</span><div class="viz"></div><span class="usage">CSS transitions; the field and dots run on the shared clock.</span></div></div></section>
+<section id="easing" class="sec"><h2 class="sec-title">Easing</h2>
+<div class="scale"><div class="scale-row"><code class="tok">ease</code><span class="mono val">cubic-bezier(0.16, 1, 0.3, 1)</span><div class="viz"></div><span class="usage">Default settle.</span></div><div class="scale-row"><code class="tok">ease-in-out</code><span class="mono val">cubic-bezier(0.65, 0, 0.35, 1)</span><div class="viz"></div><span class="usage">Exits.</span></div></div></section>
+<section id="dotPitch" class="sec"><h2 class="sec-title">Dot Pitch</h2>
+<div class="scale"><div class="scale-row"><code class="tok">pitch</code><span class="mono val">9px</span><div class="viz"></div><span class="usage">Dot pitch for DOM dot patterns (dotted rules, underlines).</span></div></div></section>
+<section id="components" class="sec"><h2 class="sec-title">Components</h2>
+<div class="toolbar"><input id="filter" type="search" placeholder="Filter components" aria-label="Filter components"><span class="muted" id="count">14 components</span></div>
+<div class="cgroup" id="group-signature"><h3 class="band-title">Signature <span class="muted">3</span></h3>
+
+<article class="comp" id="comp-Cascade" data-name="cascade a dependency dag poured as a waterfall signature">
+  <header class="comp-head"><h4><a href="#comp-Cascade">Cascade</a></h4><span class="muted">A dependency DAG poured as a waterfall</span></header>
+  <div class="stage"><iframe title="Cascade preview" data-src="previews/Cascade.html" data-frame="Cascade" style="height:640px"></iframe></div>
+  <div class="prose comp-sum"><p>定理之瀑：一张依赖图（DAG）按最长路径深度排成瀑布，前提在上、结论在下。每条依赖是一股从前提落进结论的水滴流，背景的雾点持续下落。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li>数据：<code>{ id, en, zh, st, deps, kind, topic }</code>，<code>kind</code> 决定节点形状（foundation 方块、definition 环、theorem 实心圆）。</li><li><code>new Cascade({ theorems, depth: depths(), topicOrder })</code>，放进 <code>stage</code>，相机站点 id 用 <code>fallTop</code> / <code>fallBottom</code>。</li><li>事件：<code>hover</code>（id 或 null）、<code>pick</code>（点击的 id）、<code>frame</code>（每帧节点的屏幕坐标，用于摆放 DOM 标签）。</li><li><code>cascade.focus(id)</code> 让键盘或列表也能点亮同样的上下游。</li></ul>
+<h3>规则</h3>
+<ul><li>橙色只表示「它需要什么」（上游），冰蓝只表示「它推出什么」（下游），不要互换。</li><li>文字标签必须是 DOM（<code>LabelLayer</code>），并提供一个可键盘访问的完整列表。</li></ul></div></details>
+</article>
+<article class="comp" id="comp-Field" data-name="field 65,536 gpu points that pour from set to set signature">
+  <header class="comp-head"><h4><a href="#comp-Field">Field</a></h4><span class="muted">65,536 GPU points that pour from set to set</span></header>
+  <div class="stage"><iframe title="Field preview" data-src="previews/Field.html" data-frame="Field" style="height:520px"></iframe></div>
+  <div class="prose comp-sum"><p>GPU 点场：每个点都被弹簧拴在当前点集里的一个目标上。换集时，点按扫描顺序逐个松开，先进入 ABC 流（一个无散度的欧拉方程解）再被新集拉回，所以过渡是「倒」过去的，而不是跳过去。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li><code>new Field(stage)</code> → <code>field.useSets(Lattice.sets)</code> → <code>stage.add(field)</code> → <code>field.onResize(stage)</code>。</li><li><code>field.keep(build, opts)</code>：<code>build(lattice)</code> 返回 N×4 的 Float32Array（xyz + 类别 w：0 隐藏、0.35 点阵、1 点亮）。窗口尺寸变化时会用同一个 <code>build</code> 重建。</li><li>现成的集：<code>L.rest()</code>、<code>L.lit([{map: sets.matrixText('HI', 2), col, row}])</code>、<code>L.shape(sets.lorenz(N, 2))</code>（以及 <code>torusKnot</code>、<code>crystal</code>、<code>klein</code>、<code>sphere</code>）。</li><li><code>opts</code>：<code>is3d</code>（随集旋转、可拖拽）、<code>sweep</code>（释放扫描方向）、<code>dur</code>、<code>flow</code>、<code>lit</code>（点亮点的尺寸倍数）、<code>alpha</code>。</li><li>事件：<code>press</code>、<code>tap</code>、<code>heat</code>（0–1）、<code>release</code>（<code>detail.melted</code>）。</li></ul>
+<h3>规则</h3>
+<ul><li>3D 集必须是真实的数学对象，并在说明里写出参数（如 σ = 10, ρ = 28, β = 8/3）。</li><li>按住熔化后松开，才映射到下一个集；单击只是冲击波。</li><li><code>prefers-reduced-motion</code> 下过渡瞬间完成，指针场停止。</li></ul></div></details>
+</article>
+<article class="comp" id="comp-ProofTree" data-name="prooftree a proof grows from its conclusion to its axioms signature">
+  <header class="comp-head"><h4><a href="#comp-ProofTree">ProofTree</a></h4><span class="muted">A proof grows from its conclusion to its axioms</span></header>
+  <div class="stage"><iframe title="ProofTree preview" data-src="previews/ProofTree.html" data-frame="ProofTree" style="height:640px"></iframe></div>
+  <div class="prose comp-sum"><p>证明树：把依赖图从一个结论展开成证明树。结论是树根（在下），前提逐层向上长成枝，叶子是公理；同一引理只长一次，之后出现处标 ↺。枝的粗细与其下叶子数的平方根成正比。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li><code>new ProofTree({ byId })</code> 放进 <code>stage</code>（站点 id <code>tree</code>），<code>tree.grow(id)</code> 开始生长，旧树会像落叶一样凋落。</li><li>事件：<code>grow</code>、<code>hover</code>（节点或 null）、<code>pick</code>（点击节点的定理 id，可用来以它为根重新生长）、<code>frame</code>（节点屏幕坐标与开花时刻）。</li><li>在数据中用 <code>leaf: true</code> 标出证明止步的地方（例如 ℝ 的完备性）。</li></ul>
+<h3>规则</h3>
+<ul><li>生长按深度推进，枝头为橙色；每次开花可拨一个五声音阶的音；全部长成后冰蓝色的汁液从叶流回根，表示证明闭合。</li><li><code>tree.progress()</code> 返回生长进度（0–1），适合接一个 <code>mountProgress</code> 进度条放在旁边。</li><li><code>tree.swap(id)</code> 是旋转转场：展台转半圈，旧树落叶，新树生长；用于随滚动逐个展示证明树。</li><li>标签默认只显示结论、直接前提和公理叶，其余在悬停路径上出现，避免遮挡。</li></ul></div></details>
+</article></div><div class="cgroup" id="group-interaction"><h3 class="band-title">Interaction <span class="muted">1</span></h3>
+
+<article class="comp" id="comp-CursorHalo" data-name="cursorhalo the cursor's points re-form around whatever you can press interaction">
+  <header class="comp-head"><h4><a href="#comp-CursorHalo">CursorHalo</a></h4><span class="muted">The cursor's points re-form around whatever you can press</span></header>
+  <div class="stage"><iframe title="CursorHalo preview" data-src="previews/CursorHalo.html" data-frame="CursorHalo" style="height:230px"></iframe></div>
+  <div class="prose comp-sum"><p>光标由一个点和它周围的 30 个点组成。经过任何可操作的元素（以及键盘聚焦时），这组点会离开指针，沿控件的圆角轮廓重组并缓慢绕行；按下时向外迸散；在点场上按住时，环会逐渐变成橙色。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li><code>mountCursor()</code> 一次即可；返回 <code>{ setHeat(v) }</code>，点场的 <code>heat</code> 事件接到这里。</li><li>只在精细指针（鼠标、触控板）上启用；触屏回退为页面自带的热度环。</li><li>加 <code>data-no-halo</code> 可以让某个区域不被吸附；加 <code>data-halo</code> 让非交互元素也能吸附。</li></ul>
+<h3>规则</h3>
+<ul><li>光环同时是焦点指示：有光标时隐藏浏览器默认焦点框，没有光标时恢复。</li><li>不要在光标上加文字标签；它只描轮廓。</li></ul></div></details>
+</article></div><div class="cgroup" id="group-controls"><h3 class="band-title">Controls <span class="muted">5</span></h3>
+
+<article class="comp" id="comp-Button" data-name="button pills: primary, accent, ghost, disabled controls">
+  <header class="comp-head"><h4><a href="#comp-Button">Button</a></h4><span class="muted">Pills: primary, accent, ghost, disabled</span></header>
+  <div class="stage"><iframe title="Button preview" data-src="previews/Button.html" data-frame="Button" style="height:150px"></iframe></div>
+  <div class="prose comp-sum"><p>按钮是 44px 高的胶囊。主按钮用骨白底、墨色字；强调按钮用信号橙，每个视图最多一个；幽灵按钮是透明底加描边；禁用按钮只剩淡色字和细线。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>规则</h3>
+<ul><li>按下时缩放到 0.96；点阵光标负责悬停与按压的点状反馈，按钮本身不加额外动效。</li><li>图标用点阵绘制的 SVG（<code>.lx-icon</code>），不要用字符 → 或 @ 代替图标。</li></ul></div></details>
+</article>
+<article class="comp" id="comp-Slider" data-name="slider a row of dots; the thumb pushes its neighbours controls">
+  <header class="comp-head"><h4><a href="#comp-Slider">Slider</a></h4><span class="muted">A row of dots; the thumb pushes its neighbours</span></header>
+  <div class="stage"><iframe title="Slider preview" data-src="previews/Slider.html" data-frame="Slider" style="height:130px"></iframe></div>
+  <div class="prose comp-sum"><p>滑块：一排点。已选部分为橙色，其余为淡色；七个点组成的拇指绕行，并把相邻的点推开。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li>原生 <code>&lt;input type=&quot;range&quot;&gt;</code> 放在 <code>.lx-slider</code> 里（透明，负责交互与无障碍），<code>mountSlider(input)</code> 负责绘制。</li></ul></div></details>
+</article>
+<article class="comp" id="comp-Switch" data-name="switch off: free-floating gas. on: the points converge and lock controls">
+  <header class="comp-head"><h4><a href="#comp-Switch">Switch</a></h4><span class="muted">Off: free-floating gas. On: the points converge and lock</span></header>
+  <div class="stage"><iframe title="Switch preview" data-src="previews/Switch.html" data-frame="Switch" style="height:250px"></iframe></div>
+  <div class="prose comp-sum"><p>开关：关闭时，点作为气体在整条轨道里自由游离；打开时，点汇聚到右端并锁定成橙色的六边形晶体（每个点落位时闪一下）。同一组点，不同的相。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li><code>&lt;button class=&quot;lx-switch&quot; aria-checked=&quot;false&quot;&gt;&lt;span class=&quot;lx-switch__track&quot;&gt;&lt;/span&gt;…&lt;/button&gt;</code>，<code>mountSwitch(btn)</code>。</li><li>事件：<code>switch:change</code>（<code>detail</code> 为布尔值）。</li></ul></div></details>
+</article>
+<article class="comp" id="comp-Tabs" data-name="tabs the indicator is a swarm that pours to the chosen tab controls">
+  <header class="comp-head"><h4><a href="#comp-Tabs">Tabs</a></h4><span class="muted">The indicator is a swarm that pours to the chosen tab</span></header>
+  <div class="stage"><iframe title="Tabs preview" data-src="previews/Tabs.html" data-frame="Tabs" style="height:190px"></iframe></div>
+  <div class="prose comp-sum"><p>标签页的指示器是一个 14×2 的点群。切换时点群按顺序松开，带着一小段湍流流向新的标签。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li>标准 <code>role=&quot;tablist&quot;</code> / <code>role=&quot;tab&quot;</code> 结构；<code>mountTabs(listEl)</code>，方向键切换。</li><li>事件：<code>tabs:change</code>（<code>detail.index</code>、<code>detail.value</code>）。</li></ul></div></details>
+</article>
+<article class="comp" id="comp-TextField" data-name="textfield a dotted rule that flows while you type controls">
+  <header class="comp-head"><h4><a href="#comp-TextField">TextField</a></h4><span class="muted">A dotted rule that flows while you type</span></header>
+  <div class="stage"><iframe title="TextField preview" data-src="previews/TextField.html" data-frame="TextField" style="height:180px"></iframe></div>
+  <div class="prose comp-sum"><p>文本框：没有边框，只有一条每 9px 一个点的虚线。聚焦时点变成橙色并沿线流动；出错时点距收紧到 5px，下方文字说明缺了什么。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>规则</h3>
+<ul><li>错误信息写清楚问题和补救方式，例如「需要用户名、@ 和域名」。</li></ul></div></details>
+</article></div><div class="cgroup" id="group-feedback"><h3 class="band-title">Feedback <span class="muted">2</span></h3>
+
+<article class="comp" id="comp-Loader" data-name="loader one lorenz trajectory as a fading trail feedback">
+  <header class="comp-head"><h4><a href="#comp-Loader">Loader</a></h4><span class="muted">One Lorenz trajectory as a fading trail</span></header>
+  <div class="stage"><iframe title="Loader preview" data-src="previews/Loader.html" data-frame="Loader" style="height:170px"></iframe></div>
+  <div class="prose comp-sum"><p>加载器：一条洛伦兹轨迹，画成渐隐的点迹，并缓慢旋转。它是系统里「正在思考」的状态。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li><code>mountLoader(el)</code>；元素自动获得 <code>role=&quot;status&quot;</code>。</li></ul></div></details>
+</article>
+<article class="comp" id="comp-Progress" data-name="progress new progress is built from the gas: points converge and lock feedback">
+  <header class="comp-head"><h4><a href="#comp-Progress">Progress</a></h4><span class="muted">New progress is built from the gas: points converge and lock</span></header>
+  <div class="stage"><iframe title="Progress preview" data-src="previews/Progress.html" data-frame="Progress" style="height:190px"></iframe></div>
+  <div class="prose comp-sum"><p>进度条：三行点。未完成的部分是在整条进度条里自由游离的气态点；每完成一段，就从气体里抽出点，汇聚到该段的格点上，落位时闪一下并固定为橙色。不定进度是一道有序的带子扫过；全部完成时奏一个和弦。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li><code>mountProgress(el)</code> 返回 <code>{ set(v), indeterminate(on) }</code>；元素带 <code>role=&quot;progressbar&quot;</code> 与 <code>aria-valuenow</code>。</li></ul></div></details>
+</article></div><div class="cgroup" id="group-type"><h3 class="band-title">Type <span class="muted">1</span></h3>
+
+<article class="comp" id="comp-DotText" data-name="dottext 5×7 matrix lettering that reflows dot by dot type">
+  <header class="comp-head"><h4><a href="#comp-DotText">DotText</a></h4><span class="muted">5×7 matrix lettering that reflows dot by dot</span></header>
+  <div class="stage"><iframe title="DotText preview" data-src="previews/DotText.html" data-frame="DotText" style="height:190px"></iframe></div>
+  <div class="prose comp-sum"><p>点阵字：5×7 位图字形画成点。换字符串时，新字仍需要的点滑到新位置，多余的飞走，缺的补进来。适合计数器、编号和短标签。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li><code>mountDotText(el, { pitch })</code> 返回 <code>{ set(text) }</code>；原文本写入 <code>aria-label</code>。</li><li>字符集：A–Z、0–9、空格、<code>.</code>、<code>-</code>、<code>·</code>。</li></ul>
+<h3>规则</h3>
+<ul><li>只用于短字符串；段落用阅读字体。</li></ul></div></details>
+</article></div><div class="cgroup" id="group-overlays"><h3 class="band-title">Overlays <span class="muted">2</span></h3>
+
+<article class="comp" id="comp-CommandPalette" data-name="commandpalette ⌘k: every action on the page, marked by a small swarm overlays">
+  <header class="comp-head"><h4><a href="#comp-CommandPalette">CommandPalette</a></h4><span class="muted">⌘K: every action on the page, marked by a small swarm</span></header>
+  <div class="stage"><iframe title="CommandPalette preview" data-src="previews/CommandPalette.html" data-frame="CommandPalette" style="height:150px"></iframe></div>
+  <div class="prose comp-sum"><p>命令面板：⌘K / Ctrl+K 打开的模态对话框。当前行由一小群点标出，上下移动时点群流到新行；输入按子序列过滤。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li><code>mountCommands([{ id, key, en, zh?, hint?, run }])</code> 返回 <code>{ open, close }</code>。</li><li><code>key</code> 用一个汉字或字母作为行首标记，不要用符号字符代替图标。</li></ul></div></details>
+</article>
+<article class="comp" id="comp-Toast" data-name="toast messages with a dot-matrix tag overlays">
+  <header class="comp-head"><h4><a href="#comp-Toast">Toast</a></h4><span class="muted">Messages with a dot-matrix tag</span></header>
+  <div class="stage"><iframe title="Toast preview" data-src="previews/Toast.html" data-frame="Toast" style="height:190px"></iframe></div>
+  <div class="prose comp-sum"><p>消息：右下角出现，带一个会逐点重排的点阵标签，几秒后模糊淡出。容器是 <code>role=&quot;status&quot;</code> 的礼貌播报区域。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>使用</h3>
+<ul><li><code>toast(message, { tag = 'OK', ms = 2800 })</code>。</li></ul></div></details>
+</article></div>
+</section>
+
+</main>
+</div>
+<script>(() => {
+  const frames = () => [...document.querySelectorAll('iframe[data-frame]')];
+  // Preview frames report their height; errors are shown on the card.
+  addEventListener('message', e => {
+    const d = e.data;
+    if (!d || !d.dsFrame) return;
+    const f = frames().find(x => x.dataset.frame === d.dsFrame);
+    if (!f) return;
+    if (d.h && !f.closest('.cover')) f.style.height = Math.max(parseInt(f.style.height) || 0, Math.min(d.h, 4000)) + 'px';
+    if (d.err) { const card = f.closest('.comp'); if (card && !card.querySelector('.frame-err')) { const p = document.createElement('p'); p.className = 'frame-err muted'; p.style.cssText = 'padding:8px 16px;margin:0;font-size:12px'; p.textContent = 'Preview error: ' + d.err; f.parentElement.after(p); } }
+  });
+
+  // Every preview is mounted once and stays mounted, so nothing is blank, restarts or loses its
+  // state while scrolling. The one exception: browsers drop the oldest WebGL contexts beyond ~16
+  // per page, so when a page has more WebGL previews (data-gl) than GL_BUDGET, only those are
+  // windowed around the viewport. Non-WebGL previews are never unloaded.
+  const GL_BUDGET = 12, MAX_LIVE_GL = 8;
+  const all = [...document.querySelectorAll('iframe[data-src]')];
+  const glFrames = all.filter(f => f.dataset.gl);
+  const windowed = new Set(glFrames.length > GL_BUDGET ? glFrames : []);
+  const mountFrame = f => { if (f.dataset.mounted) return; f.dataset.mounted = '1'; f.src = f.dataset.src; };
+  const unmountFrame = f => { if (!f.dataset.mounted) return; delete f.dataset.mounted; f.src = 'about:blank'; };
+  const near = f => { const r = f.getBoundingClientRect(); return r.bottom > -innerHeight && r.top < innerHeight * 2; };
+  // Eager frames: the first screen first, then the rest in document order, two per frame tick.
+  const queue = all.filter(f => !windowed.has(f)).sort((a, b) => near(b) - near(a));
+  const pump = () => { queue.splice(0, 2).forEach(mountFrame); if (queue.length) setTimeout(pump, 60); };
+  pump();
+  if (windowed.size) {
+    const live = new Set();
+    const lazy = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        if (e.isIntersecting) { mountFrame(e.target); live.add(e.target); } else { unmountFrame(e.target); live.delete(e.target); }
+      }
+      if (live.size > MAX_LIVE_GL) {
+        const mid = innerHeight / 2, dist = f => Math.abs(f.getBoundingClientRect().top + f.offsetHeight / 2 - mid);
+        [...live].sort((a, b) => dist(b) - dist(a)).slice(0, live.size - MAX_LIVE_GL).forEach(f => { unmountFrame(f); live.delete(f); });
+      }
+    }, {rootMargin: '600px 0px'});
+    windowed.forEach(f => lazy.observe(f));
+  }
+
+  // Cover: laid out at 960px wide and scaled to fit.
+  const cover = document.querySelector('.cover');
+  if (cover) {
+    const f = cover.querySelector('iframe'), h = parseInt(cover.dataset.h) || 300;
+    // A `fluid` cover lays out at the page width instead of a scaled 960px canvas.
+    const fit = cover.classList.contains('fluid') ? () => { cover.style.height = Math.min(h, Math.max(260, cover.clientWidth * h / 1280)) + 'px'; f.style.height = cover.style.height; } : () => { const s = Math.min(1, cover.clientWidth / 960); f.style.transform = `scale(${s})`; cover.style.height = h * s + 'px'; };
+    new ResizeObserver(fit).observe(cover); fit();
+  }
+
+  // Theme switch: page tokens + every preview frame.
+  const btns = [...document.querySelectorAll('[data-theme-id]')];
+  const setTheme = id => {
+    document.documentElement.dataset.theme = id;
+    btns.forEach(b => b.setAttribute('aria-checked', String(b.dataset.themeId === id)));
+    frames().forEach(f => { try { f.contentWindow.postMessage({dsTheme: id}, '*'); } catch {} });
+    try { localStorage.setItem('ds-viewer-theme:' + document.title, id); } catch {}
+  };
+  btns.forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeId)));
+  frames().forEach(f => f.addEventListener('load', () => { const t = document.documentElement.dataset.theme; if (t && f.contentWindow) f.contentWindow.postMessage({dsTheme: t}, '*'); }));
+  try { const saved = localStorage.getItem('ds-viewer-theme:' + document.title); if (saved && btns.some(b => b.dataset.themeId === saved)) setTheme(saved); } catch {}
+
+  // Component filter.
+  const input = document.getElementById('filter'), count = document.getElementById('count');
+  if (input) input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let n = 0;
+    document.querySelectorAll('.comp').forEach(c => { const show = !q || c.dataset.name.includes(q); c.hidden = !show; if (show) n++; });
+    document.querySelectorAll('.cgroup').forEach(g => { g.hidden = ![...g.querySelectorAll('.comp')].some(c => !c.hidden); });
+    count.textContent = `${n} components`;
+  });
+
+  // Copy a colour token's var() on click.
+  document.querySelectorAll('[data-copy]').forEach(el => el.addEventListener('click', () => {
+    navigator.clipboard?.writeText(el.dataset.copy).then(() => { el.classList.add('copied'); setTimeout(() => el.classList.remove('copied'), 700); }, () => {});
+  }));
+
+  // Highlight the current section in the sidebar.
+  const links = new Map([...document.querySelectorAll('.side nav a')].map(a => [a.getAttribute('href').slice(1), a]));
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) if (e.isIntersecting) { links.forEach(a => a.classList.remove('on')); links.get(e.target.id)?.classList.add('on'); }
+  }, {rootMargin: '-10% 0px -80% 0px'});
+  links.forEach((_, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
+})();
+</script>
+</body>
+</html>

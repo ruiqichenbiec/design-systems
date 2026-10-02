@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<script>/* ?motion=full shows full motion even when the OS asks for reduced motion (used by the showcase site) */if(/[?&]motion=full\b/.test(location.search)){const mm=matchMedia.bind(window);window.matchMedia=q=>/prefers-reduced-motion:\s*reduce/.test(q)?mm("not all"):mm(q);}</script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f7f8fa">
+  <meta name="description" content="可交互的 Lens 网页组件实验：实时背景折射、色散、边缘高光与弹性动效。" data-i18n-content="description">
+  <title data-i18n="title">Lens · 透镜实验室</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="design-system/tokens.css">
+  <link rel="stylesheet" href="design-system/components.css">
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="design-system/optical-demo.css">
+</head>
+<body>
+  <svg class="icon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.6 6.4L21 12l-6.4 2.6L12 21l-2.6-6.4L3 12l6.4-2.6L12 3Z"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    <symbol id="i-reset" viewBox="0 0 24 24"><path d="M4 10a8 8 0 1 1 .9 7M4 4v6h6"/></symbol>
+    <symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></symbol>
+    <symbol id="i-moon" viewBox="0 0 24 24"><path d="M20.5 14A8.7 8.7 0 0 1 10 3.5 8.7 8.7 0 1 0 20.5 14Z"/></symbol>
+    <symbol id="i-wifi" viewBox="0 0 24 24"><path d="M2 8a16 16 0 0 1 20 0M5 12a11 11 0 0 1 14 0m-11 4a6 6 0 0 1 8 0"/><circle cx="12" cy="20" r=".6" fill="currentColor"/></symbol>
+    <symbol id="i-bluetooth" viewBox="0 0 24 24"><path d="m6 7 12 10-6 5V2l6 5L6 17"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="m12 3 10 5-10 5L2 8l10-5Zm-10 9 10 5 10-5M2 16l10 5 10-5"/></symbol>
+    <symbol id="i-heart" viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0l-1 1-1-1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.8-8.6a5.5 5.5 0 0 0 0-7.8Z"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 6h9m4 0h3M4 12h3m4 0h9M4 18h9m4 0h3"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="15" cy="18" r="2"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1" fill="currentColor"/><circle cx="12" cy="12" r="1" fill="currentColor"/><circle cx="19" cy="12" r="1" fill="currentColor"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="m8 4 12 8-12 8V4Z"/></symbol>
+    <symbol id="i-code" viewBox="0 0 24 24"><path d="m8 6-6 6 6 6m8-12 6 6-6 6M14 3l-4 18"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-drag" viewBox="0 0 24 24"><path d="m9 5 3-3 3 3M12 2v20m-3-3 3 3 3-3M5 9l-3 3 3 3M2 12h20m-3-3 3 3-3 3"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M3 9h4l5-4v14l-5-4H3V9Zm13-1a6 6 0 0 1 0 8m3-11a10 10 0 0 1 0 14"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-minus" viewBox="0 0 24 24"><path d="M5 12h14"/></symbol>
+    <symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M18 6 6 18"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 8-3 8-3 10h18c0-2-3-2-3-10M10 21h4"/></symbol>
+  </defs></svg>
+  <header class="site-header">
+    <a class="wordmark" href="./" aria-label="Lens 首页" data-i18n-aria="homeAria"><span class="brand-mark" aria-hidden="true"></span><span>Lens<span class="wordmark-divider">/</span><span class="wordmark-sub"><span data-i18n="brand">材质实验室</span></span></span></a>
+    <div class="header-actions"><div class="language-switch" role="group" aria-label="Language / 语言"><button data-language="zh" lang="zh-CN" aria-pressed="true">中文</button><button data-language="en" lang="en" aria-pressed="false">EN</button></div></div>
+  </header>
+
+  <main>
+    <div class="intro">
+      <div><h1><span data-i18n="headline">触碰，流动的光。</span></h1><p><span data-i18n="intro">把玻璃的通透与触感，带到浏览器。</span></p></div>
+      <div class="render-status" id="render-status"><span class="status-dot"></span><span id="render-label">正在准备材质</span></div>
+    </div>
+
+    <div class="workspace">
+      <section class="preview-region" aria-label="透镜组件预览" data-i18n-aria="previewAria">
+        <div class="stage" id="stage" data-scene="aurora">
+          <canvas id="glass-canvas" aria-hidden="true"></canvas>
+          <div class="stage-topline"><span class="scene-caption" id="scene-caption">流光 / AURORA</span><button class="scene-motion" id="scene-motion" aria-label="暂停背景动画" aria-pressed="true"><svg class="icon"><use href="#i-pause"/></svg></button></div>
+          <div class="view-tabs" role="tablist" aria-label="预览模式" data-i18n-aria="viewsAria"><span class="view-tab-indicator glass lg-surface" data-glass="tab" aria-hidden="true"></span><button role="tab" aria-selected="true" aria-controls="components-view" id="components-tab" tabindex="0" data-view="components"><span data-i18n="controlTab">控制</span></button><button role="tab" aria-selected="false" aria-controls="gallery-view" id="gallery-tab" tabindex="-1" data-view="gallery"><span data-i18n="galleryTab">组件</span></button><button role="tab" aria-selected="false" aria-controls="lens-view" id="lens-tab" tabindex="-1" data-view="lens"><span data-i18n="lensTab">透镜</span></button></div>
+
+          <div id="components-view" class="components-view" role="tabpanel" aria-labelledby="components-tab">
+            <div class="floating-note glass lg-surface" data-glass="note" tabindex="0" role="button" aria-label="拖动玻璃提示，松手回弹" data-i18n-aria="dragAria"><svg class="icon"><use href="#i-drag"/></svg><span><span data-i18n="dragNote">按住我，轻轻拖动。</span></span></div>
+            <section class="control-panel glass lg-surface" data-glass="panel" aria-label="控制中心示例" data-i18n-aria="panelAria">
+              <div class="panel-heading"><div><span class="panel-subtitle">随心掌控</span><h2>控制中心</h2></div><div class="menu-wrap"><button class="glass icon-button more-button lg-surface" data-glass="small" id="more-button" aria-label="更多选项" data-i18n-aria="moreAria" aria-haspopup="menu" aria-expanded="false" aria-controls="demo-menu"><svg class="icon"><use href="#i-more"/></svg></button><div class="demo-menu glass lg-surface" data-glass="menu" id="demo-menu" role="menu" hidden><button role="menuitem" id="menu-reset"><svg class="icon"><use href="#i-reset"/></svg><span data-i18n="resetDemo">重置示例</span></button><button role="menuitem" id="menu-lens"><svg class="icon"><use href="#i-eye"/></svg><span data-i18n="inspectLens">检查折射</span></button></div></div></div>
+              <div class="connection-row"><button class="connection active" id="wifi" aria-pressed="true"><span class="connection-icon"><svg class="icon"><use href="#i-wifi"/></svg></span><span><strong><span data-i18n="wifi">无线网络</span></strong><small id="wifi-status">已连接</small></span></button><button class="connection active" id="bluetooth" aria-pressed="true"><span class="connection-icon"><svg class="icon"><use href="#i-bluetooth"/></svg></span><span><strong><span data-i18n="bluetooth">蓝牙</span></strong><small id="bluetooth-status">已开启</small></span></button></div>
+              <div class="demo-slider-row"><svg class="icon"><use href="#i-sun"/></svg><label class="sr-only" for="brightness"><span data-i18n="brightness">场景亮度</span></label><div class="demo-range-wrap"><input id="brightness" class="demo-range" type="range" min="30" max="100" value="82"><span class="demo-slider-thumb glass lg-surface" data-glass="slider-thumb" aria-hidden="true"></span></div><output id="brightness-value" for="brightness">82%</output></div>
+              <div class="focus-row"><span class="focus-label"><svg class="icon"><use href="#i-moon"/></svg><span><span data-i18n="focus">专注模式</span></span></span><span class="focus-state" id="focus-state" aria-hidden="true">关</span><button class="switch glass-switch" id="focus-switch" role="switch" aria-checked="false" aria-label="专注模式" data-i18n-aria="focus"><span class="switch-track glass lg-surface" data-glass="switch-track" aria-hidden="true"></span><span class="switch-thumb glass lg-surface" data-glass="thumb" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span></button></div>
+              <div class="panel-divider"></div>
+              <div class="panel-bottom"><span id="panel-message" aria-live="polite">留一点空间，给自己。</span><button class="glass round-button lg-surface" data-glass="small" id="favorite" aria-label="收藏此刻" aria-pressed="false"><svg class="icon"><use href="#i-heart"/></svg></button></div>
+            </section>
+            <nav class="glass demo-dock lg-surface" data-glass="dock" aria-label="示例视图" data-i18n-aria="dockAria"><span class="dock-indicator glass lg-surface" data-glass="selected" aria-hidden="true"></span><button class="dock-button" data-dock="overview" aria-label="总览" data-i18n-aria="overview" aria-current="page"><svg class="icon"><use href="#i-grid"/></svg><span><span data-i18n="overview">总览</span></span></button><button class="dock-button" data-dock="material" aria-label="通透材质" data-i18n-aria="clearAria"><svg class="icon"><use href="#i-layers"/></svg><span><span data-i18n="material">材质</span></span></button><button class="dock-button" data-dock="favorites" aria-label="收藏状态" data-i18n-aria="savedAria"><svg class="icon"><use href="#i-heart"/></svg><span><span data-i18n="favorites">收藏</span></span></button><button class="dock-button" data-dock="settings" aria-label="调节材质" data-i18n-aria="adjustAria"><svg class="icon"><use href="#i-sliders"/></svg><span><span data-i18n="settings">调节</span></span></button></nav>
+          </div>
+
+          <div id="gallery-view" class="gallery-view" role="tabpanel" aria-labelledby="gallery-tab" hidden>
+            <div class="gallery-search glass lg-surface" data-glass="search"><svg class="icon"><use href="#i-search"/></svg><input type="search" id="gallery-search" aria-label="查找组件" data-i18n-aria="searchAria" placeholder="查找组件，例如：通知" data-i18n-placeholder="searchPlaceholder"><span class="search-count" id="search-count">4 种</span></div>
+            <div class="gallery-grid">
+              <section class="specimen" data-component="胶囊 选项 标签 灵感 工作 生活 pill choice chip tag ideas work life"><h3><span data-i18n="choices">选项胶囊</span></h3><div class="choice-pills" role="group" aria-label="专注类型" data-i18n-aria="choiceAria"><button class="glass lg-surface" data-glass="chip" data-choice="idea" aria-pressed="true"><svg class="icon choice-check" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="idea">灵感</span></button><button class="glass lg-surface" data-glass="chip" data-choice="work" aria-pressed="false"><svg class="icon choice-check" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="work">工作</span></button><button class="glass lg-surface" data-glass="chip" data-choice="life" aria-pressed="false"><svg class="icon choice-check" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="life">生活</span></button></div></section>
+              <section class="specimen" data-component="步进 数值 时长 分钟 stepper duration time minutes"><h3><span data-i18n="stepper">步进控件</span></h3><div class="stepper glass lg-surface" data-glass="stepper"><button id="duration-minus" aria-label="减少五分钟" data-i18n-aria="lessAria"><svg class="icon"><use href="#i-minus"/></svg></button><output id="duration-value" aria-live="polite">25<span> 分钟</span></output><button id="duration-plus" aria-label="增加五分钟" data-i18n-aria="moreTimeAria"><svg class="icon"><use href="#i-plus"/></svg></button></div></section>
+              <section class="specimen specimen-wide" data-component="通知 提醒 卡片 notification reminder card"><h3><span data-i18n="notification">通知卡片</span></h3><div class="notification-card glass lg-surface" data-glass="notification" id="notification-card"><span class="notification-icon"><svg class="icon"><use href="#i-bell"/></svg></span><div><strong id="notification-title">给灵感一点空间</strong><p id="notification-text">留出 25 分钟，专注眼前。</p><span class="notification-meta"><span data-i18n="reminder">专注提醒 · 示例</span></span></div><button class="notification-close" id="notification-close" aria-label="收起通知" data-i18n-aria="closeAria"><svg class="icon"><use href="#i-close"/></svg></button></div><button class="restore-notification glass lg-surface" data-glass="button" id="restore-notification" hidden><svg class="icon"><use href="#i-bell"/></svg><span data-i18n="restore">重新显示通知</span></button></section>
+              <section class="specimen specimen-wide" data-component="操作 按钮 图标 收藏 action button icon like favorite"><h3><span data-i18n="actions">操作按钮</span></h3><div class="gallery-actions"><button class="glass action-pill lg-surface" data-glass="button" id="gallery-action"><svg class="icon"><use href="#i-check"/></svg><span><span data-i18n="choose">选择此刻</span></span></button><button class="glass gallery-icon lg-surface" data-glass="small" id="gallery-like" aria-label="喜欢这组组件" data-i18n-aria="likeAria" aria-pressed="false"><svg class="icon"><use href="#i-heart"/></svg></button><button class="glass gallery-icon lg-surface" data-glass="small" id="gallery-reset" aria-label="重置组件示例" data-i18n-aria="galleryResetAria"><svg class="icon"><use href="#i-reset"/></svg></button><span id="gallery-feedback" class="gallery-feedback" aria-live="polite">轻触，也可以拖动</span></div></section>
+            </div>
+            <p class="gallery-empty" id="gallery-empty" hidden><span data-i18n="empty">没有匹配的组件，试试“按钮”或“通知”。</span></p>
+          </div>
+          <div id="lens-view" class="lens-view" role="tabpanel" aria-labelledby="lens-tab" hidden><div id="free-lens" class="free-lens glass lg-surface" data-glass="free" role="slider" tabindex="0" aria-label="透镜水平位置，可拖动或使用方向键移动" data-i18n-aria="lensAria" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" aria-valuetext="水平 50%，垂直 50%"><svg class="icon"><use href="#i-drag"/></svg><span><span data-i18n="lensHold">按住，感受流动</span></span></div><p class="lens-caption"><span data-i18n="lensCaption">穿过边缘，看看字形如何弯曲。</span></p></div>
+          <div class="stage-bottomline"><span id="stage-hint">按住卡片拖动 · 松手，感受回弹</span><span class="stage-material" id="stage-material">LENS</span></div>
+        </div>
+        <div class="preview-footnote"><span><svg class="icon"><use href="#i-eye"/></svg><span data-i18n="footnote">每一层玻璃，都在实时折射身后的光。</span></span><button id="compare-button" class="text-button" aria-pressed="false"><span data-i18n="compare">对比普通毛玻璃</span> <svg class="icon"><use href="#i-chevron"/></svg></button></div>
+      </section>
+
+      <aside class="inspector" aria-label="材质调节" data-i18n-aria="inspector">
+        <div class="inspector-title"><h2><span data-i18n="inspector">材质调节</span></h2><button class="reset-button" id="reset" aria-label="恢复默认材质" data-i18n-aria="resetAria" title="恢复默认" data-i18n-title="resetTitle"><svg class="icon"><use href="#i-reset"/></svg></button></div>
+        <fieldset class="setting-group material-group"><legend><span data-i18n="materialLegend">玻璃质感</span></legend><div class="material-options"><button data-preset="clear" aria-pressed="false"><span class="preset-check" aria-hidden="true">✓</span><span class="material-sample sample-clear"></span><span><span data-i18n="clear">通透</span></span></button><button data-preset="soft" aria-pressed="false"><span class="preset-check" aria-hidden="true">✓</span><span class="material-sample sample-soft"></span><span><span data-i18n="soft">柔和</span></span></button><button data-preset="thick" aria-pressed="true"><span class="preset-check" aria-hidden="true">✓</span><span class="material-sample sample-thick"></span><span><span data-i18n="thick">厚润</span></span></button></div></fieldset>
+        <div class="parameters">
+          <div class="parameter"><label for="refraction"><span data-i18n="refraction">折射强度</span></label><output for="refraction" id="refraction-value">90<span>%</span></output><input id="refraction" type="range" min="0" max="100" value="90"></div>
+          <div class="parameter"><label for="blur"><span data-i18n="blur">雾化程度</span></label><output for="blur" id="blur-value">24<span>%</span></output><input id="blur" type="range" min="0" max="100" value="24"></div>
+          <div class="parameter"><label for="dispersion"><span data-i18n="dispersion">边缘色散</span></label><output for="dispersion" id="dispersion-value">65<span>%</span></output><input id="dispersion" type="range" min="0" max="100" value="65"></div>
+          <div class="parameter"><label for="elasticity"><span data-i18n="elasticity">流动弹性</span></label><output for="elasticity" id="elasticity-value">70<span>%</span></output><input id="elasticity" type="range" min="0" max="100" value="70"></div>
+        </div>
+        <fieldset class="setting-group scene-group"><legend><span data-i18n="sceneLegend">玻璃背后的世界</span></legend><div class="scene-options"><button data-scene="aurora" class="scene-swatch aurora" aria-label="流光背景" data-i18n-aria="auroraAria" aria-pressed="true"><svg class="icon"><use href="#i-check"/></svg></button><button data-scene="sunset" class="scene-swatch sunset" aria-label="日落背景" data-i18n-aria="sunsetAria" aria-pressed="false"><svg class="icon"><use href="#i-check"/></svg></button><button data-scene="ocean" class="scene-swatch ocean" aria-label="深海背景" data-i18n-aria="oceanAria" aria-pressed="false"><svg class="icon"><use href="#i-check"/></svg></button><button data-scene="grid" class="scene-swatch grid" aria-label="网格测试背景" data-i18n-aria="gridAria" aria-pressed="false"><svg class="icon"><use href="#i-check"/></svg></button></div><div class="scene-name" id="scene-name">流光 <span>柔和色彩，缓缓流动</span></div></fieldset>
+        <div class="accessibility-settings"><label class="toggle-setting" for="motion"><span><span data-i18n="motion">动态光影</span></span><input id="motion" type="checkbox" role="switch" checked><span class="small-switch" aria-hidden="true"></span></label><label class="toggle-setting" for="opaque"><span><span data-i18n="opaque">降低透明度</span></span><input id="opaque" type="checkbox" role="switch"><span class="small-switch" aria-hidden="true"></span></label></div>
+        <section class="sound-settings" aria-labelledby="sound-heading"><label class="toggle-setting" for="sound-enabled"><span id="sound-heading" data-i18n="sound">交互音效</span><input id="sound-enabled" type="checkbox" role="switch" checked><span class="small-switch" aria-hidden="true"></span></label><div class="parameter sound-volume-row"><label for="sound-volume" data-i18n="soundVolume">音效音量</label><output id="sound-volume-value" for="sound-volume">28%</output><input id="sound-volume" type="range" min="0" max="100" value="28"></div><p id="sound-status" class="sound-hint" aria-live="polite"></p></section>
+        <div class="material-note"><svg class="icon"><use href="#i-spark"/></svg><p><span data-i18n="materialNote">真实折射，细腻光感。</span><br><span><span data-i18n="materialTip">试着调高折射，或切换到网格背景。</span></span></p></div>
+        <button class="copy-button" id="copy-button"><svg class="icon"><use href="#i-code"/></svg><span><span data-i18n="copy">复制材质参数</span></span></button>
+      </aside>
+    </div>
+    <section id="optical-demo"></section>
+    <footer class="site-footer"><a class="system-link" href="design-system/examples/optics.html" data-i18n="showcase">完整展示</a><a class="system-link" href="design-system/index.html" data-i18n="designSystem">查看设计系统</a><span>Inspired by Apple. Crafted for the web.</span><span><span data-i18n="footer">可交互组件 · 实时光学模拟</span></span></footer>
+  </main>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

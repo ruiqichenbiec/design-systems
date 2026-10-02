@@ -1,0 +1,7 @@
+<!-- @dsCard group="Controls" height=130 subtitle="A row of dots; the thumb pushes its neighbours" -->
+<div class="lx-pv"><div class="lx-range"><span>Flow</span><div class="lx-slider"><input type="range" min="0" max="100" value="42" aria-label="Flow"></div><output id="o">42</output></div></div>
+<script>
+(function(){
+  var i = document.querySelector('.lx-slider input'); window.Lattice.mountSlider(i); i.addEventListener('input', function(){ document.getElementById('o').textContent = i.value; });
+})();
+</script>

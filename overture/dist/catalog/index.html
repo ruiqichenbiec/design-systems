@@ -1,0 +1,1165 @@
+<!doctype html>
+<html lang="zh" data-ds-theme="stage">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>序曲 · Overture · Design System</title>
+<link rel="stylesheet" href="assets/tokens.css">
+<style>/* DS Viewer chrome. Own tokens use --v-*; the system's tokens.css is loaded alongside. */
+:root{
+  --v-paper:#f5f6f7;--v-surface:#ffffff;--v-sunken:#eceef1;--v-ink:#1a1d21;--v-muted:#5e6570;--v-line:#dfe2e6;
+  --v-accent:#1a1d21;--v-accent-ink:#ffffff;--v-focus:#2f6fdd;--v-code:#f0f1f3;
+  --v-sans:system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+  --v-mono:ui-monospace,"Cascadia Code","SFMono-Regular",Consolas,monospace;
+  --v-r:10px;--v-side:264px;color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --v-paper:#131518;--v-surface:#1b1e22;--v-sunken:#23272c;--v-ink:#eceef1;--v-muted:#9aa2ad;--v-line:#2e3339;
+  --v-accent:#eceef1;--v-accent-ink:#131518;--v-focus:#7fa8f5;--v-code:#23272c;color-scheme:dark}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:24px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--v-paper);color:var(--v-ink);font:15px/1.6 var(--v-sans)}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--v-focus);outline-offset:2px;border-radius:4px}
+code,.mono{font-family:var(--v-mono);font-size:.86em}
+.muted{color:var(--v-muted)}
+.skip{position:absolute;left:-999px}.skip:focus{left:16px;top:16px;z-index:9;background:var(--v-surface);padding:8px 12px}
+
+.shell{display:grid;grid-template-columns:var(--v-side) minmax(0,1fr);min-height:100vh}
+.side{position:sticky;top:0;height:100vh;overflow:auto;display:flex;flex-direction:column;gap:20px;padding:24px 16px;border-right:1px solid var(--v-line);background:var(--v-surface)}
+.brand{display:flex;flex-direction:column;gap:2px;padding:0 8px}
+.brand-kicker{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--v-muted)}
+.brand strong{font-size:20px;line-height:1.2;text-wrap:balance}
+.ns{color:var(--v-muted);margin-top:4px}
+.themes{display:flex;gap:4px;padding:3px;background:var(--v-sunken);border-radius:999px;margin:0 8px}
+.themes button{flex:1;border:0;background:transparent;color:var(--v-muted);font:inherit;font-size:13px;padding:4px 10px;border-radius:999px;cursor:pointer}
+.themes button[aria-checked=true]{background:var(--v-surface);color:var(--v-ink);box-shadow:0 1px 2px #0002}
+.side nav ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+.side nav a{display:flex;justify-content:space-between;gap:8px;padding:6px 8px;border-radius:8px;text-decoration:none;font-size:14px;color:var(--v-muted)}
+.side nav a:hover{background:var(--v-sunken);color:var(--v-ink)}
+.side nav a.on{background:var(--v-accent);color:var(--v-accent-ink)}
+.side nav .lv0{margin-top:6px}.side nav .lv0:first-child{margin-top:0}
+.side nav .lv0>a{color:var(--v-ink);font-weight:600}
+.side nav .lv0>a.on{color:var(--v-accent-ink)}
+.side nav .lv1 a{padding-left:20px}
+.side nav .n{font-variant-numeric:tabular-nums;font-weight:400;opacity:.7;font-size:12px}
+.side-foot{margin-top:auto;font-size:12px;color:var(--v-muted);padding:0 8px}
+.side-foot p{margin:6px 0}
+
+main{min-width:0;padding:40px clamp(16px,4vw,56px) 96px;max-width:1180px;width:100%}
+.sec{padding-block:24px 40px;border-bottom:1px solid var(--v-line)}
+.sec:last-child{border-bottom:0}
+.sec-title{font-size:26px;line-height:1.2;margin:0 0 16px;letter-spacing:-.01em}
+.eyebrow{margin:0 0 4px;font-size:12px;color:var(--v-muted)}
+.lede{color:var(--v-muted);margin:-8px 0 20px;max-width:70ch}
+.band-title{font-size:13px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--v-muted);margin:28px 0 12px}
+
+.cover{position:relative;width:100%;overflow:hidden;border-radius:var(--v-r);border:1px solid var(--v-line);margin-bottom:32px;background:var(--v-surface)}
+.cover iframe{position:absolute;left:0;top:0;width:960px;border:0;transform-origin:0 0}
+
+.cover.fluid iframe{position:static;width:100%;height:100%;transform:none}
+.show-stage{border:1px solid var(--v-line);border-radius:var(--v-r);overflow:hidden;background:var(--v-sunken)}
+.show-stage iframe{display:block;width:100%;border:0;background:transparent}
+.prose{max-width:78ch}
+.prose.readme{max-width:none}.prose.readme>*:not(.table-wrap):not(pre){max-width:78ch}
+.prose h2{font-size:22px;margin:36px 0 10px;line-height:1.25}
+.prose h3{font-size:17px;margin:28px 0 8px}
+.prose h4,.prose h5{font-size:15px;margin:20px 0 6px}
+.prose p,.prose ul,.prose ol{margin:0 0 12px}
+.prose ul,.prose ol{padding-left:22px}
+.prose li{margin:3px 0}
+.prose code{background:var(--v-code);padding:1px 5px;border-radius:5px}
+.prose pre.code{background:var(--v-code);padding:14px 16px;border-radius:var(--v-r);overflow-x:auto;font-size:13px;line-height:1.55}
+.prose pre code{background:none;padding:0}
+.prose blockquote{margin:0 0 12px;padding:4px 16px;border-left:3px solid var(--v-line);color:var(--v-muted)}
+.table-wrap{overflow-x:auto;margin:0 0 16px;border:1px solid var(--v-line);border-radius:var(--v-r);background:var(--v-surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--v-line);vertical-align:top}
+th{background:var(--v-sunken);font-weight:600}
+tr:last-child td{border-bottom:0}
+
+.tok{font-weight:600}
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.swatch{display:flex;flex-direction:column;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r);overflow:hidden;cursor:copy}
+.chips{display:flex;height:72px}
+.chip{flex:1;border-bottom:1px solid var(--v-line)}
+.chip+.chip{border-left:1px solid #0000001a}
+.sw-meta{padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.sw-meta .tok{overflow-wrap:anywhere}
+.vals{display:flex;flex-wrap:wrap;gap:0 10px;font-family:var(--v-mono);font-size:12px;color:var(--v-muted)}
+.vals i{font-style:normal;opacity:.7}
+.usage{margin:4px 0 0;font-size:13px;color:var(--v-muted);line-height:1.45}
+.swatch.copied{outline:2px solid var(--v-focus)}
+
+.families{display:grid;gap:8px;margin-bottom:8px}
+.fam{display:grid;grid-template-columns:160px 160px minmax(0,1fr);gap:16px;align-items:baseline;padding:12px 16px;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r)}
+.fam-sample{font-size:24px}
+.fam .mono{font-size:12px;overflow-wrap:anywhere}
+.type-list{display:flex;flex-direction:column;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r)}
+.type-row{display:grid;grid-template-columns:220px minmax(0,1fr);gap:20px;padding:16px;border-bottom:1px solid var(--v-line);align-items:center}
+.type-row:last-child{border-bottom:0}
+.type-meta{display:flex;flex-direction:column;gap:2px;font-size:12px}
+.type-sample{overflow-wrap:anywhere;color:var(--v-ink)}
+
+.scale{display:flex;flex-direction:column;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r)}
+.scale-row{display:grid;grid-template-columns:180px 150px minmax(0,1fr) minmax(0,1.3fr);gap:16px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--v-line)}
+.scale-row:last-child{border-bottom:0}
+.scale-row .val{color:var(--v-muted);overflow-wrap:anywhere}
+.scale-row .usage{margin:0}
+.bar{display:block;height:12px;background:var(--v-ink);border-radius:2px;opacity:.8}
+.rad{display:block;width:72px;height:48px;border:2px solid var(--v-ink);border-top-color:var(--v-ink)}
+.shd{display:block;width:88px;height:48px;border-radius:12px;background:#f7f8fa}
+
+.toolbar{display:flex;gap:12px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.toolbar input{font:inherit;padding:8px 12px;border:1px solid var(--v-line);border-radius:999px;background:var(--v-surface);color:var(--v-ink);min-width:0;width:min(320px,100%)}
+.cgroup{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,440px),1fr));gap:16px;align-items:start}
+.cgroup>.band-title{grid-column:1/-1;margin-bottom:0}
+.comp{background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r);overflow:hidden;display:flex;flex-direction:column}
+.comp-head{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;padding:12px 16px}
+.comp-head h4{margin:0;font-size:15px}
+.comp-head h4 a{text-decoration:none}
+.comp-head .muted{font-size:13px}
+.stage{background:var(--lg-color-page, var(--v-sunken));border-block:1px solid var(--v-line)}
+.stage iframe,.stage.empty{display:block;width:100%;border:0;background:transparent}
+.stage.empty{padding:24px;color:var(--v-muted);text-align:center}
+.comp-sum{padding:12px 16px 4px;font-size:14px}
+.comp-more{padding:0 16px 12px;font-size:14px}
+.comp-more summary{cursor:pointer;color:var(--v-muted);padding:4px 0}
+.comp[hidden]{display:none}
+
+.assets{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.assets.tile-l{grid-template-columns:repeat(auto-fill,minmax(280px,1fr))}
+.assets.tile-s,.assets.tile-xs{grid-template-columns:repeat(auto-fill,minmax(112px,1fr))}
+.asset{margin:0;background:var(--v-surface);border:1px solid var(--v-line);border-radius:var(--v-r);overflow:hidden}
+.asset img{display:block;width:100%;aspect-ratio:4/3;object-fit:contain;background:var(--v-sunken);padding:12px}
+.asset video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.asset-missing{aspect-ratio:4/3;display:grid;place-items:center;background:var(--v-sunken);color:var(--v-muted);font-size:12px;text-align:center;padding:8px}
+.asset figcaption{display:flex;justify-content:space-between;gap:8px;padding:8px 10px;font-size:12px}
+.notes li{color:var(--v-muted)}
+
+@media (max-width:860px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .side{position:static;height:auto;border-right:0;border-bottom:1px solid var(--v-line)}
+  .side nav ul{flex-direction:row;flex-wrap:wrap}.side nav .lv1{display:none}.side nav .lv0{margin-top:0}
+  .side-foot{display:none}
+  .fam,.type-row,.scale-row{grid-template-columns:1fr;gap:6px}
+}
+</style>
+<style>/* Overture skin for the ds-viewer catalog page. Uses the system's own tokens, so the sidebar theme
+   switch (Stage / Paper / Nocturne) restyles the whole page, not only the previews. */
+:root:root{
+  --v-paper:var(--ov-bg);--v-surface:var(--ov-surface);--v-sunken:color-mix(in srgb,var(--ov-bg) 70%,var(--ov-surface));
+  --v-ink:var(--ov-text);--v-muted:var(--ov-muted);--v-line:var(--ov-line-soft);
+  --v-accent:var(--ov-accent);--v-accent-ink:var(--ov-bg);--v-focus:var(--ov-focus);--v-code:var(--ov-surface);
+  --v-sans:var(--font-sans);--v-r:0px;--v-side:272px;color-scheme:dark;
+}
+:root[data-theme="paper"]{color-scheme:light}
+body{font-family:var(--font-sans);-webkit-font-smoothing:antialiased;transition:background var(--ov-time),color var(--ov-time)}
+::selection{background:var(--ov-cold);color:var(--ov-bg)}
+main{max-width:1360px}
+
+/* sidebar */
+.side{background:var(--ov-bg);border-right-color:var(--ov-line-soft)}
+.brand-kicker{letter-spacing:.24em;font-size:10px}
+.brand strong{font:400 30px/1 var(--font-display);letter-spacing:-.03em;margin-top:6px}
+.ns{font-size:11px}
+.themes{border-radius:0;background:transparent;border:1px solid var(--ov-line);padding:2px;flex-direction:column}
+.themes button{border-radius:0;font-size:12px;letter-spacing:.06em;padding:7px 10px;text-align:left}
+.themes button[aria-checked=true]{background:var(--ov-text);color:var(--ov-bg);box-shadow:none}
+.side nav a{border-radius:0;font-size:13px}
+.side nav .lv0>a{font-weight:600;letter-spacing:.06em;font-size:12px;text-transform:uppercase}
+.side nav a:hover{background:transparent;color:var(--ov-cold)}
+.side nav a.on,.side nav .lv0>a.on{background:transparent;color:var(--ov-text);box-shadow:inset 2px 0 0 var(--ov-accent)}
+
+/* headings and prose */
+.sec{border-bottom-color:var(--ov-line-soft);padding-block:36px 56px}
+.sec-title{font:400 clamp(36px,4.6vw,64px)/1 var(--font-display);letter-spacing:-.035em;margin-bottom:22px}
+.eyebrow{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--ov-cold)}
+.eyebrow code{letter-spacing:0;text-transform:none;color:var(--ov-muted);background:none}
+.lede{font-size:14px;line-height:1.85;max-width:72ch}
+.band-title{letter-spacing:.2em;font-size:11px}
+.prose h2{font:400 30px/1.1 var(--font-display);letter-spacing:-.02em}
+.prose h3{font-weight:600;letter-spacing:.02em}
+.prose code{border-radius:0}
+.prose blockquote{border-left-color:var(--ov-accent)}
+.prose a{text-decoration-color:var(--ov-cold);text-underline-offset:4px}
+.table-wrap,th{border-radius:0}
+
+/* cover and showcase stages */
+.cover{border:0;border-radius:0;margin:-40px calc(-1 * clamp(16px,4vw,56px)) 40px;width:auto;background:#090706}
+.show{padding-block:48px 64px}
+.show-stage{border:1px solid var(--ov-line-soft);border-radius:0;background:var(--ov-bg)}
+
+/* tokens */
+.swatch,.fam,.type-list,.scale,.comp,.asset,.table-wrap{border-radius:0;border-color:var(--ov-line-soft)}
+.chips{height:84px}
+.swatch:hover{border-color:var(--ov-cold)}
+.type-sample{color:var(--ov-text)}
+.bar{background:var(--ov-accent);opacity:1;border-radius:0}
+.rad{border-color:var(--ov-text)}
+.shd{background:var(--ov-surface);border-radius:0}
+
+/* components */
+.toolbar input{border-radius:0;border:0;border-bottom:1px solid var(--ov-line);background:transparent;padding-left:0}
+.toolbar input:focus{outline:0;border-bottom-color:var(--ov-cold)}
+.comp-head h4{font:400 20px var(--font-display);letter-spacing:-.01em}
+.comp:hover{border-color:var(--ov-line)}
+.stage{background:var(--ov-bg);border-color:var(--ov-line-soft)}
+.comp-more summary:hover{color:var(--ov-cold)}
+.asset img{background:#090706}
+
+@media (max-width:860px){.cover{margin:-40px -16px 32px}.brand strong{font-size:28px}}
+
+/* Frames keep the document colour scheme, so the browser paints no opaque backdrop behind them. */
+.cover iframe,.stage iframe,.show-stage iframe{color-scheme:normal}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<div class="shell">
+<aside class="side" aria-label="Design system navigation">
+  <div class="brand"><span class="brand-kicker">Design system</span><strong>序曲 · Overture</strong><code class="ns">window.Overture</code></div>
+  <div class="themes" role="radiogroup" aria-label="Theme"><button type="button" role="radio" aria-checked="true" data-theme-id="stage">Stage · 暗场</button><button type="button" role="radio" aria-checked="false" data-theme-id="paper">Paper · 印纸</button><button type="button" role="radio" aria-checked="false" data-theme-id="nocturne">Nocturne · 夜场</button></div>
+  <nav><ul><li class="lv0"><a href="#overview">Overview</a></li><li class="lv0"><a href="#showcase">Showcase<span class="n">9</span></a></li><li class="lv1"><a href="#show-film">Showreel · 15 秒宣传片</a></li><li class="lv1"><a href="#show-grammar">三个动作语法</a></li><li class="lv1"><a href="#show-temperatures">两种光温</a></li><li class="lv1"><a href="#show-themes">三套主题</a></li><li class="lv1"><a href="#show-roll">胶卷暗盒 · The Roll</a></li><li class="lv1"><a href="#show-darkroom">暗房 · 一张相纸，全部控件</a></li><li class="lv1"><a href="#show-motion">动效与弹簧</a></li><li class="lv1"><a href="#show-brand">品牌工坊</a></li><li class="lv1"><a href="#show-start">接入与全部页面</a></li><li class="lv1"><a href="#section-1">基础 · 材料、字体与颜色</a></li><li class="lv1"><a href="#section-2">交互 · 开幕、显影、共振</a></li><li class="lv1"><a href="#section-3">接入 · 原生 HTML/CSS/JS</a></li><li class="lv1"><a href="#section-4">GPU · 渲染与降级</a></li><li class="lv1"><a href="#section-5">品牌 · 网页与宣传画面</a></li><li class="lv1"><a href="#section-6">体系结构与参考</a></li><li class="lv1"><a href="#section-7">追光 · 灯位、镜头与印相</a></li><li class="lv0"><a href="#colors">Colors<span class="n">14</span></a></li><li class="lv0"><a href="#type">Typography<span class="n">6</span></a></li><li class="lv0"><a href="#space">Spacing<span class="n">10</span></a></li><li class="lv0"><a href="#radius">Radius<span class="n">2</span></a></li><li class="lv0"><a href="#shadow">Shadow<span class="n">1</span></a></li><li class="lv0"><a href="#motion">Motion<span class="n">9</span></a></li><li class="lv0"><a href="#spring">Spring<span class="n">5</span></a></li><li class="lv0"><a href="#components">Components<span class="n">46</span></a></li><li class="lv1"><a href="#group-浮层与披露">浮层与披露<span class="n">5</span></a></li><li class="lv1"><a href="#group-影像与-gpu">影像与 GPU<span class="n">10</span></a></li><li class="lv1"><a href="#group-品牌与版式">品牌与版式<span class="n">6</span></a></li><li class="lv1"><a href="#group-动作与导航">动作与导航<span class="n">8</span></a></li><li class="lv1"><a href="#group-表单与选择">表单与选择<span class="n">10</span></a></li><li class="lv1"><a href="#group-内容与数据">内容与数据<span class="n">2</span></a></li><li class="lv1"><a href="#group-反馈与进度">反馈与进度<span class="n">5</span></a></li><li class="lv0"><a href="#assets">Assets<span class="n">17</span></a></li></ul></nav>
+  <div class="side-foot"><p>Last change · 2026-09-30<br>1.3.0: motion kernel Overture.motion (iris, develop, flip, count, spring presets snap/settle/stage/resonance/swing; CSS linear() springs --ov-spring/--ov-settle), optional synthesized interaction sounds (Overture.sound), enter/exit for every overlay, sprung cameras and controls; single-file showcase dist/overture-showcase.html. 46 native components.</p><p>Built 2026-10-02 17:38 by <code>ds-viewer</code></p></div>
+</aside>
+<main id="main">
+<section id="overview" class="sec">
+<div class="cover fluid" data-h="640"><iframe title="Cover" src="previews/Cover.html" data-frame="Cover" style="height:640px" loading="eager"></iframe></div>
+<div class="prose readme"><p>摄影的观看、歌剧的情绪与时装的形式，共同组成一套可在本机运行的原生网页和品牌设计体系。1.3.0 有 46 种组件，分属七个家族：动作与导航、表单与选择、浮层与披露、反馈与进度、内容与数据、影像与 GPU、品牌与版式。三套主题（Stage 暗场、Paper 印纸、Nocturne 夜场），两种光温（暖光照亮内容，冷光标记焦点）。</p>
+<p>三张用户选定的视觉图是本体系的源头。由此延伸出三个动作：<strong>开幕、显影、共振</strong>，并通过追光、走片与冲印串起连续的观看动作。它们既服务于大型视觉，也服务于按钮、选择、输入、反馈和内容阅读。1.3.0 给三个动作各配一个运动原语——光圈、显影、弹簧——由 <code>Overture.motion</code> 统一驱动全部组件的动态，另有默认关闭的合成交互声音。</p>
+<h3>这一页怎么看</h3>
+<ul><li><strong>Showcase</strong>：九段可以直接操作的现场演示，从 15 秒宣传片（配乐 A）开始，依次是三个动作语法、两种光温、三套主题、新的胶卷暗盒、暗房组合、动效时间、品牌工坊和接入方式。</li><li><strong>Guidelines</strong>：七章规范，讲材料、交互、接入、GPU、品牌、结构与追光。</li><li><strong>Tokens</strong>：颜色、字体、间距、圆角、阴影、动效，以及五种弹簧（Spring）。侧栏的主题按钮会同时切换整页和所有预览。</li><li><strong>Components</strong>：46 个组件卡，每张都是运行中的真实组件，可以筛选。</li><li><strong>Assets</strong>：照片、参考图、字标和宣传片。</li></ul>
+<h3>三个表达场景</h3>
+<p>Stage 暗场用于剧场、沉浸作品与品牌主视觉。Paper 印纸用于档案、表单、资料与编辑版式。Nocturne 夜场用于夜间档案与冷光叙事，结构与暗场相同，底、面和线换成午夜蓝。三者共用色彩角色、几何、字体与动作语法；朱红只承担明确的选择、校样和行动含义，冷光只表示光与注意力落在哪里。</p>
+<h3>怎样使用这套体系</h3>
+<p>先选择内容与交互需求，再选择对应组件。一个区域只保留一个主动作；不把所有按钮都做成光圈，也不让所有文字都漂浮。图像要有真实可辨的主题，细线要有定位用途，大字要为内容让出空间。</p>
+<p>这些组件使用原生 HTML 语义与 CSS 变量。三维画面使用本地 three.js，优先 WebGPU，自动回退 WebGL2。浏览器无法初始化图形设备时仍保留图像和常规控件。有关接入、键盘、生命周期与性能边界，见后续规范章节。</p>
+<h3>本地运行</h3>
+<p>双击系统目录里的 START.cmd，或运行 <code>node tools/serve.mjs</code>，然后打开 <code>http://127.0.0.1:4198/</code>：<code>/</code> 是四幕展示，<code>/light-studies.html</code> 是追光实验与暗房，<code>/components.html</code> 是组件库，<code>/studio.html</code> 是品牌工坊，<code>/catalog/</code> 就是这一页，<code>/overture-showcase.html</code> 是可以单独拷走、双击离线打开的单文件动态演示。这一页由 ds-viewer 从 <code>project/</code> 生成，不要手改生成结果。</p></div>
+</section>
+<div id="showcase" class="showcase"><section id="show-film" class="sec show"><p class="eyebrow">00 · FILM</p><h2 class="sec-title">Showreel · 15 秒宣传片</h2><p class="lede">配乐 A。一束光串起五幕：开幕、聚焦、显影、张力、凝住。点击章节跳到对应的一幕。</p>
+<div class="show-stage"><iframe title="Showreel · 15 秒宣传片" data-src="previews/show-film.html" data-frame="show-film" style="height:700px"></iframe></div></section>
+<section id="show-grammar" class="sec show"><p class="eyebrow">01 · GRAMMAR</p><h2 class="sec-title">三个动作语法</h2><p class="lede">整个体系只用三种动作：开幕／遮挡、聚焦／显影、张力／凝住。每个组件都由它们组合而成。下面三个都是可以直接操作的真实组件。</p>
+<div class="show-stage"><iframe title="三个动作语法" data-src="previews/show-grammar.html" data-frame="show-grammar" data-gl="1" style="height:1400px"></iframe></div></section>
+<section id="show-temperatures" class="sec show"><p class="eyebrow">02 · WARM &amp; COLD</p><h2 class="sec-title">两种光温</h2><p class="lede">暖光照亮内容，冷光勾出焦点。悬停和聚焦是冷光，确认、选中和错误是朱红。用指针和 Tab 键试一试，右侧会记录每次交互属于哪种光温。</p>
+<div class="show-stage"><iframe title="两种光温" data-src="previews/show-temperatures.html" data-frame="show-temperatures" style="height:520px"></iframe></div></section>
+<section id="show-themes" class="sec show"><p class="eyebrow">03 · STAGE / PAPER / NOCTURNE</p><h2 class="sec-title">三套主题</h2><p class="lede">同一组组件，同一份代码，只改 data-theme。朱红在三套主题里意义不变；夜场把底、面、线换成午夜蓝，冷光更明显。侧栏的主题按钮会切换整页，这里三套并排固定显示。</p>
+<div class="show-stage"><iframe title="三套主题" data-src="previews/show-themes.html" data-frame="show-themes" style="height:600px"></iframe></div></section>
+<section id="show-roll" class="sec show"><p class="eyebrow">04 · NEW IN 1.2</p><h2 class="sec-title">胶卷暗盒 · The Roll</h2><p class="lede">三维 35 mm 暗盒。横向拖动胶片拉出或卷回，卷轴和标签随之转动；把一帧向下拖到桌面，它会带着象牙边框成为相纸并显影。双击相纸放回胶片。</p>
+<div class="show-stage"><iframe title="胶卷暗盒 · The Roll" data-src="previews/show-roll.html" data-frame="show-roll" data-gl="1" style="height:820px"></iframe></div></section>
+<section id="show-darkroom" class="sec show"><p class="eyebrow">05 · COMPOSITION</p><h2 class="sec-title">暗房 · 一张相纸，全部控件</h2><p class="lede">七个操作组件共同控制同一张相纸：选片、曝光、黑白、编号、题名和冲印。冲印会在本机生成一张 1200 × 1200 PNG，并把缩略图放进纸托。</p>
+<div class="show-stage"><iframe title="暗房 · 一张相纸，全部控件" data-src="previews/show-darkroom.html" data-frame="show-darkroom" style="height:700px"></iframe></div></section>
+<section id="show-motion" class="sec show"><p class="eyebrow">06 · MOTION</p><h2 class="sec-title">动效与弹簧</h2><p class="lede">三种时长和一条缓动负责声明式过渡；五种弹簧负责有质量的运动。弹簧用解析解计算，中途改目标时保留位置与速度；CSS 的 --ov-spring、--ov-settle 由同一组常数生成。所有动效都尊重减少动态，也可以在这里手动切换。</p>
+<div class="show-stage"><iframe title="动效与弹簧" data-src="previews/show-motion.html" data-frame="show-motion" style="height:720px"></iframe></div></section>
+<section id="show-brand" class="sec show"><p class="eyebrow">07 · BRAND COMPOSER</p><h2 class="sec-title">品牌工坊</h2><p class="lede">四种视觉语言（光圈剧场、印纸显影、褶皱共振、夜场冷光）乘四种画幅。编辑标题后直接在本机导出 PNG，或录制 6 秒无声 WebM。</p>
+<div class="show-stage"><iframe title="品牌工坊" data-src="previews/show-brand.html" data-frame="show-brand" data-gl="1" style="height:700px"></iframe></div></section>
+<section id="show-start" class="sec show"><p class="eyebrow">08 · QUICK START</p><h2 class="sec-title">接入与全部页面</h2><p class="lede">一个 CSS、一个 JS、一个素材目录。dist 文件夹可以整体拷走，断网也能运行；也可以只带走一个文件：overture-showcase.html 内嵌了全部样式、脚本、字体、照片、three.js 和宣传片。</p>
+<div class="show-stage"><iframe title="接入与全部页面" data-src="previews/show-start.html" data-frame="show-start" data-gl="1" style="height:480px"></iframe></div></section></div>
+<section id="section-1" class="sec"><p class="eyebrow">Guideline · <code>guidelines/10-foundations.md</code></p><h2 class="sec-title">基础 · 材料、字体与颜色</h2><div class="prose"><h3>视觉来源</h3>
+<p>OVERTURE 光圈舞台、THE WAY I SEE 接触印样、RESONANCE 褶皱雕塑三张参考图位于素材中的 references 组。新增组件继承它们的材质与尺度，不引入另一套通用圆角卡片。</p>
+<h3>字体</h3>
+<p>Bodoni Moda Regular 是品牌大字；使用很强的粗细对比与紧凑字距。Manrope 为英文操作文字，中文正文使用 Microsoft YaHei 等本机无衬线字体；中文大标题回退宋体。字体在包中自托管。大标题能越过 96px，但必须检查完整文本与窄屏，不把文字裁断成无法阅读的装饰。</p>
+<h3>颜色</h3>
+<p>Stage：近黑与象牙白，以深红衣料承载图像，朱红作为交互信号。Paper：暖白印纸与近黑文字，深朱红用于可读的强调。Nocturne：午夜蓝底与冷白文字，朱红不变。</p>
+<p>冷光 ov-cold 是第二光温：聚焦、悬停取景角、光束边缘、信息提示。朱红 ov-accent 表示动作与选中。悬停时冷，选中后红。深蓝 ov-indigo 与深红 ov-oxblood 同为材质色，不作正文。正文使用 ov-text，说明使用 ov-muted；ov-subtle 仅用于装饰和禁用。不要把深红材质色当作暗底正文。</p>
+<h3>几何与层级</h3>
+<p>相纸、输入、面板使用直角。圆形用于进入、播放、聚焦等单一动作；开关轨道可使用圆端。细线优先 1px，取景角长度 20px。只有被抽出的相纸和浮层使用柔和偏移阴影。</p>
+<h3>状态</h3>
+<p>状态必须同时有语义与视觉：aria-pressed、aria-selected、aria-checked、aria-expanded、aria-invalid、disabled 与对应样式。红色不是唯一通知渠道，提供文字、取景角或形状变化。正文、冷光与聚焦色按三套主题检查（测试要求不低于 4.5:1），操作目标至少约 44px。</p></div></section>
+<section id="section-2" class="sec"><p class="eyebrow">Guideline · <code>guidelines/20-interaction.md</code></p><h2 class="sec-title">交互 · 开幕、显影、共振</h2><div class="prose"><p>三个动作语法各有一个运动原语，全部由 <code>Overture.motion</code> 提供：开幕是<strong>光圈</strong>，显影是<strong>显影</strong>，共振是<strong>弹簧</strong>。组件不自带缓动或回弹。</p>
+<h3>开幕</h3>
+<p>从遮挡到呈现，用在进入、展开、确认和转场。遮罩始终对应内容变化；动作完成后停下。</p>
+<ul><li><code>iris(el, {open, origin, shape})</code>：以 <code>origin</code>（触发控件或一个坐标）为圆心的圆形光圈，另有 <code>shutter</code>（快门）与 <code>unfold</code>（展开）两种形状。退出约为进入的 0.6 倍时长，用 <code>--ov-exit</code> 加速离场；中途打断从当前裁切继续。</li><li>Dialog、Drawer、CommandPalette、Popover、Toast 与灯箱都有进入和退出。按钮、取消、Escape、遮罩、保存，任何关闭路径都先退回触发控件再关闭，焦点随后返回。原生 dialog 继续负责模态与焦点。</li><li>按钮、图标按钮与单选压印的填充从指针进入的位置张开；键盘操作从中心张开。CueButton 的快门在确认时合上再打开。</li><li>CurtainTransition 用两幅幕布（深红与深蓝交替）从两侧合拢、换幕后分开。主题切换可以从按钮以光圈扩散：<code>Overture.setTheme(theme, root, {origin})</code>。</li></ul>
+<h3>显影</h3>
+<p>黑白代表等待观看，彩色代表聚焦或锁定。</p>
+<ul><li><code>develop(el)</code>：从过曝黑白显影到正常，用在新出现的内容（关键词、提示、选中的图片）。</li><li><code>flip(scope, selector, mutate)</code>：重排时保留身份，从旧位置移到新位置（表格排序、关键词增删）。</li><li><code>count(el, text, dir)</code>：数字按增减方向翻片（Stepper、Pagination、照片墙计数）。</li><li>DevelopImage 的光斑带惯性跟随指针，进入时张开、离开时收拢；选中时显影液从按下的点漫开到整幅，键盘聚焦从中心漫开。灯箱照片从缩略图飞入并显影，关闭时飞回原位。ContactSheet 的底片带 1:1 跟手，甩出后按速度停在最近一帧。</li></ul>
+<h3>共振</h3>
+<p>用张力、幅度和衰减表达连续变化。<code>spring({preset})</code> 是阻尼谐振子的解析解：中途改目标时保留位置与速度，<code>freeze()</code> 冻结位移与速度，解冻后同一次运动继续。</p>
+<div class="table-wrap"><table><thead><tr><th>预设</th><th>静止</th><th>用于</th></tr></thead><tbody><tr><td>snap</td><td>340 ms，过冲约 3 %</td><td>拨杆、勾选、刻度针、取景框、按压、翻片</td></tr><tr><td>settle</td><td>570 ms</td><td>相纸落位、底片带、FLIP、灯箱、侧幕</td></tr><tr><td>stage</td><td>830 ms</td><td>光圈开幕、照片墙运镜</td></tr><tr><td>resonance</td><td>周期 0.53 s</td><td>丝绸松手后的回荡</td></tr><tr><td>swing</td><td>周期 1.05 s</td><td>图钉相纸被拂过后的摆动</td></tr></tbody></table></div>
+<p>SilkResonance 是参数化曲面，不是物理布料求解器；张力走 resonance 弹簧，松手时带着速度越过新张力来回几次，凝住停在回荡中途。胶片两端有橡皮筋阻力并回弹；相纸落桌时位置走 settle、角度走 snap。只有真实材料（丝绸、挂着的相纸）才明显欠阻尼，控件只允许约 3 % 的过冲。</p>
+<h3>时间与声音</h3>
+<p><code>--ov-fast</code> 160 ms 用于确认，<code>--ov-time</code> 420 ms 用于显影，<code>--ov-slow</code> 900 ms 用于大型开幕，统一采用快速响应、缓慢稳定的 <code>--ov-ease</code>。CSS 里的 <code>--ov-spring</code> 与 <code>--ov-settle</code> 是由 snap、settle 两个弹簧生成的 <code>linear()</code> 缓动，与脚本里的运动是同一组常数；不支持 <code>linear()</code> 的浏览器退回普通缓动。</p>
+<p><code>Overture.sound</code> 提供八种 Web Audio 合成声音（齿轮、快门、拨杆、相纸、落桌、丝绸、光圈、移光），默认关闭，<code>Overture.setSound(true)</code> 后才会发声，并按元素的水平位置左右声像。声音不替代视觉与文字反馈，不自动播放。CuePlayer 的三个正弦振荡器是 12 秒原创合成音色示意，不是假称录制的歌剧片段。</p>
+<h3>减少动态与触控</h3>
+<p>组件默认遵循系统减少动态。<code>Overture.setMotion(mode)</code> 的 mode 可为 <code>'full'</code>、<code>'reduce'</code> 或 <code>'system'</code>，查询参数 <code>?motion=full</code> 也可以显式选择。减少动态时弹簧直接落位，光圈与显影跳过，GPU 持续动画和示波等循环停止；照片墙运镜、追光移动这类空间切换改用 <code>dissolve(el, swap)</code> 淡出淡入，在最暗时完成切换，不做位移或缩放。Windows 关闭“显示动画”时浏览器同样报告减少动态；只为展示动效的页面（如单文件演示页）可以默认 <code>setMotion('full')</code>，并提供切换。触屏保留原生纵向滚动，用显式控件代替只有 hover 才可发现的功能。不可只依赖鼠标指针位置完成任务。</p></div></section>
+<section id="section-3" class="sec"><p class="eyebrow">Guideline · <code>guidelines/30-api.md</code></p><h2 class="sec-title">接入 · 原生 HTML/CSS/JS</h2><div class="prose"><p>复制 dist 中 <code>overture.css</code>、<code>overture.js</code> 和整个 <code>assets/</code> 目录到你的项目。多文件接入时图形模块需要 HTTP 本地服务；不要依赖 file:// 的跨文件模块加载。只需要一个离线文件时，用 <code>dist/overture-showcase.html</code> 的做法：素材以对象 URL 提供给 <code>configure({assets})</code>，图形引擎经 <code>configure({loadEngine})</code> 加载。</p>
+<pre class="code" data-lang="html"><code>&lt;link rel=&quot;stylesheet&quot; href=&quot;overture.css&quot;&gt;
+&lt;script src=&quot;overture.js&quot;&gt;&lt;/script&gt;
+&lt;div id=&quot;host&quot;&gt;&lt;/div&gt;
+&lt;script&gt;
+Overture.configure({ assetBase: 'assets/' });
+const instance = Overture.mount('Range', '#host', {
+  label: '开度', value: 70,
+  onChange: ({ value }) =&gt; console.log(value)
+});
+&lt;/script&gt;</code></pre>
+<h3>公开协议</h3>
+<ul><li><code>mount(name, host, options)</code> 返回 <code>{element, state, getState(), setValue(value), destroy()}</code>。host 可为元素或 CSS 选择器。挂载只追加当前组件，不替你删除其他内容。</li><li><code>onChange(detail)</code> 接收状态变化；对应 DOM 事件为冒泡的 <code>ov:change</code>，detail 另含 component 名称。会初始化数值的组件可能在 mount 内触发一次 onChange。</li><li><code>setValue</code> 只对组件文档中明确声明的可控组件生效。其他组件由原生控件或传入回调控制。</li><li><code>destroy()</code> 可重复调用；释放事件、定时器、观察器、图形资源、对象 URL、声音和录制流。</li><li><code>setTheme('stage'|'paper'|'nocturne', element, {origin})</code> 给一个作用域设定主题；默认作用于根元素。作用于根元素并给出 <code>origin</code>（控件或坐标）时，新主题以光圈从那里扩散（View Transitions；不支持或减少动态时直接切换）。<code>nextTheme(element, {origin})</code> 按暗场 → 印纸 → 夜场循环。单个组件也可传 <code>theme</code>。</li><li><code>configure({assetBase, motion, backend, assets, loadEngine})</code> 的 assetBase 以斜杠结尾；backend 支持 auto、webgl、static；<code>assets</code> 把素材名映射到自带 URL（单文件用）；<code>loadEngine</code> 替换图形引擎的加载方式。请在挂载前配置。</li></ul>
+<h3>运动与声音</h3>
+<ul><li><code>Overture.motion.spring({preset, value, onUpdate, onRest})</code> 返回 <code>{to(target, {velocity, preset}), set(value), impulse(dv), freeze(on), finish(), stop(), value, target, velocity, moving, frozen}</code>。<code>to()</code> 返回 Promise：这一段静止时为 true，被新目标取代时为 false。value 可以是数字或数组。预设：snap、settle、stage、resonance、swing。</li><li><code>Overture.motion.iris(el, {open, origin, shape:'circle'|'shutter'|'unfold', duration})</code> 返回 Promise；关闭后裁切保留到调用 <code>release(el)</code>。<code>develop(el)</code>、<code>flip(scope, selector, mutate)</code>、<code>count(el, text, dir)</code>、<code>imprint(el)</code> 用于显影、重排、翻片与压印；<code>dissolve(el, swap, {duration, color})</code> 是减少动态时的空间切换：淡出、在最暗时执行 swap、再淡入。<code>easing('snap'|'settle')</code>、<code>time(name)</code> 给出与弹簧一致的 CSS 缓动和时长。</li><li><code>Overture.setSound(true|false)</code> 开关交互声音；<code>Overture.sound.play(name, {at, gain, force})</code> 播放一种声音（<code>force</code> 用于用户明确要求的试听）。声音默认关闭。</li></ul>
+<h3>样式使用</h3>
+<p>组件类名为 <code>ov-*</code>，变量为 <code>--ov-*</code>，字体家族为 <code>--font-display</code>、<code>--font-sans</code>。主题通过 data-theme 继承，常规文字保留原生 DOM。两种主题属于同一体系，可以在不同内容区域明确切换。</p>
+<h3>扩展</h3>
+<p>调用 <code>Overture.define(name, factory)</code> 注册组件。factory 收到 options 与 context：<code>listen</code> 为自动清理的事件，<code>timeout</code> 为可清理计时，<code>cleanup(fn)</code> 注册销毁，<code>emit(detail)</code> 发布状态，<code>child</code> 挂载随父级销毁的组件。工厂返回一个 HTMLElement。</p>
+<p>用户提供的文本必须经 <code>Overture.escape</code> 或 textContent 写入。异步回调检查 context.alive；不要把组件的临时状态写进工作区全局设置。</p></div></section>
+<section id="section-4" class="sec"><p class="eyebrow">Guideline · <code>guidelines/40-gpu.md</code></p><h2 class="sec-title">GPU · 渲染与降级</h2><div class="prose"><p>three.js 0.186.1 的 WebGPURenderer 会优先尝试 WebGPU，再使用 WebGL2。库的两个运行时文件随包保存，无 CDN 请求。依据：<a href="https://threejs.org/docs/pages/WebGPURenderer.html" target="_blank" rel="noopener">three.js 官方说明</a>。</p>
+<h3>实际技术范围</h3>
+<div class="table-wrap"><table><thead><tr><th>组件</th><th>实现</th></tr></thead><tbody><tr><td>ApertureStage</td><td>TSL 材质采样生成的无文字舞台照片，开度遮罩、位移和视差；不是完整建模的三维歌剧院</td></tr><tr><td>DevelopImage</td><td>TSL 黑白／彩色混合：hover 控制光斑半径（弹簧驱动的进出），active 控制从 origin 漫开的显影液，前沿有一道暖色显影线</td></tr><tr><td>SilkResonance</td><td>160 × 100 分段曲面；透明织物图像保留细褶与光照；TSL 顶点波动、张力扭转与轻微视差。属于 2.5D 图像曲面，不是可自由环绕的完整三维布料</td></tr><tr><td>BrandComposer</td><td>Canvas 2D 排版器，组合相同图像资产和实时 GPU 画面；本机 PNG / WebM 导出</td></tr></tbody></table></div>
+<h3>生命周期与性能</h3>
+<p>像素比默认上限 1.5，舞台持续运动限制为约 40 fps。不可见或页面隐藏时暂停绘制；减少动态时保留静止造型，并在用户操作时重绘。组件销毁时释放 renderer、geometry、material、texture、RAF、观察器与监听器。</p>
+<p>大型 GPU 场景尽量每屏一个。不要把每个表单控件都变成 canvas。组件目录包含光圈、显影、织物、追光和照片墙等 GPU 场景及工坊；常规组件全部保留原生 HTML，适于更广的浏览器和辅助技术。</p>
+<h3>调试入口</h3>
+<p><code>?backend=webgl</code> 强制 WebGL2，<code>?backend=static</code> 检查静态替代，<code>?motion=reduce</code> 检查减少动态。宿主元素的 data-renderer 报告实际后端。初始化失败保留图像或参考静帧，不把空画布当成成功。</p>
+<p>WebGPU 需要浏览器支持与安全上下文；本地使用 127.0.0.1，或直接以 file:// 打开单文件演示页（file:// 同样是安全上下文）。单文件把 three.js 与引擎以 gzip 内嵌，运行时解压成对象 URL 再按依赖顺序导入；浏览器没有 DecompressionStream 时进入静态模式。追光遮罩新增 <code>iris</code> 参数与 <code>setBeam(x, y, v, k)</code>：光束在灯位之间移动时，位置、开度与收窄一次更新、绘制一次。GPU 性能和品牌质感是两种不同验收：没有报错不代表已经达到图像参考的视觉水平。</p></div></section>
+<section id="section-5" class="sec"><p class="eyebrow">Guideline · <code>guidelines/50-brand.md</code></p><h2 class="sec-title">品牌 · 网页与宣传画面</h2><div class="prose"><h3>画面构成</h3>
+<p>品牌字标不另添复杂图标，用文字的尺度建立识别。三种版式是：黑色全幅光圈剧场、印纸与斜向底片、黑场中漂浮的象牙白褶皱。大字尽量维持一行；内容较长时缩小或主动换行，不裁断句子。</p>
+<h3>可制作的输出</h3>
+<p>BrandComposer 提供 1920 × 1080 网页横幅、1080 × 1350 海报、1080 × 1920 竖屏、1080 × 1080 方形。可以修改标题、副标题、视觉场景与动势。PNG 是静态输出；支持 captureStream / MediaRecorder 的浏览器可以录制 6 秒无声 WebM。</p>
+<p>录制期间保持页面可见，参数暂时锁定。WebM 是浏览器视频输出，不声称兼容所有剪辑软件。这里不生成 MP4，不自动上传或发布任何素材。</p>
+<h3>字体与替换素材</h3>
+<p>字体为随包保存的 OFL 字体，许可随文件提供。示例照片为 AI 生成的艺术素材，不是实际品牌拍摄案例。后续正式企划应替换为自己的内容和落款。工作名 Overture 不代表已经完成商标检索。</p>
+<h3>参考图与动态</h3>
+<p>宣传画面必须维持参考图中的材质密度和文字尺度。光圈是开场，显影是选择，共振是持续的感官反馈。不是每张海报都需要三个效果同时出现；先明确这张作品的主动作。</p></div></section>
+<section id="section-6" class="sec"><p class="eyebrow">Guideline · <code>guidelines/60-structure.md</code></p><h2 class="sec-title">体系结构与参考</h2><div class="prose"><p>本体系将基础令牌、组件、状态、使用情景和组合案例分开维护。参考 <a href="https://design-system.service.gov.uk/components/" target="_blank" rel="noopener">GOV.UK Design System 组件</a> 对用途与使用说明的组织；参考 <a href="https://m3.material.io/foundations/interaction/states/overview" target="_blank" rel="noopener">Material 的交互状态</a> 检查默认、聚焦、选中、禁用等状态覆盖。没有复制它们的颜色、组件外观或版式。</p>
+<p>工作区内参考了 Safelight 的小型交互原语、Lattice 的组件与令牌文件布局、Ash &amp; Dice 的本地构建和 GPU 接入。它们都保持不变；Overture 是独立体系。</p>
+<p><code>project/tokens.json</code> 是基础变量来源；<code>src/catalog-data.mjs</code> 是组件登记与用法来源；<code>src/</code> 是实现。构建同步运行时、组件卡、逐组件说明、站点与 ds-viewer 目录。避免维护多套相互漂移的示例代码。</p></div></section>
+<section id="section-7" class="sec"><p class="eyebrow">Guideline · <code>guidelines/70-light.md</code></p><h2 class="sec-title">追光 · 灯位、镜头与印相</h2><div class="prose"><p>两个追光组件把摄影中的两件事分开：<strong>移动光</strong>与<strong>移动观看的位置</strong>。页面示例见 <code>/light-studies.html</code>；所有素材与运行依赖均保存在本机。</p>
+<h3>移动灯位</h3>
+<p><code>FlashlightFocus</code> 保持整面六张照片固定且同时可见。每三格滚轮切换一张：前两格显示 <code>1 / 3</code>、<code>2 / 3</code> 并保持灯位，准星像对焦环一样每格转 30°；第三格光束沿 settle 弹簧移到下一张照片中心（约 570 ms），途中收窄到约 70 %、到达后张开。六个中心是光束唯一的停留位置；连续滚动时从当前位置和速度接着移动。减少动态时不移动，改为淡出淡入。灯位仅有六个固定位置，不经过中间位置；尺寸变化后仍对准对应照片。反向输入重新累计三格，首尾向外滚动释放页面。开度由独立滑块调整。方向键、Home/End、前后按钮及一次触屏滑动直接切换一张。</p>
+<pre class="code" data-lang="js"><code>const light = Overture.mount('FlashlightFocus', '#host', { value: 25 });
+light.setValue(65); // 改变光束开度，0–100
+// mode:'page' 使用一屏高的照片墙；默认 contained 使用固定高度面板。</code></pre>
+<h3>固定灯位，穿行照片</h3>
+<p><code>PinnedPhotoWall</code> 中的光束始终位于视口中央。DOM 照片、图钉和 SVG 红线形成一个宽阔的空间；普通鼠标每两格滚轮移动一张照片。第一格显示 <code>1 / 2</code>，第二格由 stage 弹簧运镜到下一张（位置进入 0.5 % 约 790 ms）；连续输入保留镜头速度，不在中途停顿；镜头移动时略后退，到达时推近。减少动态时不运镜，改为淡出淡入到下一张。触控板的小输入累计为两格，改变方向时清除旧方向半步；每个大滚轮事件最多计一格，避免一次甩动跳过整个照片墙。</p>
+<pre class="code" data-lang="js"><code>// 独立卡片/面板：在组件内以两格滚轮切换。
+const panel = Overture.mount('PinnedPhotoWall', '#panel');
+// 沉浸页面：一屏高的停靠照片墙，首尾向外滚动可离开。
+const story = Overture.mount('PinnedPhotoWall', '#story', { mode: 'page' });
+story.setValue(2); // 运镜至第三张照片</code></pre>
+<p>两面墙上的相纸都挂在图钉上：指针拂过时按横向速度和触点离图钉的距离得到一次角速度，swing 弹簧让它绕图钉摆动后停下（触屏不触发）。</p>
+<p>两种模式都提供上一张、下一张和照片索引。方向键、Page Up/Down、触屏纵向滑动直接切换一张，Home/End 到首尾。到边界后继续向外滚动或滑动会释放页面，不形成滚动死角。减少动态时直接落位；连续输入从当前镜头位置接替动画。</p>
+<h3>自动走片</h3>
+<p><code>ContactSheet</code> 默认每 4800 ms 进入下一帧。两层完整相纸包含照片、边框、题名及套准标记，一起位移和旋转：旧纸 700 ms 退出，新纸 1050 ms 落位。底片齿孔随胶片条一起移动，载片框同步用 1000 ms 回位。新的输入取消并接替上次动画，只保留两层纸。默认值可通过 <code>autoplay:false</code>、<code>interval</code>、<code>index</code> 配置。悬停底片或主相纸、键盘聚焦照片、离屏、页面隐藏和减少动态均停止自动走片；提供暂停/继续按钮。自动换片不移动键盘焦点或触发 live-region 播报。</p>
+<h3>操作与结果相连</h3>
+<p>暗房操作台复用 <code>StageTabs</code>、<code>Range</code>、<code>Stepper</code>、<code>TextField</code>、<code>Switch</code>、<code>Check</code>、<code>CueButton</code>。取景框在分类间移动，曝光刻度驱动画面亮度，数字翻片更换底片，机械拨杆控制取景线，确认标记决定手记是否保留。快门按钮实际导出 1200 × 1200 PNG，并把缩略印相放入纸托。所有数据只在本页保留，重新加载会重置。</p>
+<h3>图形预算与降级</h3>
+<p>追光使用 TSL 全屏透明遮罩；优先 WebGPU，回退 WebGL 2。光照按输入或尺寸变化重绘，光束移动期间每帧用 <code>setBeam(x, y, 开度, 收窄)</code> 一次更新并绘制一次，没有常驻动画循环，DPR 上限 1.25。无法初始化 GPU 时使用 CSS 径向遮罩，灯位、开度、滚动及键盘仍可用。光照是覆盖在可访问 DOM 照片上的视觉处理，并非物理光线追踪或真实体积散射。材质颜色属于暖黑、褐纸、象牙相纸和朱红线的同一光照空间，不改变表单和文字的语义颜色令牌。</p></div></section>
+<section id="colors" class="sec"><h2 class="sec-title">Colors</h2>
+<p class="lede">14 tokens · Stage · 暗场 / Paper · 印纸 / Nocturne · 夜场. </p>
+<div class="band"><div class="swatches">
+<article class="swatch" data-copy="var(--ov-bg)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#0c0a09"></span><span class="chip" title="Paper · 印纸" style="background:#eee8dc"></span><span class="chip" title="Nocturne · 夜场" style="background:#0a0f1f"></span></div>
+  <div class="sw-meta"><code class="tok">ov-bg</code>
+  <span class="vals"><span><i>stage</i> #0c0a09</span><span><i>paper</i> #eee8dc</span><span><i>nocturne</i> #0a0f1f</span></span>
+  <p class="usage">页面背景</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-surface)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#191411"></span><span class="chip" title="Paper · 印纸" style="background:#e5ddce"></span><span class="chip" title="Nocturne · 夜场" style="background:#121a31"></span></div>
+  <div class="sw-meta"><code class="tok">ov-surface</code>
+  <span class="vals"><span><i>stage</i> #191411</span><span><i>paper</i> #e5ddce</span><span><i>nocturne</i> #121a31</span></span>
+  <p class="usage">展开面与输入区域</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-text)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#f1ebdf"></span><span class="chip" title="Paper · 印纸" style="background:#211a16"></span><span class="chip" title="Nocturne · 夜场" style="background:#eceff6"></span></div>
+  <div class="sw-meta"><code class="tok">ov-text</code>
+  <span class="vals"><span><i>stage</i> #f1ebdf</span><span><i>paper</i> #211a16</span><span><i>nocturne</i> #eceff6</span></span>
+  <p class="usage">正文、标题</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-muted)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#b9ada0"></span><span class="chip" title="Paper · 印纸" style="background:#65584d"></span><span class="chip" title="Nocturne · 夜场" style="background:#a9b3cb"></span></div>
+  <div class="sw-meta"><code class="tok">ov-muted</code>
+  <span class="vals"><span><i>stage</i> #b9ada0</span><span><i>paper</i> #65584d</span><span><i>nocturne</i> #a9b3cb</span></span>
+  <p class="usage">次级说明，保持可读</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-subtle)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#83766d"></span><span class="chip" title="Paper · 印纸" style="background:#88796b"></span><span class="chip" title="Nocturne · 夜场" style="background:#7a84a0"></span></div>
+  <div class="sw-meta"><code class="tok">ov-subtle</code>
+  <span class="vals"><span><i>stage</i> #83766d</span><span><i>paper</i> #88796b</span><span><i>nocturne</i> #7a84a0</span></span>
+  <p class="usage">装饰与禁用</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-accent)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#ff6654"></span><span class="chip" title="Paper · 印纸" style="background:#a02b1d"></span><span class="chip" title="Nocturne · 夜场" style="background:#ff6654"></span></div>
+  <div class="sw-meta"><code class="tok">ov-accent</code>
+  <span class="vals"><span><i>stage</i> #ff6654</span><span><i>paper</i> #a02b1d</span><span><i>nocturne</i> #ff6654</span></span>
+  <p class="usage">朱红：选中、动作与校样标记</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-oxblood)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#5f1017"></span><span class="chip" title="Paper · 印纸" style="background:#69151c"></span><span class="chip" title="Nocturne · 夜场" style="background:#5f1017"></span></div>
+  <div class="sw-meta"><code class="tok">ov-oxblood</code>
+  <span class="vals"><span><i>stage</i> #5f1017</span><span><i>paper</i> #69151c</span><span><i>nocturne</i> #5f1017</span></span>
+  <p class="usage">深红丝绸材质；非正文</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-cold)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#8fb1ff"></span><span class="chip" title="Paper · 印纸" style="background:#1f4a8f"></span><span class="chip" title="Nocturne · 夜场" style="background:#9dbcff"></span></div>
+  <div class="sw-meta"><code class="tok">ov-cold</code>
+  <span class="vals"><span><i>stage</i> #8fb1ff</span><span><i>paper</i> #1f4a8f</span><span><i>nocturne</i> #9dbcff</span></span>
+  <p class="usage">冷光：第二光温。追光边缘、悬停光、取景与信息状态；不承担动作确认</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-indigo)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#1c2a55"></span><span class="chip" title="Paper · 印纸" style="background:#23386b"></span><span class="chip" title="Nocturne · 夜场" style="background:#2a3c78"></span></div>
+  <div class="sw-meta"><code class="tok">ov-indigo</code>
+  <span class="vals"><span><i>stage</i> #1c2a55</span><span><i>paper</i> #23386b</span><span><i>nocturne</i> #2a3c78</span></span>
+  <p class="usage">深蓝丝绸材质，与深红成对；非正文</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-line)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#66574b"></span><span class="chip" title="Paper · 印纸" style="background:#a39483"></span><span class="chip" title="Nocturne · 夜场" style="background:#3e4b75"></span></div>
+  <div class="sw-meta"><code class="tok">ov-line</code>
+  <span class="vals"><span><i>stage</i> #66574b</span><span><i>paper</i> #a39483</span><span><i>nocturne</i> #3e4b75</span></span>
+  <p class="usage">控件边缘与可见细线</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-line-soft)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#3d312a"></span><span class="chip" title="Paper · 印纸" style="background:#cfc2b1"></span><span class="chip" title="Nocturne · 夜场" style="background:#243056"></span></div>
+  <div class="sw-meta"><code class="tok">ov-line-soft</code>
+  <span class="vals"><span><i>stage</i> #3d312a</span><span><i>paper</i> #cfc2b1</span><span><i>nocturne</i> #243056</span></span>
+  <p class="usage">装饰分隔</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-focus)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#9dbcff"></span><span class="chip" title="Paper · 印纸" style="background:#1d4a92"></span><span class="chip" title="Nocturne · 夜场" style="background:#9dbcff"></span></div>
+  <div class="sw-meta"><code class="tok">ov-focus</code>
+  <span class="vals"><span><i>stage</i> #9dbcff</span><span><i>paper</i> #1d4a92</span><span><i>nocturne</i> #9dbcff</span></span>
+  <p class="usage">冷光：键盘聚焦与取景焦点</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-success)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#bad1ad"></span><span class="chip" title="Paper · 印纸" style="background:#385328"></span><span class="chip" title="Nocturne · 夜场" style="background:#b6d3bf"></span></div>
+  <div class="sw-meta"><code class="tok">ov-success</code>
+  <span class="vals"><span><i>stage</i> #bad1ad</span><span><i>paper</i> #385328</span><span><i>nocturne</i> #b6d3bf</span></span>
+  <p class="usage">成功文字与完成标记</p></div>
+</article>
+<article class="swatch" data-copy="var(--ov-warning)">
+  <div class="chips"><span class="chip" title="Stage · 暗场" style="background:#efc68f"></span><span class="chip" title="Paper · 印纸" style="background:#785021"></span><span class="chip" title="Nocturne · 夜场" style="background:#efc68f"></span></div>
+  <div class="sw-meta"><code class="tok">ov-warning</code>
+  <span class="vals"><span><i>stage</i> #efc68f</span><span><i>paper</i> #785021</span><span><i>nocturne</i> #efc68f</span></span>
+  <p class="usage">提示与警告</p></div>
+</article></div></div>
+</section>
+<section id="type" class="sec"><h2 class="sec-title">Typography</h2>
+<div class="families"><div class="fam"><code class="tok">--font-display</code><span style="font-family:var(--font-display)" class="fam-sample">Aa 永 123</span><span class="muted mono">&quot;Bodoni Moda&quot;, &quot;Times New Roman&quot;, &quot;SimSun&quot;, serif</span></div><div class="fam"><code class="tok">--font-sans</code><span style="font-family:var(--font-sans)" class="fam-sample">Aa 永 123</span><span class="muted mono">&quot;Manrope&quot;, &quot;Microsoft YaHei&quot;, sans-serif</span></div><div class="fam"><code class="tok">--font-zh</code><span style="font-family:var(--font-zh)" class="fam-sample">Aa 永 123</span><span class="muted mono">&quot;Microsoft YaHei&quot;, sans-serif</span></div></div>
+<h3 class="band-title">Display</h3><div class="type-list">
+<div class="type-row"><div class="type-meta"><code class="tok">.ov-type-hero</code><span class="muted mono">clamp(68px, 15.3vw, 260px) / 0.82 · 400</span></div>
+<div class="type-sample ov-type-hero">The quick brown fox · 光与点</div></div>
+<div class="type-row"><div class="type-meta"><code class="tok">.ov-type-title</code><span class="muted mono">clamp(42px, 7vw, 108px) / 0.94 · 400</span></div>
+<div class="type-sample ov-type-title">The quick brown fox · 光与点</div></div>
+<div class="type-row"><div class="type-meta"><code class="tok">.ov-type-section</code><span class="muted mono">clamp(30px, 4vw, 54px) / 1.05 · 400</span></div>
+<div class="type-sample ov-type-section">The quick brown fox · 光与点</div></div></div><h3 class="band-title">Interface</h3><div class="type-list">
+<div class="type-row"><div class="type-meta"><code class="tok">.ov-type-body</code><span class="muted mono">16px / 1.75 · 400</span></div>
+<div class="type-sample ov-type-body">The quick brown fox · 光与点</div></div>
+<div class="type-row"><div class="type-meta"><code class="tok">.ov-type-label</code><span class="muted mono">12px / 1.5 · 600</span></div>
+<div class="type-sample ov-type-label">The quick brown fox · 光与点</div></div>
+<div class="type-row"><div class="type-meta"><code class="tok">.ov-type-caption</code><span class="muted mono">13px / 1.65 · 400</span></div>
+<div class="type-sample ov-type-caption">The quick brown fox · 光与点</div></div></div>
+</section>
+<section id="space" class="sec"><h2 class="sec-title">Spacing</h2>
+<div class="scale"><div class="scale-row"><code class="tok">ov-space-4</code><span class="mono val">4px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-4))"></span></div><span class="usage">4px 基础网格</span></div><div class="scale-row"><code class="tok">ov-space-8</code><span class="mono val">8px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-8))"></span></div><span class="usage">4px 基础网格</span></div><div class="scale-row"><code class="tok">ov-space-12</code><span class="mono val">12px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-12))"></span></div><span class="usage">4px 基础网格</span></div><div class="scale-row"><code class="tok">ov-space-16</code><span class="mono val">16px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-16))"></span></div><span class="usage">4px 基础网格</span></div><div class="scale-row"><code class="tok">ov-space-24</code><span class="mono val">24px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-24))"></span></div><span class="usage">4px 基础网格</span></div><div class="scale-row"><code class="tok">ov-space-32</code><span class="mono val">32px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-32))"></span></div><span class="usage">4px 基础网格</span></div><div class="scale-row"><code class="tok">ov-space-48</code><span class="mono val">48px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-48))"></span></div><span class="usage">4px 基础网格</span></div><div class="scale-row"><code class="tok">ov-space-64</code><span class="mono val">64px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-64))"></span></div><span class="usage">4px 基础网格</span></div><div class="scale-row"><code class="tok">ov-space-96</code><span class="mono val">96px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-96))"></span></div><span class="usage">4px 基础网格</span></div><div class="scale-row"><code class="tok">ov-space-144</code><span class="mono val">144px</span><div class="viz"><span class="bar" style="width:min(100%,var(--ov-space-144))"></span></div><span class="usage">4px 基础网格</span></div></div></section>
+<section id="radius" class="sec"><h2 class="sec-title">Radius</h2>
+<div class="scale"><div class="scale-row"><code class="tok">ov-radius</code><span class="mono val">0px</span><div class="viz"><span class="rad" style="border-radius:var(--ov-radius)"></span></div><span class="usage">相纸、输入框、面板为直角</span></div><div class="scale-row"><code class="tok">ov-round</code><span class="mono val">50%</span><div class="viz"><span class="rad" style="border-radius:var(--ov-round)"></span></div><span class="usage">进入按钮与拍摄动作</span></div></div></section>
+<section id="shadow" class="sec"><h2 class="sec-title">Shadow</h2>
+<div class="scale"><div class="scale-row"><code class="tok">ov-print-shadow</code><span class="mono val">{&quot;stage&quot;:&quot;0 18px 50px rgb(0 0 0 / .45)&quot;,&quot;paper&quot;:&quot;0 16px 36px rgb(45 25 12 / .2)&quot;,&quot;nocturne&quot;:&quot;0 18px 50px rgb(2 4 14 / .6)&quot;}</span><div class="viz"><span class="shd" style="box-shadow:var(--ov-print-shadow)"></span></div><span class="usage">仅抽出的相纸、浮层使用</span></div></div></section>
+<section id="motion" class="sec"><h2 class="sec-title">Motion</h2>
+<div class="scale"><div class="scale-row"><code class="tok">ov-fast</code><span class="mono val">160ms</span><div class="viz"></div><span class="usage">触发确认</span></div><div class="scale-row"><code class="tok">ov-time</code><span class="mono val">420ms</span><div class="viz"></div><span class="usage">显影与展开</span></div><div class="scale-row"><code class="tok">ov-slow</code><span class="mono val">900ms</span><div class="viz"></div><span class="usage">开幕与深层转场</span></div><div class="scale-row"><code class="tok">ov-ease</code><span class="mono val">cubic-bezier(.16,1,.3,1)</span><div class="viz"></div><span class="usage">有阻尼的稳定落位</span></div><div class="scale-row"><code class="tok">ov-exit</code><span class="mono val">cubic-bezier(.5,0,.75,0)</span><div class="viz"></div><span class="usage">退出：加速离开；时长约为进入的 0.6 倍</span></div><div class="scale-row"><code class="tok">ov-spring</code><span class="mono val">linear(0, 0.051, 0.17, 0.319, 0.472, 0.613, 0.734, 0.832, 0.906, 0.959, 0.995, 1.017, 1.029, 1.033, 1.032, 1.029, 1.024, 1.019, 1.014, 1.01, 1.007, 1.004, 1.002, 1.001, 1)</span><div class="viz"></div><span class="usage">snap 弹簧的 CSS 缓动：拨杆、勾选、取景角、按压；与 ov-spring-time 配合</span></div><div class="scale-row"><code class="tok">ov-spring-time</code><span class="mono val">340ms</span><div class="viz"></div><span class="usage">snap 弹簧静止所需时间</span></div><div class="scale-row"><code class="tok">ov-settle</code><span class="mono val">linear(0, 0.029, 0.099, 0.191, 0.291, 0.392, 0.487, 0.573, 0.65, 0.717, 0.773, 0.82, 0.859, 0.891, 0.917, 0.937, 0.953, 0.966, 0.975, 0.983, 0.988, 0.992, 0.995, 0.997, 1)</span><div class="viz"></div><span class="usage">settle 弹簧的 CSS 缓动：落位、排序、翻转</span></div><div class="scale-row"><code class="tok">ov-settle-time</code><span class="mono val">570ms</span><div class="viz"></div><span class="usage">settle 弹簧静止所需时间</span></div></div></section>
+<section id="spring" class="sec"><h2 class="sec-title">Spring</h2><p class="lede">阻尼谐振子（质量 1）。Overture.motion.spring({preset}) 使用这些常数；CSS 用 ov-spring / ov-settle 两个 linear() 缓动。</p>
+<div class="scale"><div class="scale-row"><code class="tok">ov-spring-snap</code><span class="mono val">stiffness 600 · damping 36</span><div class="viz"></div><span class="usage">控件、刻度针、取景框、计数翻片：约 340 ms 静止，过冲约 3 %</span></div><div class="scale-row"><code class="tok">ov-spring-settle</code><span class="mono val">stiffness 120 · damping 20</span><div class="viz"></div><span class="usage">相纸、胶片、浮层、FLIP：约 570 ms，无可见过冲</span></div><div class="scale-row"><code class="tok">ov-spring-stage</code><span class="mono val">stiffness 52 · damping 13.2</span><div class="viz"></div><span class="usage">运镜与开幕：约 830 ms；照片墙两格一张的运镜</span></div><div class="scale-row"><code class="tok">ov-spring-resonance</code><span class="mono val">stiffness 140 · damping 3.2</span><div class="viz"></div><span class="usage">丝绸松手后的回荡：周期 0.53 s，约 2 s 内可见</span></div><div class="scale-row"><code class="tok">ov-spring-swing</code><span class="mono val">stiffness 36 · damping 1.8</span><div class="viz"></div><span class="usage">图钉相纸被拂过后的摆动：周期 1.05 s</span></div></div></section>
+<section id="components" class="sec"><h2 class="sec-title">Components</h2>
+<div class="toolbar"><input id="filter" type="search" placeholder="Filter components" aria-label="Filter components"><span class="muted" id="count">46 components</span></div>
+<div class="cgroup" id="group-浮层与披露"><h3 class="band-title">浮层与披露 <span class="muted">5</span></h3>
+
+<article class="comp" id="comp-Accordion" data-name="accordion 折叠说明 浮层与披露">
+  <header class="comp-head"><h4><a href="#comp-Accordion">Accordion</a></h4><span class="muted">折叠说明</span></header>
+  <div class="stage"><iframe title="Accordion preview" data-src="previews/Accordion.html" data-frame="Accordion" style="height:390px"></iframe></div>
+  <div class="prose comp-sum"><p>用展开动作分配说明文字的阅读深度。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>FAQ、规范、设置分组。</p>
+<h3>交互与状态</h3>
+<p>关闭、展开、原生 details/summary 键盘行为。1.3：展开与收起都有高度过渡，正文淡入淡出（浏览器支持 interpolate-size 时）。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Accordion', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items:[[title,body]]；事件含 index/open。</p></div></details>
+</article>
+<article class="comp" id="comp-Dialog" data-name="dialog 确认对话框 浮层与披露">
+  <header class="comp-head"><h4><a href="#comp-Dialog">Dialog</a></h4><span class="muted">确认对话框</span></header>
+  <div class="stage"><iframe title="Dialog preview" data-src="previews/Dialog.html" data-frame="Dialog" style="height:230px"></iframe></div>
+  <div class="prose comp-sum"><p>幕布暂时退暗，给需要确认的当前动作完整焦点。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>需要中断和保护焦点的编辑确认。</p>
+<h3>交互与状态</h3>
+<p>打开、取消、Escape、校验、保存、焦点返回。1.3：从触发按钮以光圈张开；按钮、取消、Escape、遮罩、保存五条路径都先退回按钮再关闭；遮罩淡入淡出。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Dialog', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>label, title；原生 dialog；示例保存只作用于页面。</p></div></details>
+</article>
+<article class="comp" id="comp-Drawer" data-name="drawer 侧边编辑 浮层与披露">
+  <header class="comp-head"><h4><a href="#comp-Drawer">Drawer</a></h4><span class="muted">侧边编辑</span></header>
+  <div class="stage"><iframe title="Drawer preview" data-src="previews/Drawer.html" data-frame="Drawer" style="height:230px"></iframe></div>
+  <div class="prose comp-sum"><p>展开侧幕编辑说明，仍保留原作品的上下文。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>短表单、作品信息、局部编辑。</p>
+<h3>交互与状态</h3>
+<p>打开、编辑、保存、取消、关闭。1.3：侧幕以 settle 弹簧滑入，内容稍后跟上；任何关闭方式都滑出。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Drawer', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>label, title；原生模态焦点，移动端适配屏幕宽度。</p></div></details>
+</article>
+<article class="comp" id="comp-Popover" data-name="popover 就地选项 浮层与披露">
+  <header class="comp-head"><h4><a href="#comp-Popover">Popover</a></h4><span class="muted">就地选项</span></header>
+  <div class="stage"><iframe title="Popover preview" data-src="previews/Popover.html" data-frame="Popover" style="height:330px"></iframe></div>
+  <div class="prose comp-sum"><p>在触发点旁展开少量设置，不打断页面。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>取景、筛选与局部偏好。</p>
+<h3>交互与状态</h3>
+<p>展开、关闭、外部点击、Escape、选项改变。1.3：从触发按钮张开，关闭时先折回再隐藏。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Popover', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>示例包含两个原生复选框；事件含 option/value。</p></div></details>
+</article>
+<article class="comp" id="comp-Tooltip" data-name="tooltip 辅助提示 浮层与披露">
+  <header class="comp-head"><h4><a href="#comp-Tooltip">Tooltip</a></h4><span class="muted">辅助提示</span></header>
+  <div class="stage"><iframe title="Tooltip preview" data-src="previews/Tooltip.html" data-frame="Tooltip" style="height:180px"></iframe></div>
+  <div class="prose comp-sum"><p>悬停和键盘聚焦时提供简短的动作说明。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>解释图标；必要信息不可只放提示内。</p>
+<h3>交互与状态</h3>
+<p>悬停、聚焦、离开；aria-describedby。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Tooltip', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>text；不装载复杂交互内容。</p></div></details>
+</article></div><div class="cgroup" id="group-影像与-gpu"><h3 class="band-title">影像与 GPU <span class="muted">10</span></h3>
+
+<article class="comp" id="comp-ApertureStage" data-name="aperturestage 光圈舞台 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-ApertureStage">ApertureStage</a></h4><span class="muted">光圈舞台</span></header>
+  <div class="stage"><iframe title="ApertureStage preview" data-src="previews/ApertureStage.html" data-frame="ApertureStage" data-gl="1" style="height:520px"></iframe></div>
+  <div class="prose comp-sum"><p>由原始图像资产与 GPU 采样、开度遮罩和视差共同组成。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>整页开幕、品牌片头、进入作品。</p>
+<h3>交互与状态</h3>
+<p>开度调节、鼠标视差、进入/退回、静态降级。1.3：开度由 stage 弹簧驱动（约 0.83 s），滑杆与滚动联动 snap／settle 跟随，视差带惯性。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('ApertureStage', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>chrome, value；setValue(0..100)。照片底图不是完整三维剧院。</p></div></details>
+</article>
+<article class="comp" id="comp-CompareLens" data-name="comparelens 显影比较 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-CompareLens">CompareLens</a></h4><span class="muted">显影比较</span></header>
+  <div class="stage"><iframe title="CompareLens preview" data-src="previews/CompareLens.html" data-frame="CompareLens" style="height:420px"></iframe></div>
+  <div class="prose comp-sum"><p>同一图像的黑白和彩色由一条可控分界线比较。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>前后对比、调色说明、工艺变化。</p>
+<h3>交互与状态</h3>
+<p>拖拽、键盘、分界值说明。1.3：分界线以 snap 弹簧跟随。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('CompareLens', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>src；setValue(0..100)；原生 range 控制。</p></div></details>
+</article>
+<article class="comp" id="comp-ContactSheet" data-name="contactsheet 底片档案 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-ContactSheet">ContactSheet</a></h4><span class="muted">底片档案</span></header>
+  <div class="stage"><iframe title="ContactSheet preview" data-src="previews/ContactSheet.html" data-frame="ContactSheet" style="height:700px"></iframe></div>
+  <div class="prose comp-sum"><p>底片与齿孔自动循环走片，焦点逐帧移动；照片、相纸边框、题名和套准标记共同换位。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>作品浏览、系列筛选、图像选择。</p>
+<h3>交互与状态</h3>
+<p>自动循环、暂停/继续、悬停/聚焦停格、离屏暂停、键盘与减少动态。1.3：底片带 1:1 跟手拖动，甩出后按速度停在最近一帧（settle 弹簧承接速度）。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('ContactSheet', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items:[[file,title,category]], autoplay:true, interval:4800, index:0；setValue(index)。自动播放不播报 live region，不移动键盘焦点。</p></div></details>
+</article>
+<article class="comp" id="comp-CuePlayer" data-name="cueplayer 共振播放器 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-CuePlayer">CuePlayer</a></h4><span class="muted">共振播放器</span></header>
+  <div class="stage"><iframe title="CuePlayer preview" data-src="previews/CuePlayer.html" data-frame="CuePlayer" style="height:250px"></iframe></div>
+  <div class="prose comp-sum"><p>三音合成声音片段让声响、时间线和播放状态相连。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>声音作品入口；这里只提供原创合成音色示意。</p>
+<h3>交互与状态</h3>
+<p>播放、暂停、续播、拖动进度、静音、结束。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('CuePlayer', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>默认 12 秒，不自动播放；组件销毁时关闭 AudioContext。</p></div></details>
+</article>
+<article class="comp" id="comp-DevelopImage" data-name="developimage 局部显影 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-DevelopImage">DevelopImage</a></h4><span class="muted">局部显影</span></header>
+  <div class="stage"><iframe title="DevelopImage preview" data-src="previews/DevelopImage.html" data-frame="DevelopImage" data-gl="1" style="height:430px"></iframe></div>
+  <div class="prose comp-sum"><p>GPU 让光斑附近从黑白显影为彩色：光斑带惯性跟随、进出时张缩；选中时显影液从按下的点漫开到整幅。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>照片预览、可选择的视觉内容。</p>
+<h3>交互与状态</h3>
+<p>移动显影、键盘聚焦从中心漫开、选中/取消、降级。1.3：光斑、漫开都由弹簧驱动，漫开前沿有暖色显影线。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('DevelopImage', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>src, alt, caption, label；aria-pressed 表示选中。</p></div></details>
+</article>
+<article class="comp" id="comp-FilmCanister" data-name="filmcanister 拉出胶片，拖出一帧 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-FilmCanister">FilmCanister</a></h4><span class="muted">拉出胶片，拖出一帧</span></header>
+  <div class="stage"><iframe title="FilmCanister preview" data-src="previews/FilmCanister.html" data-frame="FilmCanister" data-gl="1" style="height:820px"></iframe></div>
+  <div class="prose comp-sum"><p>三维 35 mm 暗盒里拉出一卷胶片：横向拖动拉出或卷回，卷轴随之转动；把一帧向下拖出，它会作为相纸落到桌面并显影。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>作品集入口、系列浏览、从一组照片中挑选并收藏若干张。</p>
+<h3>交互与状态</h3>
+<p>拖动／滚轮／方向键拉片，放手后带惯性；悬停冷光取景并显色；向下拖出成相纸，未到桌面则弹回原位；桌面相纸可拖动摆放，双击、回车或退格放回胶片；空位显示为透明片基；WebGPU / WebGL2 暗盒与 CSS 静态暗盒降级；减少动态时无惯性、无显影动画。1.3：拉过两端有橡皮筋阻力并回弹，甩到尽头会弹回；相纸落桌以 settle 弹簧定位、snap 弹簧转正，并有一次落地压缩；方向键拉片走弹簧。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('FilmCanister', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items:[[file,title,category]], roll:'ROLL 01', dates:'FEB 2026 — JUN 2026', pulled:3.2（初始拉出帧数）；setValue(0..100) 设置拉出长度；ov:change 返回 pull、turn、out（已冲印的帧序号）。</p></div></details>
+</article>
+<article class="comp" id="comp-FlashlightFocus" data-name="flashlightfocus 移动光，发现细节 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-FlashlightFocus">FlashlightFocus</a></h4><span class="muted">移动光，发现细节</span></header>
+  <div class="stage"><iframe title="FlashlightFocus preview" data-src="previews/FlashlightFocus.html" data-frame="FlashlightFocus" data-gl="1" style="height:770px"></iframe></div>
+  <div class="prose comp-sum"><p>整面六张照片墙固定可见；每三格滚轮切换一张，光束只停在六张照片中心。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>摄影作品浏览、品牌视觉探索、局部内容发现。</p>
+<h3>交互与状态</h3>
+<p>三格一张、0/3 至 2/3 计数、固定灯位、反向重计、首尾释放滚动、触屏/键盘逐张切换、独立开度、GPU / CSS 降级。1.3：前两格转动准星（对焦环）；第三格光束沿 settle 弹簧移到下一张照片中心，途中收窄、到达张开，只在六个固定灯位停留；减少动态时淡出淡入；指针拂过相纸时绕图钉摆动。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('FlashlightFocus', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>mode:'contained'|'page', value:25, items:[[file,title,category]]；setValue(0..100) 调整开度；ov:change 返回 x,y,value,index,progress,pending。</p></div></details>
+</article>
+<article class="comp" id="comp-FocusGallery" data-name="focusgallery 取景画廊 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-FocusGallery">FocusGallery</a></h4><span class="muted">取景画廊</span></header>
+  <div class="stage"><iframe title="FocusGallery preview" data-src="previews/FocusGallery.html" data-frame="FocusGallery" style="height:510px"></iframe></div>
+  <div class="prose comp-sum"><p>网格图像经聚焦显影后，进入独立的大图阅读。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>摄影、时装作品或演出档案。</p>
+<h3>交互与状态</h3>
+<p>悬停、聚焦、放大、前后翻图、Escape 关闭。1.3：打开时照片从缩略图飞到灯箱并显影，关闭时飞回原位；翻页按方向滑入并显影。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('FocusGallery', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items；原生 dialog 和焦点返回；左右键翻图。</p></div></details>
+</article>
+<article class="comp" id="comp-PinnedPhotoWall" data-name="pinnedphotowall 光留在这里，记忆向前 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-PinnedPhotoWall">PinnedPhotoWall</a></h4><span class="muted">光留在这里，记忆向前</span></header>
+  <div class="stage"><iframe title="PinnedPhotoWall preview" data-src="previews/PinnedPhotoWall.html" data-frame="PinnedPhotoWall" data-gl="1" style="height:770px"></iframe></div>
+  <div class="prose comp-sum"><p>固定大光束照在中央，每两格滚轮推动一张照片经过视野；第一格蓄势，第二格运镜落位。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>视觉档案、作品故事、品牌时间线、全屏滚动叙事。</p>
+<h3>交互与状态</h3>
+<p>两格一张、半步反馈、可打断运镜、首尾释放滚动、索引/键盘/触屏切换、减少动态直接落位。1.3：运镜由 stage 弹簧驱动，连续输入保留速度；移动时镜头略后退，到达时推近；计数翻片；减少动态时淡出淡入到下一张；相纸被拂过时绕图钉摆动。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('PinnedPhotoWall', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>mode:'contained'|'page', items:[[file,title,category]]；setValue(index) 切换照片；ov:change 返回 index,progress,pending。page 使用一屏高度；触控板小输入累计为两格。</p></div></details>
+</article>
+<article class="comp" id="comp-SilkResonance" data-name="silkresonance 共振褶皱 影像与 gpu">
+  <header class="comp-head"><h4><a href="#comp-SilkResonance">SilkResonance</a></h4><span class="muted">共振褶皱</span></header>
+  <div class="stage"><iframe title="SilkResonance preview" data-src="previews/SilkResonance.html" data-frame="SilkResonance" data-gl="1" style="height:610px"></iframe></div>
+  <div class="prose comp-sum"><p>透明织物图像映射到细分曲面；张力是一根轻阻尼弹簧，松手后带着速度回荡，凝住会停在回荡中途。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>品牌主视觉、交互雕塑、参数化艺术。</p>
+<h3>交互与状态</h3>
+<p>拖动、张力、键盘、持续运动、凝住、下载、降级。1.3：resonance 弹簧（k 140 · c 3.2，周期 0.53 s）；凝住冻结位移与速度，继续时同一次回荡接着走。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('SilkResonance', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>value, chrome；setValue(0..100)；WebGPU 优先、WebGL2 回退。</p></div></details>
+</article></div><div class="cgroup" id="group-品牌与版式"><h3 class="band-title">品牌与版式 <span class="muted">6</span></h3>
+
+<article class="comp" id="comp-BrandComposer" data-name="brandcomposer 品牌工坊 品牌与版式">
+  <header class="comp-head"><h4><a href="#comp-BrandComposer">BrandComposer</a></h4><span class="muted">品牌工坊</span></header>
+  <div class="stage"><iframe title="BrandComposer preview" data-src="previews/BrandComposer.html" data-frame="BrandComposer" data-gl="1" style="height:840px"></iframe></div>
+  <div class="prose comp-sum"><p>同一视觉体系内编辑内容、画幅、动势并导出。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>网页横幅、竖幅海报、方形品牌宣传。</p>
+<h3>交互与状态</h3>
+<p>编辑、画幅/场景切换、PNG、6 秒 WebM、错误反馈。1.3：换画幅时预览从旧画框变形到新画框，换视觉语言时显影。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('BrandComposer', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>title, subtitle；导出全在本机，无网络上传。</p></div></details>
+</article>
+<article class="comp" id="comp-CurtainTransition" data-name="curtaintransition 幕布转场 品牌与版式">
+  <header class="comp-head"><h4><a href="#comp-CurtainTransition">CurtainTransition</a></h4><span class="muted">幕布转场</span></header>
+  <div class="stage"><iframe title="CurtainTransition preview" data-src="previews/CurtainTransition.html" data-frame="CurtainTransition" style="height:300px"></iframe></div>
+  <div class="prose comp-sum"><p>深红与深蓝两幅幕布从两侧合拢，换幕后分开，避免无意义的漂浮。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>有顺序的页面或叙事段落切换。</p>
+<h3>交互与状态</h3>
+<p>当前幕、转场、下一幕；减少动态时立即切换。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('CurtainTransition', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>示例三幕循环；状态变化通过 ov:change 传递。</p></div></details>
+</article>
+<article class="comp" id="comp-Poster" data-name="poster 宣传海报 品牌与版式">
+  <header class="comp-head"><h4><a href="#comp-Poster">Poster</a></h4><span class="muted">宣传海报</span></header>
+  <div class="stage"><iframe title="Poster preview" data-src="previews/Poster.html" data-frame="Poster" style="height:630px"></iframe></div>
+  <div class="prose comp-sum"><p>图像全幅与大字叠合的直幅品牌版式。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>海报、社交封面、系列封面。</p>
+<h3>交互与状态</h3>
+<p>静态版式，标题与图像可替换。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Poster', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>title（换行支持）, src。</p></div></details>
+</article>
+<article class="comp" id="comp-PullQuote" data-name="pullquote 编辑引言 品牌与版式">
+  <header class="comp-head"><h4><a href="#comp-PullQuote">PullQuote</a></h4><span class="muted">编辑引言</span></header>
+  <div class="stage"><iframe title="PullQuote preview" data-src="previews/PullQuote.html" data-frame="PullQuote" style="height:280px"></iframe></div>
+  <div class="prose comp-sum"><p>以字的尺度和细线署名建立段落停顿。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>作品宣言、导语、创作观点。</p>
+<h3>交互与状态</h3>
+<p>blockquote 与署名语义。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('PullQuote', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>text, source；默认文字明确为创作示例。</p></div></details>
+</article>
+<article class="comp" id="comp-TypeSpecimen" data-name="typespecimen 字体编排 品牌与版式">
+  <header class="comp-head"><h4><a href="#comp-TypeSpecimen">TypeSpecimen</a></h4><span class="muted">字体编排</span></header>
+  <div class="stage"><iframe title="TypeSpecimen preview" data-src="previews/TypeSpecimen.html" data-frame="TypeSpecimen" style="height:250px"></iframe></div>
+  <div class="prose comp-sum"><p>展示标题与中文正文共同工作的比例。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>建立跨语言的标题／正文层级。</p>
+<h3>交互与状态</h3>
+<p>长标题换行、窄屏缩放。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('TypeSpecimen', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>text；字体本地托管，中文使用本机字库。</p></div></details>
+</article>
+<article class="comp" id="comp-Wordmark" data-name="wordmark 品牌字标 品牌与版式">
+  <header class="comp-head"><h4><a href="#comp-Wordmark">Wordmark</a></h4><span class="muted">品牌字标</span></header>
+  <div class="stage"><iframe title="Wordmark preview" data-src="previews/Wordmark.html" data-frame="Wordmark" style="height:270px"></iframe></div>
+  <div class="prose comp-sum"><p>大尺度高对比衬线字标，配合克制的落款。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>页首、封面与品牌署名。</p>
+<h3>交互与状态</h3>
+<p>响应式缩放；保持足够留白。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Wordmark', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>name, tagline；默认名称是本体系工作名。</p></div></details>
+</article></div><div class="cgroup" id="group-动作与导航"><h3 class="band-title">动作与导航 <span class="muted">8</span></h3>
+
+<article class="comp" id="comp-Breadcrumb" data-name="breadcrumb 路径导航 动作与导航">
+  <header class="comp-head"><h4><a href="#comp-Breadcrumb">Breadcrumb</a></h4><span class="muted">路径导航</span></header>
+  <div class="stage"><iframe title="Breadcrumb preview" data-src="previews/Breadcrumb.html" data-frame="Breadcrumb" style="height:180px"></iframe></div>
+  <div class="prose comp-sum"><p>用细线方向标记说明当前层级。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>档案、作品详情和分类页。</p>
+<h3>交互与状态</h3>
+<p>当前位置 aria-current；示例链接发出选择事件。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Breadcrumb', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items；ov:change 的 value 为所选层级。</p></div></details>
+</article>
+<article class="comp" id="comp-ChapterNav" data-name="chapternav 章节导航 动作与导航">
+  <header class="comp-head"><h4><a href="#comp-ChapterNav">ChapterNav</a></h4><span class="muted">章节导航</span></header>
+  <div class="stage"><iframe title="ChapterNav preview" data-src="previews/ChapterNav.html" data-frame="ChapterNav" style="height:180px"></iframe></div>
+  <div class="prose comp-sum"><p>有顺序意义的章号成为阅读位置标记。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>分幕长页、作品集章节。</p>
+<h3>交互与状态</h3>
+<p>当前步骤、聚焦；onSelect 交给应用导航。1.3：朱红下划线按前进方向接力。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('ChapterNav', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items, onSelect(index)。</p></div></details>
+</article>
+<article class="comp" id="comp-CommandPalette" data-name="commandpalette 动作搜索 动作与导航">
+  <header class="comp-head"><h4><a href="#comp-CommandPalette">CommandPalette</a></h4><span class="muted">动作搜索</span></header>
+  <div class="stage"><iframe title="CommandPalette preview" data-src="previews/CommandPalette.html" data-frame="CommandPalette" style="height:230px"></iframe></div>
+  <div class="prose comp-sum"><p>集中寻找动作，保留可见结果和键盘路径。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>工具密集页面的快捷导航。</p>
+<h3>交互与状态</h3>
+<p>搜索、有结果、空结果、当前结果、执行、关闭。1.3：从触发按钮以光圈张开并退回；结果逐项显影（最多六项）；Escape 同样有退场。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('CommandPalette', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>actions:[{label,value}], onSelect；上下键/Enter/Escape。</p></div></details>
+</article>
+<article class="comp" id="comp-CueButton" data-name="cuebutton 进入按钮 动作与导航">
+  <header class="comp-head"><h4><a href="#comp-CueButton">CueButton</a></h4><span class="muted">进入按钮</span></header>
+  <div class="stage"><iframe title="CueButton preview" data-src="previews/CueButton.html" data-frame="CueButton" style="height:220px"></iframe></div>
+  <div class="prose comp-sum"><p>圆形或长条按钮，以快门闭合回应确认，支持异步操作的忙碌与失败反馈。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>主要动作、进入下一幕、提交本地操作。</p>
+<h3>交互与状态</h3>
+<p>悬停、键盘聚焦、禁用、忙碌和完成。1.3：填充从指针进入处张开，按压 snap 回弹；可选快门声。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('CueButton', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>label, variant:'circle', disabled, onActivate。</p></div></details>
+</article>
+<article class="comp" id="comp-IconButton" data-name="iconbutton 图标按钮 动作与导航">
+  <header class="comp-head"><h4><a href="#comp-IconButton">IconButton</a></h4><span class="muted">图标按钮</span></header>
+  <div class="stage"><iframe title="IconButton preview" data-src="previews/IconButton.html" data-frame="IconButton" style="height:180px"></iframe></div>
+  <div class="prose comp-sum"><p>以单一细线图标表达可反复切换的动作。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>收藏、锁定、静音等可逆动作。</p>
+<h3>交互与状态</h3>
+<p>aria-pressed 双态、焦点、禁用。1.3：悬停填充从指针处张开，按下时图标像印章压下。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('IconButton', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>label, icon, value, disabled；setValue(boolean)。</p></div></details>
+</article>
+<article class="comp" id="comp-Pagination" data-name="pagination 翻页 动作与导航">
+  <header class="comp-head"><h4><a href="#comp-Pagination">Pagination</a></h4><span class="muted">翻页</span></header>
+  <div class="stage"><iframe title="Pagination preview" data-src="previews/Pagination.html" data-frame="Pagination" style="height:180px"></iframe></div>
+  <div class="prose comp-sum"><p>像翻阅底片页一样浏览有限集合。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>分页作品、资料清单。</p>
+<h3>交互与状态</h3>
+<p>首末页禁用、页码播报、按钮焦点。1.3：页码按翻页方向翻片。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Pagination', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>total, size；setValue(page)，事件含起止索引。</p></div></details>
+</article>
+<article class="comp" id="comp-StageTabs" data-name="stagetabs 幕次标签页 动作与导航">
+  <header class="comp-head"><h4><a href="#comp-StageTabs">StageTabs</a></h4><span class="muted">幕次标签页</span></header>
+  <div class="stage"><iframe title="StageTabs preview" data-src="previews/StageTabs.html" data-frame="StageTabs" style="height:290px"></iframe></div>
+  <div class="prose comp-sum"><p>朱红取景框是一个弹簧：按速度拉长、带轻微过冲落定；面板按切换方向展开。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>同一上下文中的内容切换。</p>
+<h3>交互与状态</h3>
+<p>选中、非选中；左右、Home、End 键；原生 tablist 语义。连续切换保留取景框速度；减少动态时直接落位。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('StageTabs', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items, panels, label；setValue(index)。</p></div></details>
+</article>
+<article class="comp" id="comp-TextLink" data-name="textlink 文字链接 动作与导航">
+  <header class="comp-head"><h4><a href="#comp-TextLink">TextLink</a></h4><span class="muted">文字链接</span></header>
+  <div class="stage"><iframe title="TextLink preview" data-src="previews/TextLink.html" data-frame="TextLink" style="height:180px"></iframe></div>
+  <div class="prose comp-sum"><p>细规则线与箭头形成不抢占图像的次级入口。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>阅读更多、查看说明、进入详情。</p>
+<h3>交互与状态</h3>
+<p>悬停、焦点；提供 href 时为真实导航。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('TextLink', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>label, href；不提供 href 时为示例状态。</p></div></details>
+</article></div><div class="cgroup" id="group-表单与选择"><h3 class="band-title">表单与选择 <span class="muted">10</span></h3>
+
+<article class="comp" id="comp-Check" data-name="check 复选框 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-Check">Check</a></h4><span class="muted">复选框</span></header>
+  <div class="stage"><iframe title="Check preview" data-src="previews/Check.html" data-frame="Check" style="height:170px"></iframe></div>
+  <div class="prose comp-sum"><p>精确的直角边框与短促落位的确认标记。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>多选、偏好、局部开关。</p>
+<h3>交互与状态</h3>
+<p>选中、未选中、禁用、聚焦。1.3：勾一笔画出，方框以 snap 弹簧转正。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Check', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>label, value, disabled；setValue(boolean)。</p></div></details>
+</article>
+<article class="comp" id="comp-ChoiceGroup" data-name="choicegroup 单选组 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-ChoiceGroup">ChoiceGroup</a></h4><span class="muted">单选组</span></header>
+  <div class="stage"><iframe title="ChoiceGroup preview" data-src="previews/ChoiceGroup.html" data-frame="ChoiceGroup" style="height:220px"></iframe></div>
+  <div class="prose comp-sum"><p>相纸从轮廓变为实色，清楚表明互斥选择。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>视觉主题、输出类型、有限方案。</p>
+<h3>交互与状态</h3>
+<p>选中、未选中、键盘方向键。1.3：选中压印从指针进入处张开。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('ChoiceGroup', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items, label；事件含 index 与 value。</p></div></details>
+</article>
+<article class="comp" id="comp-Dropzone" data-name="dropzone 本地图片选择 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-Dropzone">Dropzone</a></h4><span class="muted">本地图片选择</span></header>
+  <div class="stage"><iframe title="Dropzone preview" data-src="previews/Dropzone.html" data-frame="Dropzone" style="height:360px"></iframe></div>
+  <div class="prose comp-sum"><p>文件进入取景框；仅在本机预览和验证。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>导入 PNG、JPEG、WebP 图片。</p>
+<h3>交互与状态</h3>
+<p>空、拖入、选择、成功、格式错误、超大文件。1.3：选中的图片显影进入。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Dropzone', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>10 MB 上限，支持文件选择键盘入口，销毁时释放对象 URL。</p></div></details>
+</article>
+<article class="comp" id="comp-Range" data-name="range 曝光滑杆 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-Range">Range</a></h4><span class="muted">曝光滑杆</span></header>
+  <div class="stage"><iframe title="Range preview" data-src="previews/Range.html" data-frame="Range" style="height:210px"></iframe></div>
+  <div class="prose comp-sum"><p>镜头式刻度与朱红游标表达连续数值；游标像表针一样带质量跟随，保留原生滑杆与键盘调节。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>曝光、音量、开度、材质强度。</p>
+<h3>交互与状态</h3>
+<p>拖拽、聚焦、键盘、最小最大、数值输出。游标跟随为视觉，数值输出始终精确；越过刻度有齿感声（可选）。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Range', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>min, max, step, value, label, unit；setValue(number)。</p></div></details>
+</article>
+<article class="comp" id="comp-Select" data-name="select 下拉选择 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-Select">Select</a></h4><span class="muted">下拉选择</span></header>
+  <div class="stage"><iframe title="Select preview" data-src="previews/Select.html" data-frame="Select" style="height:200px"></iframe></div>
+  <div class="prose comp-sum"><p>采用原生选择行为，统一底线和方向标记。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>有限选项，移动端调用系统选择器。</p>
+<h3>交互与状态</h3>
+<p>聚焦、展开、选定。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Select', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items, label；setValue(value)。</p></div></details>
+</article>
+<article class="comp" id="comp-Stepper" data-name="stepper 数量步进 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-Stepper">Stepper</a></h4><span class="muted">数量步进</span></header>
+  <div class="stage"><iframe title="Stepper preview" data-src="previews/Stepper.html" data-frame="Stepper" style="height:180px"></iframe></div>
+  <div class="prose comp-sum"><p>翻片式数字窗口配合有边界的加减，立即回应数量或底片切换。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>印刷份数、数量、分段级别。</p>
+<h3>交互与状态</h3>
+<p>值变化、边界禁用、屏幕阅读器播报。1.3：翻片按增减方向转动。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Stepper', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>min, max, value, label；setValue(number)。</p></div></details>
+</article>
+<article class="comp" id="comp-Switch" data-name="switch 状态开关 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-Switch">Switch</a></h4><span class="muted">状态开关</span></header>
+  <div class="stage"><iframe title="Switch preview" data-src="previews/Switch.html" data-frame="Switch" style="height:170px"></iframe></div>
+  <div class="prose comp-sum"><p>机械拨杆露出朱红状态窗，让开关像相机上的实体动作一样明确。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>立即生效的偏好设置。</p>
+<h3>交互与状态</h3>
+<p>开、关、禁用；Space/Enter。1.3：拨杆以 snap 弹簧带轻微过冲落位，按住时下压；可选拨杆声。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Switch', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>label, value, disabled；setValue(boolean)。</p></div></details>
+</article>
+<article class="comp" id="comp-TagInput" data-name="taginput 关键词输入 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-TagInput">TagInput</a></h4><span class="muted">关键词输入</span></header>
+  <div class="stage"><iframe title="TagInput preview" data-src="previews/TagInput.html" data-frame="TagInput" style="height:250px"></iframe></div>
+  <div class="prose comp-sum"><p>把文本整理成可以单独移除的校样标签。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>作品关键词、有限标签。</p>
+<h3>交互与状态</h3>
+<p>输入、去重、添加、移除、数量上限。1.3：新词显影出现，删去的词被裁掉，其余词 FLIP 到新位置。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('TagInput', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>value, label；Enter/逗号添加，Backspace 移除。</p></div></details>
+</article>
+<article class="comp" id="comp-TextArea" data-name="textarea 创作笔记 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-TextArea">TextArea</a></h4><span class="muted">创作笔记</span></header>
+  <div class="stage"><iframe title="TextArea preview" data-src="previews/TextArea.html" data-frame="TextArea" style="height:300px"></iframe></div>
+  <div class="prose comp-sum"><p>多行文字与字数余量，让长表达仍保持简洁。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>说明、创作手记、反馈。</p>
+<h3>交互与状态</h3>
+<p>空、输入、长度上限、可调整高度。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('TextArea', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>label, value, placeholder, maxLength；setValue(text)。</p></div></details>
+</article>
+<article class="comp" id="comp-TextField" data-name="textfield 文字输入 表单与选择">
+  <header class="comp-head"><h4><a href="#comp-TextField">TextField</a></h4><span class="muted">文字输入</span></header>
+  <div class="stage"><iframe title="TextField preview" data-src="previews/TextField.html" data-frame="TextField" style="height:250px"></iframe></div>
+  <div class="prose comp-sum"><p>取景角与底线强调输入焦点；错误贴近字段。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>邮箱、姓名和短文本。</p>
+<h3>交互与状态</h3>
+<p>空、输入、聚焦、禁用、错误、纠正。1.3：出错时朱红线从左侧曝光，提示文字显影。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('TextField', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>type, label, value, placeholder, help, error, required, disabled。</p></div></details>
+</article></div><div class="cgroup" id="group-内容与数据"><h3 class="band-title">内容与数据 <span class="muted">2</span></h3>
+
+<article class="comp" id="comp-EditorialTable" data-name="editorialtable 档案表格 内容与数据">
+  <header class="comp-head"><h4><a href="#comp-EditorialTable">EditorialTable</a></h4><span class="muted">档案表格</span></header>
+  <div class="stage"><iframe title="EditorialTable preview" data-src="previews/EditorialTable.html" data-frame="EditorialTable" style="height:360px"></iframe></div>
+  <div class="prose comp-sum"><p>编辑档案般的细线表格，支持有意义的排序。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>作品清单、批次与状态。</p>
+<h3>交互与状态</h3>
+<p>默认、排序升降、行悬停、表头语义。1.3：排序时同一行 FLIP 到新位置，排序箭头翻转。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('EditorialTable', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>rows:[{title,category,frames,state}]。</p></div></details>
+</article>
+<article class="comp" id="comp-Timeline" data-name="timeline 幕次时间线 内容与数据">
+  <header class="comp-head"><h4><a href="#comp-Timeline">Timeline</a></h4><span class="muted">幕次时间线</span></header>
+  <div class="stage"><iframe title="Timeline preview" data-src="previews/Timeline.html" data-frame="Timeline" style="height:290px"></iframe></div>
+  <div class="prose comp-sum"><p>舞台提示单的时间和事件组成清楚的顺序。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>活动安排、制作过程、作品历程。</p>
+<h3>交互与状态</h3>
+<p>顺序语义；每项都有时间、标题、补充说明。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Timeline', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>items:[[time,title,description]]。</p></div></details>
+</article></div><div class="cgroup" id="group-反馈与进度"><h3 class="band-title">反馈与进度 <span class="muted">5</span></h3>
+
+<article class="comp" id="comp-EmptyState" data-name="emptystate 空白起点 反馈与进度">
+  <header class="comp-head"><h4><a href="#comp-EmptyState">EmptyState</a></h4><span class="muted">空白起点</span></header>
+  <div class="stage"><iframe title="EmptyState preview" data-src="previews/EmptyState.html" data-frame="EmptyState" style="height:370px"></iframe></div>
+  <div class="prose comp-sum"><p>空的取景框告诉用户缺少什么、可以怎样开始。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>初次使用、没有作品或搜索无结果。</p>
+<h3>交互与状态</h3>
+<p>空、添加示例、成功。1.3：加入的照片展开并显影。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('EmptyState', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>title, message；默认动作加入一个本地示例。</p></div></details>
+</article>
+<article class="comp" id="comp-Loading" data-name="loading 准备状态 反馈与进度">
+  <header class="comp-head"><h4><a href="#comp-Loading">Loading</a></h4><span class="muted">准备状态</span></header>
+  <div class="stage"><iframe title="Loading preview" data-src="previews/Loading.html" data-frame="Loading" style="height:190px"></iframe></div>
+  <div class="prose comp-sum"><p>缓慢转动的光圈配合内容骨架。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>等待素材或内容的短暂状态。</p>
+<h3>交互与状态</h3>
+<p>加载、减少动态；状态有文字说明。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Loading', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>label；这是展示加载态的组件，完成时由宿主移除。</p></div></details>
+</article>
+<article class="comp" id="comp-Notice" data-name="notice 状态提示 反馈与进度">
+  <header class="comp-head"><h4><a href="#comp-Notice">Notice</a></h4><span class="muted">状态提示</span></header>
+  <div class="stage"><iframe title="Notice preview" data-src="previews/Notice.html" data-frame="Notice" style="height:250px"></iframe></div>
+  <div class="prose comp-sum"><p>朱红细线指出需要关注的状态，并给出恢复动作。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>可恢复错误、缺少素材、下一步说明。</p>
+<h3>交互与状态</h3>
+<p>待处理、执行恢复动作、已解决。1.3：解决后内容显影。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Notice', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>title, message, action；使用文字而不只依赖颜色。</p></div></details>
+</article>
+<article class="comp" id="comp-Progress" data-name="progress 显影进度 反馈与进度">
+  <header class="comp-head"><h4><a href="#comp-Progress">Progress</a></h4><span class="muted">显影进度</span></header>
+  <div class="stage"><iframe title="Progress preview" data-src="previews/Progress.html" data-frame="Progress" style="height:280px"></iframe></div>
+  <div class="prose comp-sum"><p>Expose、Develop、Fix 三个过程映射可见进度。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>明确总量的任务；也可由外部真实进度驱动。</p>
+<h3>交互与状态</h3>
+<p>开始、暂停、继续、完成、重置。1.3：每步 4 % 由 settle 弹簧连成连续推进，运行时前沿有冷光。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Progress', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>value；setValue(0..100)。默认是有明确标识的进度示例。</p></div></details>
+</article>
+<article class="comp" id="comp-Toast" data-name="toast 可撤销反馈 反馈与进度">
+  <header class="comp-head"><h4><a href="#comp-Toast">Toast</a></h4><span class="muted">可撤销反馈</span></header>
+  <div class="stage"><iframe title="Toast preview" data-src="previews/Toast.html" data-frame="Toast" style="height:240px"></iframe></div>
+  <div class="prose comp-sum"><p>像显影后的印记一样确认动作，并提供撤销。</p></div>
+  <details class="comp-more"><summary>Guidelines</summary><div class="prose"><h3>何时使用</h3>
+<p>轻量、可逆的操作结果。</p>
+<h3>交互与状态</h3>
+<p>出现、撤销、关闭、超时；悬停/聚焦时保留。1.3：快门式出现与消失；底部细线显示剩余时间，悬停或聚焦时暂停并在离开后继续。</p>
+<h3>接入</h3>
+<pre class="code" data-lang="js"><code>const instance = Overture.mount('Toast', host, {});
+// 监听 instance.element 的 ov:change。移除时调用 instance.destroy()。</code></pre>
+<p>示例收藏只保存在组件状态；role=status。</p></div></details>
+</article></div>
+</section>
+<section id="assets" class="sec"><h2 class="sec-title">Assets</h2><h3 class="band-title">photos</h3>
+<div class="assets tile-m"><figure class="asset"><img src="assets/files/photos/backstage-mirror.jpg" alt="backstage-mirror.jpg"><figcaption><code>backstage-mirror.jpg</code><span class="muted">148.6 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/brass-pin.png" alt="brass-pin.png"><figcaption><code>brass-pin.png</code><span class="muted">2107.9 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/camera-hands.jpg" alt="camera-hands.jpg"><figcaption><code>camera-hands.jpg</code><span class="muted">120.6 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/dance-stage.jpg" alt="dance-stage.jpg"><figcaption><code>dance-stage.jpg</code><span class="muted">100.0 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/hero-backstage.jpg" alt="hero-backstage.jpg"><figcaption><code>hero-backstage.jpg</code><span class="muted">117.3 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/overture-art.png" alt="overture-art.png"><figcaption><code>overture-art.png</code><span class="muted">2128.3 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/red-silk.png" alt="red-silk.png"><figcaption><code>red-silk.png</code><span class="muted">2016.2 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/resonance-silk.png" alt="resonance-silk.png"><figcaption><code>resonance-silk.png</code><span class="muted">2471.9 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/runway.jpg" alt="runway.jpg"><figcaption><code>runway.jpg</code><span class="muted">118.7 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/stage-bow.jpg" alt="stage-bow.jpg"><figcaption><code>stage-bow.jpg</code><span class="muted">188.6 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/photos/textile-panorama.png" alt="textile-panorama.png"><figcaption><code>textile-panorama.png</code><span class="muted">2921.0 KB</span></figcaption></figure></div><h3 class="band-title">references</h3>
+<div class="assets tile-l"><figure class="asset"><img src="assets/files/references/01-overture.png" alt="01-overture.png"><figcaption><code>01-overture.png</code><span class="muted">2149.0 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/references/02-contact-sheet.png" alt="02-contact-sheet.png"><figcaption><code>02-contact-sheet.png</code><span class="muted">2530.6 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/references/03-resonance.png" alt="03-resonance.png"><figcaption><code>03-resonance.png</code><span class="muted">1989.1 KB</span></figcaption></figure></div><h3 class="band-title">brand</h3>
+<div class="assets tile-m"><figure class="asset"><img src="assets/files/brand/overture-wordmark-paper.svg" alt="overture-wordmark-paper.svg"><figcaption><code>overture-wordmark-paper.svg</code><span class="muted">58.8 KB</span></figcaption></figure><figure class="asset"><img src="assets/files/brand/overture-wordmark-stage.svg" alt="overture-wordmark-stage.svg"><figcaption><code>overture-wordmark-stage.svg</code><span class="muted">58.8 KB</span></figcaption></figure></div><h3 class="band-title">video</h3>
+<div class="assets tile-m"><figure class="asset"><video src="assets/files/video/overture-promo-15s.mp4" controls preload="metadata" playsinline></video><figcaption><code>overture-promo-15s.mp4</code><span class="muted">8403.7 KB</span></figcaption></figure></div></section>
+
+</main>
+</div>
+<script>(() => {
+  const frames = () => [...document.querySelectorAll('iframe[data-frame]')];
+  // Preview frames report their height; errors are shown on the card.
+  addEventListener('message', e => {
+    const d = e.data;
+    if (!d || !d.dsFrame) return;
+    const f = frames().find(x => x.dataset.frame === d.dsFrame);
+    if (!f) return;
+    if (d.h && !f.closest('.cover')) f.style.height = Math.max(parseInt(f.style.height) || 0, Math.min(d.h, 4000)) + 'px';
+    if (d.err) { const card = f.closest('.comp'); if (card && !card.querySelector('.frame-err')) { const p = document.createElement('p'); p.className = 'frame-err muted'; p.style.cssText = 'padding:8px 16px;margin:0;font-size:12px'; p.textContent = 'Preview error: ' + d.err; f.parentElement.after(p); } }
+  });
+
+  // Every preview is mounted once and stays mounted, so nothing is blank, restarts or loses its
+  // state while scrolling. The one exception: browsers drop the oldest WebGL contexts beyond ~16
+  // per page, so when a page has more WebGL previews (data-gl) than GL_BUDGET, only those are
+  // windowed around the viewport. Non-WebGL previews are never unloaded.
+  const GL_BUDGET = 12, MAX_LIVE_GL = 8;
+  const all = [...document.querySelectorAll('iframe[data-src]')];
+  const glFrames = all.filter(f => f.dataset.gl);
+  const windowed = new Set(glFrames.length > GL_BUDGET ? glFrames : []);
+  const mountFrame = f => { if (f.dataset.mounted) return; f.dataset.mounted = '1'; f.src = f.dataset.src; };
+  const unmountFrame = f => { if (!f.dataset.mounted) return; delete f.dataset.mounted; f.src = 'about:blank'; };
+  const near = f => { const r = f.getBoundingClientRect(); return r.bottom > -innerHeight && r.top < innerHeight * 2; };
+  // Eager frames: the first screen first, then the rest in document order, two per frame tick.
+  const queue = all.filter(f => !windowed.has(f)).sort((a, b) => near(b) - near(a));
+  const pump = () => { queue.splice(0, 2).forEach(mountFrame); if (queue.length) setTimeout(pump, 60); };
+  pump();
+  if (windowed.size) {
+    const live = new Set();
+    const lazy = new IntersectionObserver(entries => {
+      for (const e of entries) {
+        if (e.isIntersecting) { mountFrame(e.target); live.add(e.target); } else { unmountFrame(e.target); live.delete(e.target); }
+      }
+      if (live.size > MAX_LIVE_GL) {
+        const mid = innerHeight / 2, dist = f => Math.abs(f.getBoundingClientRect().top + f.offsetHeight / 2 - mid);
+        [...live].sort((a, b) => dist(b) - dist(a)).slice(0, live.size - MAX_LIVE_GL).forEach(f => { unmountFrame(f); live.delete(f); });
+      }
+    }, {rootMargin: '600px 0px'});
+    windowed.forEach(f => lazy.observe(f));
+  }
+
+  // Cover: laid out at 960px wide and scaled to fit.
+  const cover = document.querySelector('.cover');
+  if (cover) {
+    const f = cover.querySelector('iframe'), h = parseInt(cover.dataset.h) || 300;
+    // A `fluid` cover lays out at the page width instead of a scaled 960px canvas.
+    const fit = cover.classList.contains('fluid') ? () => { cover.style.height = Math.min(h, Math.max(260, cover.clientWidth * h / 1280)) + 'px'; f.style.height = cover.style.height; } : () => { const s = Math.min(1, cover.clientWidth / 960); f.style.transform = `scale(${s})`; cover.style.height = h * s + 'px'; };
+    new ResizeObserver(fit).observe(cover); fit();
+  }
+
+  // Theme switch: page tokens + every preview frame.
+  const btns = [...document.querySelectorAll('[data-theme-id]')];
+  const setTheme = id => {
+    document.documentElement.dataset.theme = id;
+    btns.forEach(b => b.setAttribute('aria-checked', String(b.dataset.themeId === id)));
+    frames().forEach(f => { try { f.contentWindow.postMessage({dsTheme: id}, '*'); } catch {} });
+    try { localStorage.setItem('ds-viewer-theme:' + document.title, id); } catch {}
+  };
+  btns.forEach(b => b.addEventListener('click', () => setTheme(b.dataset.themeId)));
+  frames().forEach(f => f.addEventListener('load', () => { const t = document.documentElement.dataset.theme; if (t && f.contentWindow) f.contentWindow.postMessage({dsTheme: t}, '*'); }));
+  try { const saved = localStorage.getItem('ds-viewer-theme:' + document.title); if (saved && btns.some(b => b.dataset.themeId === saved)) setTheme(saved); } catch {}
+
+  // Component filter.
+  const input = document.getElementById('filter'), count = document.getElementById('count');
+  if (input) input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    let n = 0;
+    document.querySelectorAll('.comp').forEach(c => { const show = !q || c.dataset.name.includes(q); c.hidden = !show; if (show) n++; });
+    document.querySelectorAll('.cgroup').forEach(g => { g.hidden = ![...g.querySelectorAll('.comp')].some(c => !c.hidden); });
+    count.textContent = `${n} components`;
+  });
+
+  // Copy a colour token's var() on click.
+  document.querySelectorAll('[data-copy]').forEach(el => el.addEventListener('click', () => {
+    navigator.clipboard?.writeText(el.dataset.copy).then(() => { el.classList.add('copied'); setTimeout(() => el.classList.remove('copied'), 700); }, () => {});
+  }));
+
+  // Highlight the current section in the sidebar.
+  const links = new Map([...document.querySelectorAll('.side nav a')].map(a => [a.getAttribute('href').slice(1), a]));
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) if (e.isIntersecting) { links.forEach(a => a.classList.remove('on')); links.get(e.target.id)?.classList.add('on'); }
+  }, {rootMargin: '-10% 0px -80% 0px'});
+  links.forEach((_, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
+})();
+</script>
+</body>
+</html>

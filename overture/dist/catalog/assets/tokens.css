@@ -1,0 +1,91 @@
+@font-face { font-family: "Manrope"; src: url("fonts/Manrope-Semibold.ttf"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("fonts/Manrope-Regular.ttf"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Bodoni Moda"; src: url("fonts/BodoniModa-Regular.ttf"); font-weight: 400; font-style: normal; font-display: swap; }
+:root, [data-theme="stage"] {
+  --ov-bg: #0c0a09;
+  --ov-surface: #191411;
+  --ov-text: #f1ebdf;
+  --ov-muted: #b9ada0;
+  --ov-subtle: #83766d;
+  --ov-accent: #ff6654;
+  --ov-oxblood: #5f1017;
+  --ov-cold: #8fb1ff;
+  --ov-indigo: #1c2a55;
+  --ov-line: #66574b;
+  --ov-line-soft: #3d312a;
+  --ov-focus: #9dbcff;
+  --ov-success: #bad1ad;
+  --ov-warning: #efc68f;
+  --ov-print-shadow: 0 18px 50px rgb(0 0 0 / .45);
+}
+[data-theme="paper"] {
+  --ov-bg: #eee8dc;
+  --ov-surface: #e5ddce;
+  --ov-text: #211a16;
+  --ov-muted: #65584d;
+  --ov-subtle: #88796b;
+  --ov-accent: #a02b1d;
+  --ov-oxblood: #69151c;
+  --ov-cold: #1f4a8f;
+  --ov-indigo: #23386b;
+  --ov-line: #a39483;
+  --ov-line-soft: #cfc2b1;
+  --ov-focus: #1d4a92;
+  --ov-success: #385328;
+  --ov-warning: #785021;
+  --ov-print-shadow: 0 16px 36px rgb(45 25 12 / .2);
+}
+[data-theme="nocturne"] {
+  --ov-bg: #0a0f1f;
+  --ov-surface: #121a31;
+  --ov-text: #eceff6;
+  --ov-muted: #a9b3cb;
+  --ov-subtle: #7a84a0;
+  --ov-accent: #ff6654;
+  --ov-oxblood: #5f1017;
+  --ov-cold: #9dbcff;
+  --ov-indigo: #2a3c78;
+  --ov-line: #3e4b75;
+  --ov-line-soft: #243056;
+  --ov-focus: #9dbcff;
+  --ov-success: #b6d3bf;
+  --ov-warning: #efc68f;
+  --ov-print-shadow: 0 18px 50px rgb(2 4 14 / .6);
+}
+:root {
+  --ov-space-4: 4px;
+  --ov-space-8: 8px;
+  --ov-space-12: 12px;
+  --ov-space-16: 16px;
+  --ov-space-24: 24px;
+  --ov-space-32: 32px;
+  --ov-space-48: 48px;
+  --ov-space-64: 64px;
+  --ov-space-96: 96px;
+  --ov-space-144: 144px;
+  --ov-radius: 0px;
+  --ov-round: 50%;
+  --ov-fast: 160ms;
+  --ov-time: 420ms;
+  --ov-slow: 900ms;
+  --ov-ease: cubic-bezier(.16,1,.3,1);
+  --ov-exit: cubic-bezier(.5,0,.75,0);
+  --ov-spring: linear(0, 0.051, 0.17, 0.319, 0.472, 0.613, 0.734, 0.832, 0.906, 0.959, 0.995, 1.017, 1.029, 1.033, 1.032, 1.029, 1.024, 1.019, 1.014, 1.01, 1.007, 1.004, 1.002, 1.001, 1);
+  --ov-spring-time: 340ms;
+  --ov-settle: linear(0, 0.029, 0.099, 0.191, 0.291, 0.392, 0.487, 0.573, 0.65, 0.717, 0.773, 0.82, 0.859, 0.891, 0.917, 0.937, 0.953, 0.966, 0.975, 0.983, 0.988, 0.992, 0.995, 0.997, 1);
+  --ov-settle-time: 570ms;
+  --ov-spring-snap: stiffness 600 · damping 36;
+  --ov-spring-settle: stiffness 120 · damping 20;
+  --ov-spring-stage: stiffness 52 · damping 13.2;
+  --ov-spring-resonance: stiffness 140 · damping 3.2;
+  --ov-spring-swing: stiffness 36 · damping 1.8;
+  --font-display: "Bodoni Moda", "Times New Roman", "SimSun", serif;
+  --font-sans: "Manrope", "Microsoft YaHei", sans-serif;
+  --font-zh: "Microsoft YaHei", sans-serif;
+}
+.ov-type-hero { font-family: var(--font-display); font-size: clamp(68px, 15.3vw, 260px); line-height: 0.82; font-weight: 400; letter-spacing: -0.04em;  }
+.ov-type-title { font-family: var(--font-display); font-size: clamp(42px, 7vw, 108px); line-height: 0.94; font-weight: 400; letter-spacing: -0.03em;  }
+.ov-type-section { font-family: var(--font-display); font-size: clamp(30px, 4vw, 54px); line-height: 1.05; font-weight: 400;   }
+.ov-type-body { font-family: var(--font-sans); font-size: 16px; line-height: 1.75; font-weight: 400;   }
+.ov-type-label { font-family: var(--font-sans); font-size: 12px; line-height: 1.5; font-weight: 600; letter-spacing: 0.12em;  }
+.ov-type-caption { font-family: var(--font-sans); font-size: 13px; line-height: 1.65; font-weight: 400;   }

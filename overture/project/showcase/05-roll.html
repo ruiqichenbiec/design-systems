@@ -1,0 +1,13 @@
+<!-- @dsShowcase title="胶卷暗盒 · The Roll" eyebrow="04 · NEW IN 1.2" lede="三维 35 mm 暗盒。横向拖动胶片拉出或卷回，卷轴和标签随之转动；把一帧向下拖到桌面，它会带着象牙边框成为相纸并显影。双击相纸放回胶片。" height=820 gl -->
+<style>
+.roll{background:var(--ov-bg);color:var(--ov-text);padding:34px 36px 30px;position:relative;isolation:isolate;overflow:hidden}
+.roll:before{content:"";position:absolute;inset:0;z-index:-1;background:radial-gradient(ellipse 55% 45% at 24% 50%,color-mix(in srgb,var(--ov-cold) 15%,transparent),transparent 70%)}
+.roll h3{font:400 clamp(56px,9vw,120px)/.9 var(--font-display);letter-spacing:-.045em;margin:0 0 14px}
+.roll .ov-roll{--roll-h:440px;--frame-w:230px}.roll .ov-roll__meta,.roll .ov-roll__table{padding-left:0;padding-right:0;margin-left:0;margin-right:0}
+@media(max-width:700px){.roll{padding:24px 16px}.roll .ov-roll{--roll-h:300px;--frame-w:150px}}
+</style>
+<div class="ov roll" data-theme="nocturne"><h3>THE ROLL</h3><div id="roll"></div></div>
+<script>
+Overture.configure({assetBase: '../assets/'});
+Overture.mount('FilmCanister', '#roll', {pulled: 3.3});
+</script>

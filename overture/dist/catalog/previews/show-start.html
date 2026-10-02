@@ -1,0 +1,55 @@
+<!doctype html><html data-theme="stage"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/bundle.css">
+<script src="../assets/bundle.js"></script>
+<style>html,body{margin:0;background:transparent}html{overflow:hidden}body{padding:0;font-family:var(--font-sans)}</style>
+<script>
+addEventListener('message',e=>{if(e.data&&e.data.dsTheme)document.documentElement.dataset.theme=e.data.dsTheme;});
+(function(){try{var t=new URLSearchParams(location.search).get('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}})();
+addEventListener('load',function(){var post=function(){parent.postMessage({dsFrame:"show-start",h:Math.ceil(Math.max(document.documentElement.scrollHeight,document.body.scrollHeight))},'*');};post();try{new ResizeObserver(post).observe(document.body);}catch(e){}});
+addEventListener('error',function(e){parent.postMessage({dsFrame:"show-start",err:String(e.message||e)},'*');});
+</script></head><body>
+<style>
+.qs{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(260px,1fr);gap:40px;padding:40px 36px;background:var(--ov-bg);color:var(--ov-text)}
+.qs pre{margin:0;padding:22px 24px;background:var(--ov-surface);border-top:2px solid var(--ov-accent);font:12.5px/1.75 ui-monospace,Consolas,monospace;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--ov-text)}
+.qs pre b{color:var(--ov-cold);font-weight:400}.qs pre i{color:var(--ov-muted);font-style:normal}
+.qs__copy{margin-top:14px}
+.qs__pages{list-style:none;margin:0;padding:0;border-top:1px solid var(--ov-line)}
+.qs__pages a{display:grid;grid-template-columns:44px 1fr auto;gap:12px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--ov-line-soft);text-decoration:none;color:var(--ov-text);transition:color var(--ov-fast),padding var(--ov-time) var(--ov-ease)}
+.qs__pages a:hover,.qs__pages a:focus-visible{color:var(--ov-cold);padding-left:8px}
+.qs__pages span:first-child{font:22px var(--font-display);color:var(--ov-muted)}
+.qs__pages small{font-size:10px;letter-spacing:.16em;color:var(--ov-muted)}
+@media(max-width:760px){.qs{grid-template-columns:1fr;padding:24px 16px}}
+</style>
+<div class="ov qs">
+  <div>
+<pre id="code"><i>&lt;!-- dist/ 里的三样东西 --&gt;</i>
+&lt;link rel="stylesheet" href="<b>overture.css</b>"&gt;
+&lt;script src="<b>overture.js</b>"&gt;&lt;/script&gt;
+&lt;html <b>data-theme</b>="stage | paper | nocturne"&gt;
+
+&lt;script&gt;
+  Overture.configure({ assetBase: '<b>assets/</b>' });
+  const roll = Overture.mount('<b>FilmCanister</b>', '#host', { pulled: 3 });
+  roll.element.addEventListener('ov:change', e =&gt; console.log(e.detail));
+  <i>// Overture.nextTheme()   暗场 → 印纸 → 夜场</i>
+  <i>// roll.destroy()         释放监听器、定时器与 GPU 资源</i>
+&lt;/script&gt;</pre>
+    <div class="qs__copy" id="copy"></div>
+  </div>
+  <ul class="qs__pages">
+    <li><a href="../../index.html" target="_top"><span>01</span>展示页 · 四幕<small>SHOWCASE</small></a></li>
+    <li><a href="../../components.html" target="_top"><span>02</span>组件库 · 46 种<small>COMPONENTS</small></a></li>
+    <li><a href="../../light-studies.html" target="_top"><span>03</span>追光实验与暗房<small>LIGHT STUDIES</small></a></li>
+    <li><a href="../../studio.html" target="_top"><span>04</span>品牌工坊<small>STUDIO</small></a></li>
+    <li><a href="../../starter.html" target="_top"><span>05</span>最小接入示例<small>STARTER</small></a></li>
+    <li><a href="../../overture-showcase.html" target="_top"><span>06</span>单文件动态演示<small>ONE FILE · 1.3</small></a></li>
+    <li><a href="../assets/files/video/overture-promo-15s.mp4" target="_top"><span>07</span>宣传片 MP4（配乐 A）<small>FILM</small></a></li>
+  </ul>
+</div>
+<script>
+Overture.configure({assetBase: '../assets/'});
+Overture.mount('CueButton', '#copy', {label: '复制接入代码', onActivate: async () => { const text = document.getElementById('code').textContent; try { await navigator.clipboard.writeText(text); } catch { const r = document.createRange(); r.selectNodeContents(document.getElementById('code')); getSelection().removeAllRanges(); getSelection().addRange(r); throw new Error('浏览器未允许写入剪贴板，已选中代码，请按 Ctrl+C。'); } }});
+</script>
+
+</body></html>

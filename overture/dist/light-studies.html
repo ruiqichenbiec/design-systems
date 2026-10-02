@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="stage">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="用光寻找照片，沿红线穿行记忆，再亲手冲印一帧。Overture 原生交互组件实验。"><title>追光 — OVERTURE</title><link rel="stylesheet" href="overture.css"><link rel="stylesheet" href="showcase.css"><link rel="stylesheet" href="light-studies.css"><script src="overture.js" defer></script><script src="light-studies.js" defer></script></head>
+<body class="ov light-studies">
+<a class="skip-link" href="#follow-light">跳至追光</a>
+<header class="work-header"><a href="index.html">序曲 / OVERTURE</a><nav aria-label="追光导航"><a href="#follow-light">移动光</a><a href="#photo-wall">穿行照片</a><a href="#darkroom">暗房操作台</a><a href="components.html">全部组件</a></nav></header>
+<main>
+  <section id="follow-light" aria-labelledby="light-title"><div class="light-heading"><h1 id="light-title">让光，决定观看。</h1><p>整面照片墙，留在眼前。<br>三下滚轮，点亮下一帧。</p></div><div id="flashlight-demo"></div></section>
+  <section id="photo-wall" aria-label="红线与图钉，滚动照片墙"><div id="wall-demo"></div></section>
+  <section class="darkroom" id="darkroom" data-theme="paper" aria-labelledby="darkroom-title">
+    <div class="darkroom-heading"><h2 id="darkroom-title">把这一瞬，<br><em>留在纸上。</em></h2><p>选择底片，调节曝光，按下快门。<br>每个动作，都在画面上留下回应。</p></div>
+    <div class="darkroom-workspace"><div class="darkroom-controls"><div id="room-tabs"></div><div id="room-exposure"></div><div id="room-stepper"></div><div id="room-title"></div><div class="darkroom-toggles"><div id="room-grid"></div><div id="room-note"></div></div><div id="room-shutter"></div><p class="darkroom-status" role="status">等待第一张印相。</p></div>
+      <div class="darkroom-view"><div class="darkroom-board"><figure class="darkroom-print"><div class="darkroom-image"><img src="assets/photos/red-silk.png" alt="形与色"><span class="darkroom-grid" aria-hidden="true"></span><span class="darkroom-shutter" aria-hidden="true"></span></div><figcaption><span class="darkroom-print-title">形与色</span><span class="darkroom-print-number">03 / 06</span></figcaption><p class="darkroom-note">光线留下形状，观看赋予意义。</p></figure><span class="darkroom-registration" aria-hidden="true"></span></div><div class="darkroom-print-tray" aria-label="本次冲印的照片"></div></div>
+    </div>
+  </section>
+</main>
+<footer class="site-footer"><a href="index.html">返回三幕作品</a><span>OVERTURE / LIGHT STUDIES</span><button type="button" id="motion-toggle">动态设置</button></footer>
+</body></html>

@@ -1,0 +1,103 @@
+/* Dynamics (1.3): the declarative half of the motion kernel. Springs arrive as --ov-spring / --ov-settle linear() easings
+   compiled from project/tokens.json; browsers without linear() keep the --ov-ease fallbacks written before each @supports. */
+
+/* Open / occlude — every fill opens from where the pointer came in, and a press gives a little. */
+.ov-button{transition:color var(--ov-time),border-color var(--ov-time),box-shadow var(--ov-time),transform var(--ov-time) var(--ov-ease)}
+.ov-button:active:not(:disabled){transform:scale(.972)}
+.ov-icon-button{position:relative;isolation:isolate;overflow:hidden}
+.ov-icon-button::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--ov-text);clip-path:circle(0 at var(--x,50%) var(--y,50%));transition:clip-path var(--ov-time) var(--ov-ease);pointer-events:none}
+.ov-icon-button:hover:not(:disabled),.ov-icon-button[aria-pressed=true]{background:transparent}
+.ov-icon-button:hover:not(:disabled)::before,.ov-icon-button[aria-pressed=true]::before{clip-path:circle(150% at var(--x,50%) var(--y,50%))}
+.ov-icon-button:disabled::before{display:none}
+.ov-icon-button:active:not(:disabled){transform:scale(.94)}
+.ov-choices span{position:relative;isolation:isolate;overflow:hidden}
+.ov-choices span::after{content:"";position:absolute;inset:0;z-index:-1;background:var(--ov-text);clip-path:circle(0 at var(--x,50%) var(--y,50%));transition:clip-path var(--ov-time) var(--ov-ease);pointer-events:none}
+.ov-choices input:checked+span{background:transparent}
+.ov-choices input:checked+span::after{clip-path:circle(160% at var(--x,50%) var(--y,50%))}
+.ov-tabs [role=tabpanel]:not([hidden]){animation-name:ov-panel-enter}
+.ov-tabs[data-dir=back] [role=tabpanel]:not([hidden]){animation-name:ov-panel-enter-back}
+@keyframes ov-panel-enter-back{from{clip-path:inset(0 0 0 100%);transform:translateX(-12px)}to{clip-path:inset(0);transform:none}}
+.ov-tabs__line{will-change:transform}
+
+/* Overlays: JavaScript runs the iris from the trigger; the backdrop fades in and out around it. */
+.ov-dialog::backdrop,.ov-lightbox::backdrop{opacity:1;transition:opacity .34s ease}
+@starting-style{.ov-dialog[open]::backdrop,.ov-lightbox[open]::backdrop{opacity:0}}
+.ov-dialog.is-closing::backdrop,.ov-lightbox.is-closing::backdrop{opacity:0;transition-duration:.26s}
+.ov-dialog.is-closing{pointer-events:none}
+.ov-lightbox{transition:background-color .38s ease}
+@starting-style{.ov-lightbox[open]{background-color:transparent}}
+.ov-lightbox.is-closing{background-color:transparent;pointer-events:none}
+.ov-lightbox>:not(.ov-flight){transition:opacity .3s ease .14s}
+@starting-style{.ov-lightbox[open]>:not(.ov-flight){opacity:0}}
+.ov-lightbox.is-closing>:not(.ov-flight){opacity:0;transition-delay:0s}
+.ov-flight{position:fixed;margin:0;z-index:10;object-fit:cover;pointer-events:none;box-shadow:0 30px 70px rgb(0 0 0 / .5)}
+.ov-toast{position:relative}
+.ov-toast__timer{position:absolute;left:0;right:0;bottom:0;height:2px;background:currentColor;opacity:.32;transform-origin:0 50%;pointer-events:none}
+.ov-accordion details p{transition:opacity .34s ease,transform var(--ov-time) var(--ov-ease)}
+.ov-accordion details:not([open]) p{opacity:0;transform:translateY(-8px)}
+@supports (interpolate-size:allow-keywords){
+  .ov-accordion{interpolate-size:allow-keywords}
+  .ov-accordion details::details-content{block-size:0;overflow-y:clip;transition:block-size var(--ov-time) var(--ov-ease),content-visibility var(--ov-time) allow-discrete}
+  .ov-accordion details[open]::details-content{block-size:auto}
+}
+
+/* Focus / develop — rules that relay, lines that expose, marks that are drawn. */
+.ov-chapters button{position:relative}
+.ov-chapters [aria-current=step]{border-color:var(--ov-line-soft)}
+.ov-chapters button::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;background:var(--ov-accent);transform:scaleX(0);transform-origin:100% 50%;transition:transform var(--ov-time) var(--ov-ease);pointer-events:none}
+.ov-chapters [aria-current=step]::after{transform:scaleX(1);transform-origin:0 50%;transition-delay:.1s}
+.ov-chapters[data-dir=back] button::after{transform-origin:0 50%}
+.ov-chapters[data-dir=back] [aria-current=step]::after{transform-origin:100% 50%}
+.ov-field__control::before{content:"";position:absolute;left:0;right:0;bottom:0;z-index:1;height:1px;background:var(--ov-accent);transform:scaleX(0);transform-origin:0 50%;transition:transform var(--ov-time) var(--ov-ease);pointer-events:none}
+.ov-field__control:has([aria-invalid=true])::before{transform:scaleX(1)}
+.ov-field.is-near-limit small{color:var(--ov-warning)}
+.ov-check__box svg{opacity:1;transform:none}
+.ov-check__box svg path{stroke-dasharray:21;stroke-dashoffset:21;transition:stroke-dashoffset .3s var(--ov-ease)}
+.ov-check input:checked+.ov-check__box svg path{stroke-dashoffset:0;transition-delay:.05s}
+.ov-table th .ov-icon{transition:transform var(--ov-time) var(--ov-ease),opacity var(--ov-fast)}
+.ov-table th[aria-sort=descending] .ov-icon{transform:rotate(180deg)}
+.ov-table th[aria-sort=none] .ov-icon{opacity:.45}
+.ov-range__needle{left:var(--needle,var(--exposure,42%));transition:none}
+.ov-progress__fill{transition:none}
+.ov-progress__track{position:relative}
+.ov-progress__track::after{content:"";position:absolute;top:0;bottom:0;width:28px;left:calc(var(--head,0) * 100% - 28px);background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--ov-cold) 75%,transparent));opacity:0;transition:opacity .3s;pointer-events:none}
+.ov-progress[data-running=true] .ov-progress__track::after{opacity:1}
+
+/* Tension / freeze — sprung transitions for the physical controls. */
+@supports (transition-timing-function:linear(0, 1)){
+  .ov-button{transition:color var(--ov-time),border-color var(--ov-time),box-shadow var(--ov-time),transform var(--ov-spring-time) var(--ov-spring)}
+  .ov-icon-button{transition:color var(--ov-fast),border-color var(--ov-fast),transform var(--ov-spring-time) var(--ov-spring)}
+  .ov-switch__track i{transition:transform var(--ov-spring-time) var(--ov-spring),background var(--ov-fast)}
+  .ov-check__box{transition:transform var(--ov-spring-time) var(--ov-spring),background .25s,border-color .25s}
+  .ov-choices span:before{transition:transform var(--ov-spring-time) var(--ov-spring),background .3s}
+  .ov-focus-corners{transition:opacity var(--ov-time),transform var(--ov-spring-time) var(--ov-spring)}
+  .ov-text-link .ov-icon,.ov-accordion summary .ov-icon{transition:transform var(--ov-spring-time) var(--ov-spring)}
+  .ov-table th .ov-icon{transition:transform var(--ov-settle-time) var(--ov-settle),opacity var(--ov-fast)}
+}
+.ov-focus-corners{transform:scale(1.08)}
+.ov-switch:active:not(:disabled) .ov-switch__track i{scale:.92}
+
+/* Light instruments: the reticle turns like a focus ring; pinned prints swing about their pin head. */
+.ov-flashlight__reticle{transform:translate(-50%,-50%) rotate(var(--ring,0deg))}
+.ov-flashlight__reticle::before{content:"";position:absolute;inset:-9px;border:1px solid #9dbcff66;border-radius:50%}
+.ov-flashlight__reticle::after{content:"";position:absolute;left:50%;top:-13px;width:1px;height:7px;margin-left:-.5px;background:#9dbcffd0}
+.ov-flashlight__photos figure{transform:rotate(var(--photo-turn)) translateY(-50%) rotate(var(--swing,0deg)) translateY(50%)}
+.ov-wall__photo{transform:translate(-50%,-50%) rotate(var(--turn)) translateY(-50%) rotate(var(--swing,0deg)) translateY(50%)}
+.ov-roll__print.is-landing{transition:box-shadow var(--ov-time)}
+
+/* The curtain is two drapes with pleats; they meet in the middle and part again. */
+.ov-curtain__veil{inset:0 auto 0 0;width:51%;background-color:var(--veil,#601018);background-image:repeating-linear-gradient(90deg,rgb(0 0 0 / .2) 0 2px,transparent 2px 16px,rgb(255 255 255 / .05) 16px 19px,transparent 19px 34px);transform:translateX(-101%)}
+.ov-curtain__veil--right{left:auto;right:0;background-color:var(--veil-2,var(--ov-indigo));transform:translateX(101%)}
+.ov-curtain.is-changing .ov-curtain__veil--left{animation:ov-drape-left .96s var(--ov-ease)}
+.ov-curtain.is-changing .ov-curtain__veil--right{animation:ov-drape-right .96s var(--ov-ease)}
+@keyframes ov-drape-left{0%{transform:translateX(-101%)}24%{transform:translateX(-34%) skewX(-3deg)}40%,58%{transform:translateX(0) skewX(0)}100%{transform:translateX(-101%)}}
+@keyframes ov-drape-right{0%{transform:translateX(101%)}24%{transform:translateX(34%) skewX(3deg)}40%,58%{transform:translateX(0) skewX(0)}100%{transform:translateX(101%)}}
+
+/* Reduced motion: spatial moves dissolve through the scene's own darkness instead of jumping. */
+.ov-dissolve{position:absolute;inset:0;z-index:6;background:var(--dissolve,#0c0a09);opacity:0;pointer-events:none}
+
+/* Theme changes: an iris from the control; only the new snapshot moves. */
+html.ov-vt::view-transition-old(root),html.ov-vt::view-transition-new(root){animation:none;mix-blend-mode:normal}
+
+[data-motion=reduce] .ov-focus-corners{transform:none}
+@media(prefers-reduced-motion:reduce){html:not([data-motion=full]) .ov-focus-corners{transform:none}}

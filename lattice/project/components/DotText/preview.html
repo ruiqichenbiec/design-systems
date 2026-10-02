@@ -1,0 +1,7 @@
+<!-- @dsCard group="Type" height=190 subtitle="5×7 matrix lettering that reflows dot by dot" -->
+<div class="lx-pv"><span id="d" style="display:inline-block">043</span><div class="pv-row" style="margin-top:14px"><button class="lx-btn lx-btn--ghost" id="u">+ 1</button><button class="lx-btn lx-btn--ghost" id="q">Say QED</button></div></div>
+<script>
+(function(){
+  var L = window.Lattice; var n = 43; var d = L.mountDotText(document.getElementById('d'), { pitch: 7 }); document.getElementById('u').onclick = function(){ n = (n + 1) % 1000; d.set(String(n).padStart(3, '0')); }; document.getElementById('q').onclick = function(){ d.set('QED'); };
+})();
+</script>

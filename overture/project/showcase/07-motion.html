@@ -1,0 +1,57 @@
+<!-- @dsShowcase title="动效与弹簧" eyebrow="06 · MOTION" lede="三种时长和一条缓动负责声明式过渡；五种弹簧负责有质量的运动。弹簧用解析解计算，中途改目标时保留位置与速度；CSS 的 --ov-spring、--ov-settle 由同一组常数生成。所有动效都尊重减少动态，也可以在这里手动切换。" height=720 -->
+<style>
+.mo{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(240px,1fr);gap:40px;padding:40px 36px;background:var(--ov-bg);color:var(--ov-text)}
+.mo__lanes{display:grid;gap:14px}
+.mo__group{margin:10px 0 2px;font-size:11px;letter-spacing:.16em;color:var(--ov-muted)}
+.mo__lane{display:grid;grid-template-columns:132px minmax(0,1fr);gap:18px;align-items:center}
+.mo__lane code{font-size:11px;color:var(--ov-muted);display:grid;gap:2px;font-variant-ligatures:none}
+.mo__lane code b{font:400 22px var(--font-display);color:var(--ov-text)}
+.mo__rail{position:relative;height:50px;border-bottom:1px solid var(--ov-line)}
+.mo__rail:after{content:"";position:absolute;bottom:0;left:calc(62% - 1px);width:1px;height:14px;background:var(--ov-accent)}
+.mo__rail--time:after{display:none}
+.mo__chip{position:absolute;left:0;bottom:7px;width:50px;height:36px;background:#f1ebdf;box-shadow:var(--ov-print-shadow);transition-property:left,transform;transition-timing-function:var(--ov-ease)}
+.mo__chip:after{content:"";position:absolute;inset:5px 5px 10px;background:var(--ov-oxblood)}
+.mo.is-on .mo__rail--time .mo__chip{left:calc(100% - 50px);transform:rotate(3deg)}
+.mo__rail--spring .mo__chip{transition:none;will-change:transform}
+.mo__curve svg{width:100%;height:auto;display:block}
+.mo__curve path{fill:none}
+.mo__curve .ov-help{margin-top:12px;font-variant-ligatures:none}
+.mo__actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.mo__dot{transition:transform var(--ov-slow) var(--ov-ease)}
+@media(max-width:760px){.mo{grid-template-columns:1fr;padding:24px 16px}.mo__lane{grid-template-columns:96px 1fr}}
+</style>
+<div class="ov mo" id="mo">
+  <div class="mo__lanes">
+    <p class="mo__group">时长 · 声明式过渡</p>
+    <div class="mo__lane"><code><b>160</b>--ov-fast · 确认</code><div class="mo__rail mo__rail--time"><i class="mo__chip" style="transition-duration:var(--ov-fast)"></i></div></div>
+    <div class="mo__lane"><code><b>420</b>--ov-time · 显影</code><div class="mo__rail mo__rail--time"><i class="mo__chip" style="transition-duration:var(--ov-time)"></i></div></div>
+    <div class="mo__lane"><code><b>900</b>--ov-slow · 开幕</code><div class="mo__rail mo__rail--time"><i class="mo__chip" style="transition-duration:var(--ov-slow)"></i></div></div>
+    <p class="mo__group">弹簧 · Overture.motion.spring（朱红刻度是目标）</p>
+    <div id="springs"></div>
+    <div class="mo__actions"><button type="button" class="ov-button ov-button--solid" id="run"><span>播放时长与弹簧</span></button><button type="button" class="ov-button" id="reduce"><span>减少动态</span></button><span class="ov-help" id="state"></span></div>
+  </div>
+  <div class="mo__curve">
+    <svg viewBox="-10 -40 220 250" role="img" aria-label="缓动曲线 cubic-bezier(.16, 1, .3, 1) 与 snap 弹簧曲线">
+      <path d="M0 200 L200 200 M0 200 L0 -30" stroke="var(--ov-line)" stroke-width="1"/>
+      <path d="M0 0 L200 0" stroke="var(--ov-line-soft)" stroke-width="1" stroke-dasharray="2 4"/>
+      <path d="M0 200 C32 0 60 0 200 0" stroke="var(--ov-accent)" stroke-width="2.5"/>
+      <path id="snap-curve" stroke="var(--ov-cold)" stroke-width="2"/>
+      <circle class="mo__dot" id="dot" cx="0" cy="200" r="6" fill="var(--ov-text)"/>
+    </svg>
+    <p class="ov-help">朱红：--ov-ease，cubic-bezier(.16, 1, .3, 1)，前段快速打开、后段长时间稳住。冷光：snap 弹簧（k 600 · c 36），约 3 % 过冲后落定，拨杆、勾选和取景框都用它。</p>
+  </div>
+</div>
+<script>
+const O = Overture, M = O.motion, mo = document.getElementById('mo'), state = document.getElementById('state'), dot = document.getElementById('dot');
+const names = Object.keys(M.presets), host = document.getElementById('springs');
+host.innerHTML = names.map(n => `<div class="mo__lane"><code><b>${n}</b>k ${M.presets[n].stiffness} · c ${M.presets[n].damping} · ${M.time(n)} ms</code><div class="mo__rail mo__rail--spring"><i class="mo__chip"></i></div></div>`).join('');
+// Each chip rides its own spring toward 62 % of the rail, so the lightly damped presets have room to overshoot.
+const springs = [...host.querySelectorAll('.mo__rail')].map((rail, i) => { const chip = rail.querySelector('.mo__chip'); return M.spring({preset: names[i], value: 0, precision: .0005, onUpdate: v => { chip.style.transform = `translateX(${v * .62 * Math.max(0, rail.clientWidth - 50)}px)`; }}); });
+const pts = []; for (let i = 0; i <= 60; i++) { const t = i / 60 * M.time('snap') / 1000, [x] = M.solve(M.presets.snap, -1, 0, t); pts.push(`${(i / 60 * 200).toFixed(1)} ${(200 - (1 + x) * 200).toFixed(1)}`); }
+document.getElementById('snap-curve').setAttribute('d', 'M' + pts.join(' L'));
+const refresh = () => { document.querySelector('#reduce span').textContent = O.reduced() ? '启用完整动态' : '减少动态'; state.textContent = O.reduced() ? '当前：减少动态，状态直接落位' : '当前：完整动态'; };
+document.getElementById('run').addEventListener('click', () => { const on = !mo.classList.contains('is-on'); mo.classList.toggle('is-on', on); dot.style.transform = on ? 'translate(200px,-200px)' : 'none'; springs.forEach(s => s.to(on ? 1 : 0)); });
+document.getElementById('reduce').addEventListener('click', () => { O.setMotion(O.reduced() ? 'full' : 'reduce'); document.querySelectorAll('.mo__rail--time .mo__chip,.mo__dot').forEach(el => el.style.transitionDuration = O.reduced() ? '1ms' : ''); refresh(); });
+new ResizeObserver(() => springs.forEach(s => s.set(s.target))).observe(host);
+refresh();
+</script>

@@ -1,0 +1,33 @@
+<!-- @dsCard group="Identity" height=640 fluid subtitle="Light. Emotion. Form." -->
+<style>
+html,body{height:100%}
+.cv{position:relative;height:100%;min-height:260px;background:#090706;color:#f1ebdf;overflow:hidden}
+.cv video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cv:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#090706e6 0,#09070699 34%,#0000 62%),linear-gradient(0deg,#090706cc,#0000 45%)}
+.cv__t{position:absolute;left:4.5%;bottom:9%;z-index:1;max-width:62%;transition:opacity .6s}.cv.is-finale .cv__t{opacity:0}
+.cv__k{font:600 11px var(--font-sans);letter-spacing:.3em;color:#b9ada0}
+.cv__w{font:400 clamp(56px,11vw,168px)/.86 var(--font-display);letter-spacing:-.045em;margin:14px 0 18px}
+.cv__s{font:13px/1.8 var(--font-sans);color:#e6ddcd;max-width:46ch;margin:0}
+.cv__s b{color:#9dbcff;font-weight:600}
+.cv .cv__a{position:absolute;right:4.5%;bottom:9%;z-index:2;color:#f1ebdf;border-color:#f1ebdf99}
+@media(max-width:620px){.cv__t{max-width:none;right:4.5%}.cv .cv__a{display:none}}
+</style>
+<div class="ov cv">
+  <video src="../assets/files/video/overture-promo-15s.mp4" muted loop playsinline preload="auto" aria-hidden="true"></video>
+  <div class="cv__t">
+    <div class="cv__k">A DESIGN SYSTEM · 1.3.0 · PHOTOGRAPHY / OPERA / FASHION</div>
+    <div class="cv__w">OVERTURE</div>
+    <p class="cv__s">序曲。光圈剧场、编辑底片与共振褶皱。<br>46 种原生组件 · 光圈、显影、<b>弹簧</b>三个运动原语 · Stage / Paper / <b>Nocturne</b> 三套主题 · 暖光与<b>冷光</b>两种光温。</p>
+  </div>
+  <a class="ov-button ov-button--circle cv__a" href="../index.html#show-film" target="_top"><span>FILM</span></a>
+</div>
+<script>
+(function () {
+  var v = document.querySelector('.cv video');
+  // Muted autoplay loop; with reduced motion the hero rests on a still of the photo wall instead.
+  // The film ends on its own wordmark; the overlay steps aside for those last seconds.
+  v.addEventListener('timeupdate', function () { v.parentNode.classList.toggle('is-finale', v.currentTime > 12.6); });
+  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) v.play().catch(function () {});
+  else v.addEventListener('loadeddata', function () { v.currentTime = 5.2; });
+})();
+</script>

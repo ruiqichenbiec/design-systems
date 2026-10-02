@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="stage">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="序曲 Overture 1.3：交互动态的单文件演示。光圈、显影与弹簧三个运动原语驱动 46 个组件；字体、照片、three.js 与宣传片全部内嵌。">
+<title>序曲 · 交互动态</title>
+<!-- @inline:css -->
+</head>
+<body class="ov dm">
+<a class="skip-link" href="#open">跳至第一幕</a>
+<header class="dm-bar is-clear" id="dm-bar">
+  <a class="dm-sig" href="#prologue">OVERTURE <span>序曲 1.3</span></a>
+  <nav class="dm-acts" aria-label="幕次">
+    <a href="#open"><b>I</b>开幕</a><a href="#develop"><b>II</b>显影</a><a href="#tension"><b>III</b>共振</a><a href="#roll"><b>IV</b>夜场</a><a href="#light"><b>V</b>追光</a><a href="#kernel"><b>VI</b>动势</a>
+    <i class="dm-acts__rule" aria-hidden="true"></i>
+  </nav>
+  <div class="dm-tools">
+    <button type="button" id="dm-theme" class="dm-tool" aria-label="切换主题">主题 · <span>暗场</span></button>
+    <button type="button" id="dm-sound" class="dm-tool" aria-pressed="false">声音 · <span>关</span></button>
+    <button type="button" id="dm-motion" class="dm-tool" aria-pressed="false">动态 · <span>完整</span></button>
+  </div>
+</header>
+<main>
+  <section class="dm-prologue" id="prologue" aria-label="序曲">
+    <h1 class="dm-title">OVERTURE</h1>
+    <figure class="dm-screen">
+      <div class="dm-screen__frame"><video class="dm-film" muted loop playsinline preload="auto" aria-label="Overture 15 秒宣传片，静音循环"></video><span class="ov-focus-corners" aria-hidden="true"></span></div>
+      <figcaption><span>15 秒宣传片 · 配乐 A</span><span class="dm-screen__state">静音循环</span></figcaption>
+    </figure>
+    <div class="dm-prologue__side">
+      <p class="dm-prologue__lede">三个动作语法，一个运动核心。<br>开幕是光圈，显影是显影，共振是弹簧。</p>
+      <div id="dm-enter" class="dm-enter"></div>
+      <button type="button" class="dm-film-sound" id="dm-film-sound"><span class="dm-film-sound__icon"></span><span class="dm-film-sound__label">有声观看宣传片 · 0:15</span></button>
+    </div>
+    <p class="dm-prologue__foot"><span>光圈 · 显影 · 弹簧</span><span>向下滚动，或按 ENTER 开幕</span></p>
+  </section>
+
+  <section class="dm-act dm-open" id="open" aria-labelledby="open-title">
+    <header class="dm-head">
+      <span class="dm-num" aria-hidden="true">I</span>
+      <div class="dm-head__text"><h2 id="open-title">开幕 <em>Open / Occlude</em></h2><p>从遮挡到看见。每一个浮层都从请求它的按钮张开，也按原路退回按钮；Esc、遮罩、关闭和保存，四种离开方式共用同一次退场。</p></div>
+      <dl class="dm-facts"><div><dt>原语</dt><dd>iris()</dd></div><div><dt>进入</dt><dd>420–540 ms</dd></div><div><dt>离开</dt><dd>约 0.6 倍，加速离场</dd></div></dl>
+    </header>
+    <div class="dm-stage" id="dm-aperture"></div>
+    <p class="dm-caption">ENTER 以舞台弹簧开幕，约 <span data-time="stage">830</span> ms；拖动开度，光圈带着质量跟随。</p>
+    <div class="dm-desk dm-desk--open">
+      <article class="dm-cell"><h3>快门 CueButton</h3><p>按下时叶片合上再打开；填充从指针进入的位置张开。</p><div class="dm-slot" id="dm-cue"></div><p class="dm-meta">SHUTTER 650 ms · 按压 snap</p></article>
+      <article class="dm-cell"><h3>对话框 Dialog</h3><p>从按钮张开，按原路退回按钮。</p><div class="dm-slot" id="dm-dialog"></div><p class="dm-meta">IN 540 · OUT 300 ms</p></article>
+      <article class="dm-cell"><h3>侧幕 Drawer</h3><p>幕布先到，内容随后跟上。</p><div class="dm-slot" id="dm-drawer"></div><p class="dm-meta">SETTLE <span data-time="settle">570</span> · OUT 280 ms</p></article>
+      <article class="dm-cell"><h3>取景选项 Popover</h3><p>从触发按钮张开，点别处时折回。</p><div class="dm-slot dm-slot--tall" id="dm-popover"></div><p class="dm-meta">IN 380 · OUT 220 ms</p></article>
+      <article class="dm-cell"><h3>动作搜索 CommandPalette</h3><p>列表逐项显影，最多六项。</p><div class="dm-slot" id="dm-command"></div><p class="dm-meta">STAGGER 32 ms</p></article>
+      <article class="dm-cell"><h3>提示 Toast</h3><p>快门式出现；底线是剩余时间，悬停时暂停。</p><div class="dm-slot" id="dm-toast"></div><p class="dm-meta">6 s · 悬停暂停</p></article>
+      <article class="dm-cell dm-cell--wide"><h3>换幕 CurtainTransition</h3><p>两幅幕布从两侧合拢，换幕后分开。</p><div class="dm-slot" id="dm-curtain"></div><p class="dm-meta">960 ms · 深红与深蓝交替</p></article>
+      <article class="dm-cell"><h3>折叠 Accordion</h3><p>展开与收起都有高度和显影。</p><div class="dm-slot" id="dm-accordion"></div><p class="dm-meta">420 ms</p></article>
+    </div>
+  </section>
+
+  <section class="dm-act dm-develop" id="develop" data-theme="paper" aria-labelledby="develop-title">
+    <header class="dm-head">
+      <span class="dm-num" aria-hidden="true">II</span>
+      <div class="dm-head__text"><h2 id="develop-title">显影 <em>Focus / Develop</em></h2><p>黑白是等待，彩色是看见。光斑带着惯性跟随目光；选中时，显影液从按下的那一点漫开到整张相纸。重排的东西保留身份，从原来的位置走到新位置。</p></div>
+      <dl class="dm-facts"><div><dt>原语</dt><dd>develop() · flip() · count()</dd></div><div><dt>重排</dt><dd>settle <span data-time="settle">570</span> ms</dd></div><div><dt>翻片</dt><dd>snap <span data-time="snap">340</span> ms</dd></div></dl>
+    </header>
+    <div class="dm-develop__pair">
+      <figure class="dm-figure"><div id="dm-develop-image"></div><figcaption>移动指针：光斑跟随并张开。点击：显影液从点击处漫开。键盘聚焦：从中心漫开。</figcaption></figure>
+      <figure class="dm-figure"><div id="dm-gallery"></div><figcaption>点开一张：相纸从原位飞到灯箱并显影；关闭时飞回原位。左右键翻页。</figcaption></figure>
+    </div>
+    <div class="dm-contact" id="dm-contact"></div>
+    <p class="dm-caption">抓住底片带拖动：1:1 跟手；甩出去，按速度停在最近的一帧。每 4.8 秒自动走片，悬停即停。</p>
+    <div class="dm-desk dm-desk--develop">
+      <article class="dm-cell dm-cell--wide"><h3>作品档案 EditorialTable</h3><p>排序时同一行相纸移动到新位置。</p><div class="dm-slot" id="dm-table"></div></article>
+      <article class="dm-cell"><h3>关键词 TagInput</h3><p>新词显影出现，删去的词被裁掉，其余滑到新位置。</p><div class="dm-slot" id="dm-tags"></div></article>
+      <article class="dm-cell"><h3>幕次 StageTabs</h3><p>取景框按速度拉长再落定，面板按方向展开。</p><div class="dm-slot" id="dm-tabs"></div></article>
+      <article class="dm-cell"><h3>翻页 Pagination</h3><p>数字按翻页方向翻转。</p><div class="dm-slot" id="dm-pages"></div></article>
+    </div>
+  </section>
+
+  <section class="dm-act dm-tension" id="tension" data-theme="stage" aria-labelledby="tension-title">
+    <div class="dm-tension__word" aria-hidden="true">RESONANCE</div>
+    <header class="dm-head">
+      <span class="dm-num" aria-hidden="true">III</span>
+      <div class="dm-head__text"><h2 id="tension-title">共振 <em>Tension / Freeze</em></h2><p>张力是一根弹簧。拖动衣料再松手，它带着你的速度越过新张力，来回几次才停；按下凝住，它就停在回荡的中途，再按一次，同一次回荡继续。</p></div>
+      <dl class="dm-facts"><div><dt>原语</dt><dd>spring()</dd></div><div><dt>回荡</dt><dd>k 140 · c 3.2</dd></div><div><dt>周期</dt><dd>0.53 s</dd></div></dl>
+    </header>
+    <div class="dm-silk" id="dm-silk"></div>
+    <div class="dm-scope">
+      <canvas id="dm-scope" aria-label="张力示波：冷光线是衣料的实际张力，朱红虚线是设定的张力"></canvas>
+      <p class="dm-scope__legend"><span class="is-cold">实际张力</span><span class="is-target">设定张力</span><span>最近 3 秒</span></p>
+    </div>
+    <div class="dm-desk dm-desk--tension">
+      <article class="dm-cell"><h3>曝光 Range</h3><p>刻度针像表针一样跟随；越过刻度时有齿感。</p><div class="dm-slot" id="dm-range"></div></article>
+      <article class="dm-cell"><h3>拨杆 Switch</h3><p>拨杆带一点过冲落位。</p><div class="dm-slot" id="dm-switch"></div></article>
+      <article class="dm-cell"><h3>勾选 Check</h3><p>勾是一笔画出来的。</p><div class="dm-slot" id="dm-check"></div></article>
+      <article class="dm-cell"><h3>计数 Stepper</h3><p>数字按增减方向翻片。</p><div class="dm-slot" id="dm-stepper"></div></article>
+      <article class="dm-cell dm-cell--wide"><h3>情绪 ChoiceGroup</h3><p>选中压印从指针进入的位置张开。</p><div class="dm-slot" id="dm-choice"></div></article>
+      <article class="dm-cell"><h3>显影进度 Progress</h3><p>每步 4 %，由弹簧连成一次连续的显影。</p><div class="dm-slot" id="dm-progress"></div></article>
+      <article class="dm-cell"><h3>题名 TextField</h3><p>写错后离开：朱红线从左侧曝光，提示显影出现。</p><div class="dm-slot" id="dm-field"></div></article>
+      <article class="dm-cell"><h3>收藏 IconButton</h3><p>按下时像印章压下。</p><div class="dm-slot" id="dm-icon"></div></article>
+    </div>
+  </section>
+
+  <section class="dm-act dm-roll" id="roll" data-theme="nocturne" aria-labelledby="roll-title">
+    <header class="dm-head">
+      <span class="dm-num" aria-hidden="true">IV</span>
+      <div class="dm-head__text"><h2 id="roll-title">夜场 <em>The Roll</em></h2><p>胶片有重量。甩出去会滑行；拉到尽头会被拉长再弹回；把一帧向下拖出，它落在桌面上轻轻一弹，然后显影。</p></div>
+      <dl class="dm-facts"><div><dt>两端</dt><dd>橡皮筋，最多 140 px</dd></div><div><dt>落桌</dt><dd>settle 位置 · snap 角度</dd></div><div><dt>冲击</dt><dd>440 ms</dd></div></dl>
+    </header>
+    <div id="dm-roll"></div>
+  </section>
+
+  <section class="dm-act dm-light" id="light" data-theme="stage" aria-labelledby="light-title">
+    <header class="dm-head">
+      <span class="dm-num" aria-hidden="true">V</span>
+      <div class="dm-head__text"><h2 id="light-title">追光 <em>Follow Spot</em></h2><p>第一面墙：三格滚轮一张，灯位只有六个。前两格转动准星，第三格时光束移向下一张照片：途中稍稍收窄，到达后张开，只停在六个灯位上。第二面墙：两格一张，镜头走弹簧，连续滚动不会中途停顿；移动时稍稍后退，到达时推近。指针拂过相纸，它会绕着图钉摆动。减少动态时，两面墙都改为淡出淡入，不再直接跳换。</p></div>
+      <dl class="dm-facts"><div><dt>移光</dt><dd>settle <span data-time="settle">570</span> ms · 途中收至 70 %</dd></div><div><dt>运镜</dt><dd>stage <span data-time="stage">830</span> ms</dd></div><div><dt>减少动态</dt><dd>淡出淡入 420 ms</dd></div></dl>
+    </header>
+    <div id="dm-flashlight"></div>
+    <div id="dm-wall"></div>
+  </section>
+
+  <section class="dm-act dm-kernel" id="kernel" aria-labelledby="kernel-title">
+    <header class="dm-head">
+      <span class="dm-num" aria-hidden="true">VI</span>
+      <div class="dm-head__text"><h2 id="kernel-title">动势 <em>The Kernel</em></h2><p>三个原语覆盖全部 46 个组件。弹簧用解析解计算：中途改目标时保留位置和速度，冻结时保留位移和速度。CSS 里的 <code>--ov-spring</code> 与 <code>--ov-settle</code> 由同一组常数生成，所以声明式过渡和脚本里的运动是同一种物理。</p></div>
+      <dl class="dm-facts"><div><dt>接口</dt><dd>Overture.motion</dd></div><div><dt>声音</dt><dd>Overture.sound</dd></div><div><dt>减少动态</dt><dd>移动改为淡出淡入</dd></div></dl>
+    </header>
+    <div class="dm-lab">
+      <div class="dm-lab__play">
+        <div class="dm-rail" id="dm-rail"><i></i><i></i><i></i><button type="button" class="dm-print" id="dm-print" aria-label="相纸：拖动后松手，按所选弹簧落到最近的刻度；方向键移动"><span></span></button></div>
+        <canvas class="dm-plot" id="dm-plot" aria-label="位移曲线：相纸位置随时间变化"></canvas>
+        <div id="dm-preset"></div>
+      </div>
+      <table class="dm-tokens" aria-label="动效令牌">
+        <thead><tr><th scope="col">弹簧</th><th scope="col">常数</th><th scope="col">静止</th><th scope="col">用途</th></tr></thead>
+        <tbody id="dm-token-rows"></tbody>
+      </table>
+    </div>
+    <div class="dm-voices">
+      <p>八种合成声音，默认关闭。页头打开后，它们只在有意义的动作上出现；这里的按钮可以直接试听。</p>
+      <div class="dm-voices__list" id="dm-voices"></div>
+    </div>
+  </section>
+
+  <footer class="dm-coda" id="coda">
+    <div id="dm-wordmark"></div>
+    <p>这是一张单文件演示页：样式、脚本、字体、照片、three.js 与 15 秒宣传片（720p）都在这一个 HTML 里，断网也能打开。GPU 依次尝试 WebGPU 与 WebGL2，都不可用时显示静态照片。</p>
+    <p class="dm-coda__small">示例摄影由 AI 生成，不代表真实作品履历 · three.js 0.186.1（MIT）· Bodoni Moda、Manrope（OFL）· Overture 1.3.0 · 2026-09-30</p>
+  </footer>
+</main>
+<!-- @inline:embeds -->
+<!-- @inline:js -->
+</body>
+</html>

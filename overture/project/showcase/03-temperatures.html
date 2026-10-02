@@ -1,0 +1,44 @@
+<!-- @dsShowcase title="两种光温" eyebrow="02 · WARM & COLD" lede="暖光照亮内容，冷光勾出焦点。悬停和聚焦是冷光，确认、选中和错误是朱红。用指针和 Tab 键试一试，右侧会记录每次交互属于哪种光温。" height=520 -->
+<style>
+.temp{position:relative;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(240px,1fr);gap:36px;padding:40px 36px;background:var(--ov-bg);color:var(--ov-text);overflow:hidden;isolation:isolate}
+.temp:before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;background:radial-gradient(circle 260px at var(--mx,30%) var(--my,40%),color-mix(in srgb,var(--ov-cold) 16%,transparent),transparent 70%);transition:background .08s}
+.temp__bench{display:grid;gap:28px;align-content:start}
+.temp__row{display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+.temp__legend{display:grid;gap:14px;align-content:start;border-left:1px solid var(--ov-line-soft);padding-left:28px}
+.temp__key{display:grid;grid-template-columns:44px 1fr;gap:12px;align-items:center;font-size:12px;color:var(--ov-muted)}
+.temp__key i{height:44px;display:block}
+.temp__key strong{display:block;color:var(--ov-text);font-weight:600;letter-spacing:.1em;font-size:11px}
+.temp__log{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px;font-size:12px;max-height:190px;overflow:hidden}
+.temp__log li{display:flex;gap:10px;align-items:baseline;animation:ov-unfold .4s var(--ov-ease)}
+.temp__log b{font-weight:600;font-size:10px;letter-spacing:.14em;min-width:52px}
+@media(max-width:760px){.temp{grid-template-columns:1fr;padding:26px 18px}.temp__legend{border-left:0;padding-left:0;border-top:1px solid var(--ov-line-soft);padding-top:20px}}
+</style>
+<div class="ov temp" id="temp">
+  <div class="temp__bench">
+    <div class="temp__row" id="cue"></div>
+    <div id="tabs"></div>
+    <div class="temp__row"><div id="field" style="flex:1;min-width:220px"></div><div id="switch"></div></div>
+    <div id="range"></div>
+  </div>
+  <aside class="temp__legend" aria-label="光温说明">
+    <div class="temp__key"><i style="background:var(--ov-cold)"></i><span><strong>COLD · 冷光</strong>聚焦、悬停取景、光束边缘、信息</span></div>
+    <div class="temp__key"><i style="background:var(--ov-accent)"></i><span><strong>VERMILION · 朱红</strong>动作、选中、进度、错误</span></div>
+    <div class="temp__key"><i style="background:linear-gradient(90deg,var(--ov-oxblood) 50%,var(--ov-indigo) 50%)"></i><span><strong>SILK · 材质</strong>深红与深蓝只承载织物，不作文字</span></div>
+    <ol class="temp__log" id="log" aria-live="polite"></ol>
+  </aside>
+</div>
+<script>
+Overture.configure({assetBase: '../assets/'});
+const O = Overture, log = document.getElementById('log'), temp = document.getElementById('temp');
+const note = (kind, text) => { const li = document.createElement('li'); li.innerHTML = `<b style="color:var(${kind === 'cold' ? '--ov-cold' : '--ov-accent'})">${kind === 'cold' ? 'COLD' : 'ACT'}</b><span>${O.escape(text)}</span>`; log.prepend(li); while (log.children.length > 7) log.lastChild.remove(); };
+O.mount('CueButton', '#cue', {label: '冲印这一张'});
+O.mount('StageTabs', '#tabs', {});
+O.mount('TextField', '#field', {label: '题名', placeholder: '给这一帧起个名字'});
+O.mount('Switch', '#switch', {label: '朱红点色'});
+O.mount('Range', '#range', {label: '曝光', min: -3, max: 3, step: .3, value: 0, unit: ' EV'});
+temp.addEventListener('pointermove', e => { const r = temp.getBoundingClientRect(); temp.style.setProperty('--mx', e.clientX - r.left + 'px'); temp.style.setProperty('--my', e.clientY - r.top + 'px'); });
+let last = null;
+temp.addEventListener('pointerover', e => { const el = e.target.closest('button,input,[role=tab],[role=switch]'); if (el && el !== last) { last = el; note('cold', `悬停 · ${(el.getAttribute('aria-label') || el.textContent || el.placeholder || el.type || '').trim().slice(0, 18)}`); } });
+temp.addEventListener('focusin', e => note('cold', `聚焦 · ${(e.target.getAttribute('aria-label') || e.target.textContent || e.target.placeholder || '控件').trim().slice(0, 18)}`));
+temp.addEventListener('ov:change', e => { const d = e.detail; note('act', `${d.component} → ${d.value !== undefined ? JSON.stringify(d.value) : d.activated ? '已确认' : d.index !== undefined ? '第 ' + (d.index + 1) + ' 项' : '变化'}`); });
+</script>

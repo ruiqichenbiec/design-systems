@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh" data-motion="full">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>一次曝光 · 透镜 点阵 序曲</title>
+<meta name="description" content="三套原生 Web 设计体系：透镜 Lens、点阵 Lattice、序曲 Overture。MIT 开源，每一屏都是体系自己的实时渲染。">
+<meta name="color-scheme" content="dark">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2307070a'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23fff4dc'/%3E%3C/svg%3E">
+<style>
+:root{
+  --ink:#07070a;--ink-2:#0e0e12;--paper:#efe9df;--dim:rgba(239,233,223,.58);--faint:rgba(239,233,223,.32);--line:rgba(239,233,223,.14);
+  --warm:#ffcf99;--photon:#fff4dc;--bar:64px;--cap:124px;
+  --sans:"Inter Tight",system-ui,-apple-system,"Segoe UI","PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  --ease:cubic-bezier(.7,0,.2,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--ink);color:var(--paper);font:400 16px/1.55 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+body{background:var(--ink);min-height:100vh}
+html.playing{overflow:hidden}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1px solid var(--warm);outline-offset:3px}
+html[data-lang="zh"] [lang="en"],html[data-lang="en"] [lang="zh"]{display:none!important}
+.mono{font-family:var(--mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+
+/* header */
+.top{position:fixed;inset:0 0 auto;height:var(--bar);z-index:30;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:0 28px;background:var(--ink);border-bottom:1px solid var(--line)}
+.mark{display:flex;align-items:center;gap:12px;text-decoration:none;font-size:14px;letter-spacing:.04em;justify-self:start}
+.mark i{width:7px;height:7px;border-radius:50%;background:var(--photon);box-shadow:0 0 10px 2px rgba(255,214,160,.6)}
+.index{display:flex;gap:4px}
+.index a{display:flex;gap:8px;align-items:baseline;padding:8px 14px;border-radius:999px;text-decoration:none;color:var(--dim);font-size:14px;transition:color .3s,background .3s}
+.index a .mono{font-size:11px;color:var(--faint)}
+.index a:hover{color:var(--paper)}
+.index a[aria-current="true"]{color:var(--paper);background:rgba(239,233,223,.07)}
+.index a[aria-current="true"] .mono{color:var(--warm)}
+.tools{display:flex;gap:6px;justify-self:end;align-items:center}
+.tool{display:flex;gap:7px;align-items:center;padding:7px 12px;border:1px solid var(--line);border-radius:999px;font-size:12.5px;color:var(--dim);transition:color .3s,border-color .3s;text-decoration:none;white-space:nowrap}
+.tool:hover{color:var(--paper);border-color:var(--faint)}
+.tool b{font-weight:500;color:var(--paper)}
+
+/* photon + aperture */
+.photon{position:fixed;left:0;top:0;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--photon);z-index:12;pointer-events:none;will-change:transform,opacity;
+  box-shadow:0 0 4px 1px #fff,0 0 22px 6px rgba(255,214,160,.42),0 0 90px 26px rgba(255,190,130,.13)}
+.rim{position:fixed;left:0;top:var(--bar);width:100%;height:calc(100% - var(--bar) - var(--cap));z-index:11;pointer-events:none;overflow:visible}
+.rim circle{fill:none;stroke:rgba(255,236,210,.7);stroke-width:1;filter:drop-shadow(0 0 6px rgba(255,200,140,.7))}
+
+/* hero */
+.hero{height:100vh;position:relative}
+.hero__copy{position:absolute;left:32px;bottom:44px;max-width:680px}
+.hero h1{font-weight:300;font-size:clamp(46px,7.4vw,112px);line-height:.98;letter-spacing:-.025em}
+.hero h1 small{display:block;font-size:.3em;letter-spacing:.01em;color:var(--dim);margin-top:.7em;line-height:1.2}
+.hero p{margin-top:22px;color:var(--dim);max-width:540px;font-size:16.5px}
+.hero__meta{position:absolute;right:32px;bottom:44px;text-align:right;color:var(--faint);line-height:2}
+.hero__meta b{color:var(--dim);font-weight:400}
+.cue{position:absolute;left:50%;top:calc(var(--bar) + (100vh - var(--bar) - var(--cap))/2 + 40px);transform:translateX(-50%);color:var(--faint);transition:opacity .6s}
+
+/* systems */
+.sys{height:360vh;position:relative}
+.stage{position:sticky;top:var(--bar);height:calc(100vh - var(--bar));overflow:hidden}
+.stage iframe{position:absolute;left:0;top:0;width:100%;height:calc(100% - var(--cap));border:0;background:transparent;pointer-events:none;clip-path:circle(0 at 50% 50%);visibility:hidden}
+html.playing .sys.active iframe{pointer-events:auto}
+.loading{position:absolute;inset:0 0 var(--cap) 0;display:grid;place-items:center;color:var(--faint);opacity:0;transition:opacity .4s;pointer-events:none}
+.sys.wait .loading{opacity:1}
+.slate{position:absolute;inset:0 0 var(--cap) 0;pointer-events:none;--h:clamp(44px,6vw,92px)}
+.slate__in{position:absolute;inset:0;text-align:center}
+.slate .no{position:absolute;left:0;right:0;bottom:calc(50% + 40px);color:var(--warm)}
+.slate h2{position:absolute;left:0;right:0;top:calc(50% + 30px);font-weight:300;font-size:var(--h);line-height:1;letter-spacing:-.01em}
+.slate .sub{position:absolute;left:0;right:0;top:calc(50% + 30px + var(--h) + 16px);color:var(--dim)}
+.slate .sub .mono{color:var(--warm)}
+
+/* caption bar */
+.bar{position:absolute;left:0;right:0;bottom:0;height:var(--cap);z-index:3;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;padding:0 28px;
+  background:var(--ink);border-top:1px solid var(--line);opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s var(--ease);pointer-events:none}
+.sys.open .bar{opacity:1;transform:none;pointer-events:auto}
+html.playing .bar{opacity:0!important;pointer-events:none!important}
+.bar h3{font-weight:400;font-size:26px;line-height:1.1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.bar h3 .mono{color:var(--warm);font-size:11.5px}
+.bar h3 small{font-size:15px;color:var(--dim);font-weight:300}
+.bar p{color:var(--dim);font-size:14.5px;margin-top:6px;max-width:820px;line-height:1.5}
+.bar h3 .stats{color:var(--faint);font-size:10.5px;letter-spacing:.1em;margin-left:6px}
+.acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.acts a,.acts button{font-size:13px;padding:9px 15px;border:1px solid var(--line);border-radius:999px;text-decoration:none;white-space:nowrap;transition:border-color .3s,background .3s}
+.acts a:hover,.acts button:hover{border-color:var(--faint);background:rgba(239,233,223,.05)}
+.acts .play{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.acts .play:hover{background:#fff}
+.exit{position:fixed;left:50%;bottom:calc(var(--cap)/2);transform:translate(-50%,calc(50% + 8px));z-index:31;padding:9px 16px;border-radius:999px;background:rgba(7,7,10,.86);border:1px solid var(--line);font-size:13px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;backdrop-filter:blur(10px)}
+html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
+
+/* fin */
+.fin{min-height:100vh;display:grid;align-content:center;padding:120px 32px 60px;position:relative}
+.fin__grid{display:grid;grid-template-columns:1.1fr 1fr;gap:64px;max-width:1240px;width:100%;margin:0 auto}
+.fin h2{font-weight:300;font-size:clamp(36px,4.6vw,64px);line-height:1.05;letter-spacing:-.015em}
+.fin h2 small{display:block;font-size:.34em;color:var(--dim);margin-top:16px;letter-spacing:0;line-height:1.5}
+.fin dl{display:grid;grid-template-columns:auto 1fr;gap:14px 26px;align-content:start;font-size:14.5px}
+.fin dt{color:var(--faint);padding-top:2px}
+.fin dd{color:var(--dim)}
+.fin dd a{text-decoration-color:var(--faint);text-underline-offset:3px}
+.fin code{font-family:var(--mono);font-size:12.5px;color:var(--paper);background:rgba(239,233,223,.06);padding:2px 6px;border-radius:4px}
+.fin footer{max-width:1240px;width:100%;margin:90px auto 0;display:flex;justify-content:space-between;color:var(--faint);border-top:1px solid var(--line);padding-top:18px;gap:20px;flex-wrap:wrap}
+
+@media (max-width:880px){
+  .top{grid-template-columns:auto 1fr;padding:0 14px}
+  .index{display:none}
+  .mark .t{display:none}
+  .tool{padding:6px 10px}
+  .tool .lbl{display:none}
+  .hero__copy{left:20px;right:20px;bottom:110px}
+  .hero__meta{left:20px;right:auto;text-align:left;bottom:30px}
+  :root{--cap:176px}
+  .bar{grid-template-columns:1fr;padding:0 16px;gap:12px;align-content:center}
+  .bar p{font-size:13.5px}
+  .acts{justify-content:flex-start}
+  .fin{padding:100px 20px 40px}
+  .fin__grid{grid-template-columns:1fr;gap:40px}
+  .fin dl{grid-template-columns:1fr;gap:4px}
+  .fin dd{margin-bottom:14px;overflow-wrap:anywhere}
+}
+@media (max-width:520px){ :root{--cap:132px} .bar .stats{display:none} .bar p{font-size:13px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden} .acts .opt{display:none} }
+</style>
+</head>
+<body>
+<header class="top">
+  <a class="mark" href="#top" aria-label="一次曝光 One Exposure"><i></i><span class="t"><span lang="zh">一次曝光</span><span lang="en">One Exposure</span></span></a>
+  <nav class="index" aria-label="Systems">
+    <a href="#lens" data-go="0"><span class="mono">01</span><span lang="zh">透镜</span><span lang="en">Lens</span></a>
+    <a href="#lattice" data-go="1"><span class="mono">02</span><span lang="zh">点阵</span><span lang="en">Lattice</span></a>
+    <a href="#overture" data-go="2"><span class="mono">03</span><span lang="zh">序曲</span><span lang="en">Overture</span></a>
+  </nav>
+  <div class="tools">
+    <button class="tool" id="t-lang" aria-label="Language / 语言"><b lang="zh">中</b><span lang="zh">EN</span><span lang="en">中</span><b lang="en">EN</b></button>
+    <button class="tool" id="t-motion" aria-pressed="true"><span class="lbl"><span lang="zh">动效</span><span lang="en">Motion</span></span><b data-motion-label></b></button>
+    <button class="tool" id="t-sound" aria-pressed="false"><span class="lbl"><span lang="zh">声音</span><span lang="en">Sound</span></span><b data-sound-label></b></button>
+    <a class="tool" href="https://github.com/ruiqichenbiec/design-systems" rel="noopener">GitHub ↗</a>
+  </div>
+</header>
+
+<div class="photon" id="photon" aria-hidden="true"></div>
+<svg class="rim" aria-hidden="true"><circle id="rim" cx="0" cy="0" r="0"/></svg>
+<button class="exit" id="exit"><span lang="zh">退出试玩 · Esc</span><span lang="en">Exit · Esc</span></button>
+
+<main id="top">
+  <section class="hero" aria-labelledby="hero-h">
+    <div class="cue mono" id="cue"><span lang="zh">滚动 · 曝光</span><span lang="en">Scroll to expose</span></div>
+    <div class="hero__copy">
+      <h1 id="hero-h"><span lang="zh">一次曝光</span><span lang="en">One exposure</span>
+        <small><span lang="zh">透镜、点阵、序曲：三套原生 Web 设计体系</span><span lang="en">Lens, Lattice, Overture: three native web design systems</span></small></h1>
+      <p><span lang="zh">往下滚动，光点会依次打开它们。窗里每一帧都是体系自己的实时渲染，不是录屏也不是截图；点“在此试玩”可以直接上手。</span><span lang="en">Scroll and the point of light opens each one in turn. Every frame inside is the system's own live rendering, not a recording or a screenshot. Press “Play here” to try it in place.</span></p>
+    </div>
+    <div class="hero__meta mono"><b>MIT</b> · <span lang="zh">开源</span><span lang="en">Open source</span><br><b>3</b> <span lang="zh">套体系</span><span lang="en">systems</span> · <b>78</b> <span lang="zh">个组件</span><span lang="en">components</span><br><span lang="zh">零框架 · 原生 HTML/CSS/JS</span><span lang="en">No framework · plain HTML/CSS/JS</span></div>
+  </section>
+
+  <section class="sys" id="lens" aria-label="透镜 Lens" data-src-zh="lens/lens.html" data-src-en="lens/lens-en.html">
+    <div class="stage">
+      <div class="slate" aria-hidden="true"><div class="slate__in"><div class="no mono">01 / 03</div><h2><span lang="zh">透镜</span><span lang="en">Lens</span></h2><div class="sub"><span lang="zh">Lens · </span><span class="mono"><span lang="zh">玻璃 · 液体 · 光</span><span lang="en">Glass · Liquid · Light</span></span></div></div></div>
+      <div class="loading mono"><span lang="zh">正在载入透镜…</span><span lang="en">Loading Lens…</span></div>
+      <iframe title="透镜 Lens · live" tabindex="-1"></iframe>
+      <div class="bar">
+        <div>
+          <h3><span class="mono">01</span><span lang="zh">透镜</span><span lang="en">Lens</span><small class="mono"><span lang="zh">玻璃 · 液体 · 光</span><span lang="en">Glass · Liquid · Light</span></small><span class="stats mono"><span lang="zh">18 类组件 · WebGL2 · 13 种合成音效 · 零运行时依赖</span><span lang="en">18 components · WebGL2 · 13 synthesized sounds · zero runtime dependencies</span></span></h3>
+          <p><span lang="zh">玻璃承载信息，液体表达连续变化，光表达状态。实时背景折射、弹簧形变和原创合成音；所有可交互的部分都由同一块透镜承载。</span><span lang="en">Glass carries information, liquid shows continuous change, light shows state. Live background refraction, spring deformation and synthesized sound; everything you can touch is carried by one lens.</span></p>
+        </div>
+        <div class="acts">
+          <button class="play"><span lang="zh">在此试玩</span><span lang="en">Play here</span></button>
+          <a href="lens/lens-showcase.html" data-en="lens/lens-showcase-en.html"><span lang="zh">完整展示</span><span lang="en">Full showcase</span></a>
+          <a class="opt" href="lens/lens-showcase-standalone.html"><span lang="zh">单文件版</span><span lang="en">Single file</span></a>
+          <a class="opt" href="https://github.com/ruiqichenbiec/design-systems/tree/main/lens" rel="noopener"><span lang="zh">源码</span><span lang="en">Source</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sys" id="lattice" aria-label="点阵 Lattice" data-src-zh="lattice/dist/lattice-showcase.html" data-src-en="lattice/dist/lattice-showcase.html">
+    <div class="stage">
+      <div class="slate" aria-hidden="true"><div class="slate__in"><div class="no mono">02 / 03</div><h2><span lang="zh">点阵</span><span lang="en">Lattice</span></h2><div class="sub"><span lang="zh">Lattice · </span><span class="mono"><span lang="zh">点 · 集 · 映射</span><span lang="en">Point · Set · Map</span></span></div></div></div>
+      <div class="loading mono"><span lang="zh">正在载入点阵…</span><span lang="en">Loading Lattice…</span></div>
+      <iframe title="点阵 Lattice · live" tabindex="-1"></iframe>
+      <div class="bar">
+        <div>
+          <h3><span class="mono">02</span><span lang="zh">点阵</span><span lang="en">Lattice</span><small class="mono"><span lang="zh">点 · 集 · 映射</span><span lang="en">Point · Set · Map</span></small><span class="stats mono"><span lang="zh">14 类组件 · three.js · WebGL2 · 真实定理依赖数据</span><span lang="en">14 components · three.js · WebGL2 · a real theorem dependency graph</span></span></h3>
+          <p><span lang="zh">万物皆点集，交互即映射。文字、吸引子、定理之瀑和证明树都是同一张 GPU 点阵：点先被放进无散度流场，再被弹簧拉进下一个集合。</span><span lang="en">Everything is a point set; every interaction is a map. Lettering, attractors, a theorem waterfall and proof trees are one GPU lattice: points pour through a divergence-free flow, then springs pull them into the next set.</span></p>
+        </div>
+        <div class="acts">
+          <button class="play"><span lang="zh">在此试玩</span><span lang="en">Play here</span></button>
+          <a href="lattice/dist/lattice-showcase.html"><span lang="zh">完整展示</span><span lang="en">Full showcase</span></a>
+          <a class="opt" href="lattice/dist/catalog/index.html"><span lang="zh">组件目录</span><span lang="en">Catalog</span></a>
+          <a class="opt" href="https://github.com/ruiqichenbiec/design-systems/tree/main/lattice" rel="noopener"><span lang="zh">源码</span><span lang="en">Source</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sys" id="overture" aria-label="序曲 Overture" data-src-zh="overture/dist/overture-showcase.html" data-src-en="overture/dist/overture-showcase.html">
+    <div class="stage">
+      <div class="slate" aria-hidden="true"><div class="slate__in"><div class="no mono">03 / 03</div><h2><span lang="zh">序曲</span><span lang="en">Overture</span></h2><div class="sub"><span lang="zh">Overture · </span><span class="mono"><span lang="zh">光圈 · 显影 · 弹簧</span><span lang="en">Aperture · Develop · Spring</span></span></div></div></div>
+      <div class="loading mono"><span lang="zh">正在载入序曲（约 7 MB）…</span><span lang="en">Loading Overture (about 7 MB)…</span></div>
+      <iframe title="序曲 Overture · live" tabindex="-1"></iframe>
+      <div class="bar">
+        <div>
+          <h3><span class="mono">03</span><span lang="zh">序曲</span><span lang="en">Overture</span><small class="mono"><span lang="zh">光圈 · 显影 · 弹簧</span><span lang="en">Aperture · Develop · Spring</span></small><span class="stats mono"><span lang="zh">46 类组件 · WebGPU / WebGL2 · 品牌工坊 · 示例照片为 AI 生成</span><span lang="en">46 components · WebGPU / WebGL2 · brand studio · sample photos are AI-generated</span></span></h3>
+          <p><span lang="zh">摄影、歌剧与时装。开幕是光圈，显影是显影，共振是弹簧：三个运动原语驱动全部交互。暗场、印纸、夜场三套主题，WebGPU / WebGL2 渲染。</span><span lang="en">Photography, opera and fashion. Opening is an aperture, revealing is developing, resonance is a spring: three motion primitives drive every interaction. Three themes, rendered with WebGPU / WebGL2.</span></p>
+        </div>
+        <div class="acts">
+          <button class="play"><span lang="zh">在此试玩</span><span lang="en">Play here</span></button>
+          <a href="overture/dist/overture-showcase.html?motion=full"><span lang="zh">完整展示</span><span lang="en">Full showcase</span></a>
+          <a class="opt" href="overture/dist/components.html"><span lang="zh">46 个组件</span><span lang="en">46 components</span></a>
+          <a class="opt" href="overture/dist/catalog/index.html"><span lang="zh">组件目录</span><span lang="en">Catalog</span></a>
+          <a class="opt" href="https://github.com/ruiqichenbiec/design-systems/tree/main/overture" rel="noopener"><span lang="zh">源码</span><span lang="en">Source</span></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="fin" aria-labelledby="fin-h">
+    <div class="fin__grid">
+      <h2 id="fin-h"><span lang="zh">拿去用。</span><span lang="en">Take it.</span>
+        <small><span lang="zh">三套体系都以 MIT 许可证开源：可以商用、修改、闭源，只需保留版权声明。仓库按原样提供，不再维护。</span><span lang="en">All three systems are MIT-licensed: use them commercially, change them, ship them closed, as long as the copyright notice stays. Provided as-is and not actively maintained.</span></small></h2>
+      <dl>
+        <dt><span lang="zh">本地运行</span><span lang="en">Run locally</span></dt>
+        <dd><code>git clone https://github.com/ruiqichenbiec/design-systems</code><br><code>node serve.mjs</code> → <code>http://127.0.0.1:4300/</code></dd>
+        <dt><span lang="zh">各体系</span><span lang="en">Systems</span></dt>
+        <dd><a href="lens/START-HERE.md">lens/</a> · <a href="lattice/README.md">lattice/</a> · <a href="overture/README.md">overture/</a> · <a href="ds-viewer/README.md">ds-viewer/</a> <span lang="zh">（组件目录生成器）</span><span lang="en">(catalog generator)</span></dd>
+        <dt><span lang="zh">第三方</span><span lang="en">Third party</span></dt>
+        <dd><span lang="zh">three.js（MIT）；Bodoni Moda、Manrope、Inter Tight 等字体（SIL OFL）。序曲的示例照片由 AI 生成。</span><span lang="en">three.js (MIT); Bodoni Moda, Manrope, Inter Tight and other fonts (SIL OFL). Overture's sample photos are AI-generated.</span></dd>
+        <dt><span lang="zh">浏览器</span><span lang="en">Browsers</span></dt>
+        <dd><span lang="zh">需要 WebGL2；序曲在支持时使用 WebGPU。系统开启“减弱动态”时，页面默认仍播放完整动效，可在右上角切换。</span><span lang="en">WebGL2 required; Overture uses WebGPU where available. The page plays full motion by default even when the OS asks for reduced motion; switch it at the top right.</span></dd>
+      </dl>
+    </div>
+    <footer class="mono"><span>MIT License</span><span><span lang="zh">按原样提供 · 不再维护</span><span lang="en">Provided as-is · not maintained</span></span><a href="#top"><span lang="zh">回到光点 ↑</span><span lang="en">Back to the point ↑</span></a></footer>
+  </section>
+</main>
+
+<script>
+(() => {
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const root = document.documentElement, photon = $("#photon"), rim = $("#rim"), cue = $("#cue");
+  const secs = $$(".sys"), links = $$(".index a");
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const smooth = (t) => t * t * (3 - 2 * t);
+  const expo = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2);
+  const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+
+  /* ---------- preferences ---------- */
+  let lang = store.get("exposure.lang") || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en");
+  let motion = store.get("exposure.motion") || "full"; // showcase default: full motion, regardless of the OS setting
+  let soundOn = false;
+  const srcOf = (s) => { const u = s.dataset["src" + (lang === "zh" ? "Zh" : "En")]; return motion === "full" ? u + (u.includes("?") ? "&" : "?") + "motion=full" : u; };
+  function applyLang() {
+    root.dataset.lang = lang; root.lang = lang === "zh" ? "zh-CN" : "en";
+    $$("a[data-en]").forEach((a) => { a.dataset.zh ??= a.getAttribute("href"); a.setAttribute("href", lang === "en" ? a.dataset.en : a.dataset.zh); });
+    document.title = lang === "zh" ? "一次曝光 · 透镜 点阵 序曲" : "One Exposure · Lens, Lattice, Overture";
+  }
+  function applyMotion() {
+    root.dataset.motion = motion;
+    $("[data-motion-label]").textContent = motion === "full" ? (lang === "zh" ? "完整" : "Full") : (lang === "zh" ? "减弱" : "Reduced");
+    $("#t-motion").setAttribute("aria-pressed", String(motion === "full"));
+  }
+  function applySound() {
+    $("[data-sound-label]").textContent = soundOn ? (lang === "zh" ? "开" : "On") : (lang === "zh" ? "关" : "Off");
+    $("#t-sound").setAttribute("aria-pressed", String(soundOn));
+  }
+  const reloadLoaded = () => secs.forEach((s) => { if ($("iframe", s).dataset.cur) load(s, true); });
+  $("#t-lang").onclick = () => { lang = lang === "zh" ? "en" : "zh"; store.set("exposure.lang", lang); applyLang(); applyMotion(); applySound(); reloadLoaded(); };
+  $("#t-motion").onclick = () => { motion = motion === "full" ? "reduced" : "full"; store.set("exposure.motion", motion); applyMotion(); reloadLoaded(); };
+  $("#t-sound").onclick = () => { soundOn = !soundOn; if (soundOn) audio.init(); applySound(); if (soundOn) audio.tick(); };
+  applyLang(); applyMotion(); applySound();
+
+  /* ---------- sound: synthesized, quiet, off by default ---------- */
+  const audio = {
+    ctx: null, out: null,
+    init() { if (this.ctx) { this.ctx.resume?.(); return; } try { const C = window.AudioContext || window.webkitAudioContext; this.ctx = new C(); this.out = this.ctx.createGain(); this.out.gain.value = 0.5; this.out.connect(this.ctx.destination); } catch { this.ctx = null; } },
+    noise(dur) { const c = this.ctx, b = c.createBuffer(1, Math.ceil(c.sampleRate * dur), c.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / d.length, 3); const s = c.createBufferSource(); s.buffer = b; return s; },
+    tick() { if (!soundOn || !this.ctx) return; const c = this.ctx, t = c.currentTime, n = this.noise(0.03), f = c.createBiquadFilter(), g = c.createGain(); f.type = "highpass"; f.frequency.value = 3200; g.gain.value = 0.22; n.connect(f).connect(g).connect(this.out); n.start(t); },
+    // shutter: two clicks (leaf blades) and a low body
+    shutter(open) { if (!soundOn || !this.ctx) return; const c = this.ctx, t = c.currentTime;
+      [0, open ? 0.055 : 0.04].forEach((dt, i) => { const n = this.noise(0.045), f = c.createBiquadFilter(), g = c.createGain(); f.type = "bandpass"; f.frequency.value = i ? 2400 : 1600; f.Q.value = 0.9; g.gain.value = 0.32; n.connect(f).connect(g).connect(this.out); n.start(t + dt); });
+      const o = c.createOscillator(), g = c.createGain(); o.type = "sine"; o.frequency.setValueAtTime(open ? 140 : 110, t); o.frequency.exponentialRampToValueAtTime(60, t + 0.18); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.18, t + 0.008); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22); o.connect(g).connect(this.out); o.start(t); o.stop(t + 0.25); },
+    // exposure: a soft airy swell when the frame is fully open
+    swell() { if (!soundOn || !this.ctx) return; const c = this.ctx, t = c.currentTime, n = this.noise(1.6), f = c.createBiquadFilter(), g = c.createGain(); f.type = "bandpass"; f.frequency.setValueAtTime(500, t); f.frequency.exponentialRampToValueAtTime(2600, t + 1.2); f.Q.value = 0.6; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.07, t + 0.35); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.5); n.connect(f).connect(g).connect(this.out); n.start(t); },
+  };
+
+  /* ---------- loading: only systems near the viewport keep a live page ---------- */
+  function load(s, force) {
+    const f = $("iframe", s), want = srcOf(s);
+    if (!force && f.dataset.cur === want) return;
+    s.classList.add("wait"); f.onload = () => s.classList.remove("wait"); f.dataset.cur = want; f.src = want;
+  }
+  function unload(s) { const f = $("iframe", s); if (f.dataset.cur) { f.onload = null; f.src = "about:blank"; delete f.dataset.cur; } s.classList.remove("wait"); }
+  const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? load(e.target) : unload(e.target))), { rootMargin: "120% 0px" });
+  secs.forEach((s) => io.observe(s));
+
+  /* ---------- play in place ---------- */
+  let playing = null;
+  function play(s) { playing = s; root.classList.add("playing"); const f = $("iframe", s); f.tabIndex = 0; f.focus(); audio.tick(); }
+  function stop() { if (!playing) return; $("iframe", playing).tabIndex = -1; playing = null; root.classList.remove("playing"); audio.tick(); }
+  secs.forEach((s) => $(".play", s).addEventListener("click", () => play(s)));
+  $("#exit").onclick = stop;
+  addEventListener("keydown", (e) => { if (e.key === "Escape") stop(); });
+  // Esc pressed inside a same-origin system page
+  secs.forEach((s) => $("iframe", s).addEventListener("load", (ev) => { try { ev.target.contentWindow.addEventListener("keydown", (e) => { if (e.key === "Escape") stop(); }); } catch {} }));
+
+  /* ---------- navigation: jump to the fully open frame ---------- */
+  const H = () => innerHeight, css = (n, d) => parseFloat(getComputedStyle(root).getPropertyValue(n)) || d, BAR = () => css("--bar", 64), CAP = () => css("--cap", 112);
+  const openY = (s) => s.offsetTop + 0.56 * (s.offsetHeight - (H() - BAR()));
+  links.forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); stop(); scrollTo({ top: openY(secs[+a.dataset.go]), behavior: motion === "full" ? "smooth" : "auto" }); }));
+
+  /* ---------- the exposure ---------- */
+  // per system: .00–.10 slate (the point alone) · .10–.34 aperture opens from the point · .34–.80 open · .80–.98 closes back to the point
+  const OPEN0 = 0.1, OPEN1 = 0.34, CLOSE0 = 0.8, CLOSE1 = 0.98;
+  let px = innerWidth / 2, py = innerHeight / 2, tx = 0, ty = 0, mx = 0, my = 0;
+  addEventListener("pointermove", (e) => { mx = (e.clientX / innerWidth - 0.5) * 2; my = (e.clientY / innerHeight - 0.5) * 2; }, { passive: true });
+  const state = secs.map(() => ({ phase: "dark" }));
+
+  function frame(now) {
+    const vh = H(), bar = BAR(), sh = vh - bar, fh = sh - CAP(), cx = innerWidth / 2, cy = bar + fh / 2;
+    const R = Math.hypot(innerWidth, fh) / 2 + 2;
+    let photonAlpha = 1, rimR = 0, rimA = 0, current = -1;
+
+    // hero: the point waits in the middle; the cue fades as you begin
+    const hp = clamp(scrollY / vh);
+    cue.style.opacity = String(1 - smooth(clamp(hp * 4)));
+
+    secs.forEach((s, i) => {
+      const r = s.getBoundingClientRect(), span = s.offsetHeight - sh, p = clamp((bar - r.top) / span);
+      const f = $("iframe", s), slate = $(".slate", s), st = state[i];
+      const inView = r.top < vh && r.bottom > bar;
+      let k = 0; // how open, 0..1
+      if (p > OPEN0 && p < CLOSE1) k = p < OPEN1 ? (p - OPEN0) / (OPEN1 - OPEN0) : p < CLOSE0 ? 1 : 1 - (p - CLOSE0) / (CLOSE1 - CLOSE0);
+      k = clamp(k);
+      const e = motion === "full" ? expo(k) * 0.7 + smooth(k) * 0.3 : k;
+      if (motion === "full") {
+        const rad = e * R;
+        f.style.clipPath = k >= 1 ? "none" : `circle(${rad.toFixed(1)}px at 50% 50%)`;
+        f.style.opacity = "1";
+        if (inView && k > 0 && k < 1) { rimR = rad; rimA = Math.max(rimA, Math.sin(Math.PI * clamp(k)) * 0.9); }
+      } else {
+        f.style.clipPath = "none"; f.style.opacity = String(smooth(k));
+      }
+      f.style.visibility = k > 0 && inView ? "visible" : "hidden";
+      // the slate belongs to the dark: it fades as the frame opens and returns as it closes
+      // the slate belongs to the dark before the frame opens; it rises toward the point as the section arrives
+      const slateA = !inView ? 0 : p <= 0 ? smooth(clamp(1 - (r.top - bar) / (vh * 0.7))) : p < OPEN1 ? 1 - smooth(clamp(k * 4)) : 0;
+      slate.style.opacity = String(slateA);
+      slate.firstElementChild.style.transform = `translateY(${(6 - 6 * slateA).toFixed(1)}px)`;
+      const open = k > 0.985 && inView;
+      s.classList.toggle("open", open); s.classList.toggle("active", inView && k > 0);
+      if (inView && k > 0.02) photonAlpha = Math.min(photonAlpha, 1 - smooth(clamp(k * 3)));
+      if (inView && p > OPEN0 * 0.5 && p < CLOSE1) current = i;
+      // sounds on phase changes
+      const phase = k <= 0 ? "dark" : k >= 1 ? "open" : st.phase === "dark" ? "opening" : st.phase === "open" ? "closing" : st.phase;
+      if (phase !== st.phase) { if (phase === "opening") audio.shutter(true); if (phase === "open") audio.swell(); if (phase === "closing") audio.shutter(false); st.phase = phase; }
+    });
+    if (playing && !playing.classList.contains("open")) stop();
+
+    links.forEach((a, i) => a.setAttribute("aria-current", String(i === current)));
+
+    // photon: a slow breath, a little pull toward the pointer, gone while a frame is open
+    const t = now / 1000, breath = motion === "full" ? 1 + 0.18 * Math.sin(t * 1.7) : 1;
+    tx = cx + mx * 14; ty = cy + my * 10;
+    px += (tx - px) * 0.06; py += (ty - py) * 0.06;
+    const fin = $(".fin").getBoundingClientRect(), finA = 1 - smooth(clamp((vh - fin.top) / (vh * 0.5)));
+    photon.style.opacity = String(photonAlpha * finA);
+    photon.style.transform = `translate(${px.toFixed(1)}px,${py.toFixed(1)}px) scale(${(breath * (1 + rimA * 0.6)).toFixed(3)})`;
+    rim.setAttribute("cx", String(cx)); rim.setAttribute("cy", String(fh / 2)); rim.setAttribute("r", rimR.toFixed(1));
+    rim.style.opacity = String(motion === "full" ? rimA : 0);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+  addEventListener("resize", () => { px = innerWidth / 2; py = innerHeight / 2; });
+})();
+</script>
+</body>
+</html>

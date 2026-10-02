@@ -1,0 +1,9 @@
+<!-- @dsShowcase title="品牌工坊" eyebrow="07 · BRAND COMPOSER" lede="四种视觉语言（光圈剧场、印纸显影、褶皱共振、夜场冷光）乘四种画幅。编辑标题后直接在本机导出 PNG，或录制 6 秒无声 WebM。" height=700 gl -->
+<style>.brand{padding:36px;background:var(--ov-bg);color:var(--ov-text)}@media(max-width:760px){.brand{padding:20px 16px}}</style>
+<div class="ov brand"><div id="composer"></div></div>
+<script>
+Overture.configure({assetBase: '../assets/'});
+const c = Overture.mount('BrandComposer', '#composer', {});
+const mode = document.querySelector('#composer [data-field=mode]');
+if (mode) { mode.value = 'nocturne'; mode.dispatchEvent(new Event('input', {bubbles: true})); }
+</script>

@@ -1,0 +1,14 @@
+<!-- @dsCard group="Cover" height=540 subtitle="点阵 Lattice" -->
+<section id="s" data-stage style="height:540px"></section>
+<canvas class="lx-stage" id="c"></canvas>
+<div style="position:absolute;left:40px;bottom:34px;z-index:2"><p style="margin:0;font:700 30px/1.2 var(--f-ui);color:var(--text)"><span lang="zh" style="color:var(--hot)">点阵</span> Lattice</p><p style="margin:6px 0 0;font:400 17px/1.4 var(--f-ui);color:var(--text-dim)">Everything is a set of points. Every interaction is a map.</p></div>
+<script>
+(function(){
+  var L = window.Lattice;
+  function stage(stations){ return new L.Stage(document.getElementById('c'), stations, L.WORLDS.night); }
+  var st = stage([{id:'hero', el:'#s', pos:[0,0,10], look:[0,0,0]}]);
+  var f = new L.Field(st, {}); f.useSets(L.sets); st.add(f); f.onResize(st);
+  f.keep(function(Lt){ return Lt.rest(); }, {dur:0.001});
+  setTimeout(function(){ f.keep(function(Lt){ var m = L.sets.matrixText('LATTICE', 2); return Lt.lit([{map:m, col:Math.floor((Lt.cols-m.w)/2), row:Math.floor(Lt.rows*0.2)}]); }, {sweep:[1,0,0], span:9, dur:1.5, lit:1.6, flow:2.4, alpha:0.42}); }, 400);
+})();
+</script>

@@ -1,0 +1,48 @@
+<!doctype html><html data-theme="stage"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="../assets/tokens.css">
+<link rel="stylesheet" href="../assets/bundle.css">
+<script src="../assets/bundle.js"></script>
+<style>html,body{margin:0;background:transparent}html{overflow:hidden}body{padding:0;font-family:var(--font-sans)}</style>
+<script>
+addEventListener('message',e=>{if(e.data&&e.data.dsTheme)document.documentElement.dataset.theme=e.data.dsTheme;});
+(function(){try{var t=new URLSearchParams(location.search).get('theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}})();
+addEventListener('load',function(){var post=function(){parent.postMessage({dsFrame:"show-themes",h:Math.ceil(Math.max(document.documentElement.scrollHeight,document.body.scrollHeight))},'*');};post();try{new ResizeObserver(post).observe(document.body);}catch(e){}});
+addEventListener('error',function(e){parent.postMessage({dsFrame:"show-themes",err:String(e.message||e)},'*');});
+</script></head><body>
+<style>
+.themes3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:#0006}
+.th{background:var(--ov-bg);color:var(--ov-text);padding:30px 26px 34px;display:grid;gap:22px;align-content:start;min-width:0}
+.th__head{display:flex;flex-wrap:wrap;gap:6px 14px;justify-content:space-between;align-items:baseline;border-bottom:1px solid var(--ov-line);padding-bottom:12px}
+.th__head strong{font:400 34px/1 var(--font-display);letter-spacing:-.02em}
+.th__head span{font-size:10px;letter-spacing:.2em;color:var(--ov-muted)}
+.th__sw{display:grid;grid-template-columns:repeat(6,1fr);height:26px}
+.th__sw i{display:block}
+.th .ov-button{min-height:44px;padding:11px 18px}
+.th__row{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.th code{font-size:11px;color:var(--ov-muted)}
+@media(max-width:860px){.themes3{grid-template-columns:1fr}}
+</style>
+<div class="themes3">
+  <section class="ov th" data-theme="stage"></section>
+  <section class="ov th" data-theme="paper"></section>
+  <section class="ov th" data-theme="nocturne"></section>
+</div>
+<script>
+Overture.configure({assetBase: '../assets/'});
+const names = {stage: ['Stage', '暗场'], paper: ['Paper', '印纸'], nocturne: ['Nocturne', '夜场']};
+document.querySelectorAll('.th').forEach(el => {
+  const id = el.dataset.theme;
+  el.innerHTML = `<div class="th__head"><strong>${names[id][0]}</strong><span>${names[id][1]} · data-theme="${id}"</span></div>
+  <div class="th__sw" aria-hidden="true">${['--ov-bg', '--ov-surface', '--ov-text', '--ov-accent', '--ov-cold', '--ov-indigo'].map(v => `<i style="background:var(${v})" title="${v}"></i>`).join('')}</div>
+  <div class="th__row" data-slot="cue"></div><div data-slot="tabs"></div><div class="th__row"><div data-slot="switch"></div><div data-slot="check"></div></div><div data-slot="range"></div><div data-slot="notice"></div>`;
+  const m = (name, slot, props) => Overture.mount(name, el.querySelector(`[data-slot=${slot}]`), props);
+  m('CueButton', 'cue', {label: '进入这一幕'});
+  m('StageTabs', 'tabs', {});
+  m('Switch', 'switch', {label: '取景线', value: id !== 'paper'});
+  m('Check', 'check', {label: '保留原片', value: true});
+  m('Range', 'range', {label: '曝光', min: -3, max: 3, step: .3, value: id === 'nocturne' ? -0.9 : 0.6, unit: ' EV'});
+  m('Notice', 'notice', {title: id === 'nocturne' ? '夜场已就绪' : '底片已归档', message: '同一组件，只有主题令牌不同。'});
+});
+</script>
+
+</body></html>

@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script>/* ?motion=full shows full motion even when the OS asks for reduced motion (used by the showcase site) */if(/[?&]motion=full\b/.test(location.search)){const mm=matchMedia.bind(window);window.matchMedia=q=>/prefers-reduced-motion:\s*reduce/.test(q)?mm("not all"):mm(q);}</script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>点阵 Lattice</title>
+<meta name="description" content="点阵 Lattice — a particle-field design system: everything is a set of points, every interaction is a map.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Doto:wght@500;700;900&family=Atkinson+Hyperlegible+Next:wght@300..700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2307080b'/%3E%3Cg fill='%23ff5a1f'%3E%3Ccircle cx='9' cy='9' r='2.4'/%3E%3Ccircle cx='16' cy='16' r='2.4'/%3E%3Ccircle cx='23' cy='23' r='2.4'/%3E%3Ccircle cx='23' cy='9' r='2.4'/%3E%3C/g%3E%3C/svg%3E">
+<!--build:css-->
+<link rel="stylesheet" href="../src/tokens.css">
+<link rel="stylesheet" href="../src/components.css">
+<link rel="stylesheet" href="./page.css">
+<!--/build:css-->
+<!--build:importmap-->
+<script type="importmap">{ "imports": { "three": "../node_modules/three/build/three.module.js", "three/addons/": "../node_modules/three/examples/jsm/" } }</script>
+<!--/build:importmap-->
+</head>
+<body>
+<!--
+THESIS: 万物皆点集，交互即映射. Everything on the page is a set of points and every interaction is a map between sets; refuses the dark dev-portfolio default (floating blob, neon accent, project-card grid) and the generic "particles morph into random models" demo by giving the points rules: springs to sets, an ABC flow, fields, heat, shock, and real data (a theorem DAG).
+OWN-WORLD: Night. One lattice of dots under every page; lit sites become living swarms; signal orange marks what a thing needs, ice blue what it enables; dot-matrix lettering (5×7 matrix, Doto) against Atkinson Hyperlegible Next (chosen for 12 px labels over moving points) and Noto Sans SC.
+STORY: the visitor sees a mathematician-engineer's work as structures made of points, watches a theorem waterfall and a proof tree grow, and believes the rigour because every picture is real data they can interrogate.
+FIRST VIEWPORT: full-bleed lattice; "POINT SETS" lit in the matrix at ×2 across the upper third; lower-left thesis zh+en with the gesture legend; lower-right set caption and next-set control.
+FORM: user-pinned direction (粒子点阵 particle field) in the user-chosen Night world; no roll.
+FINISH: unreviewed and undocumented is unfinished; this build ends with the finish review, the verdict, and DESIGN.md
+-->
+<canvas class="lx-stage" id="stage" aria-hidden="true"></canvas>
+
+<header class="top">
+  <a class="top__mark" href="#top" aria-label="Lattice, top of page"><span class="top__rc" data-dottext aria-hidden="true">LX</span><span class="top__name">Lattice</span></a>
+  <nav class="top__nav" aria-label="Sections">
+    <a href="#top"><b lang="zh">点</b>Sets</a>
+    <a href="#waterfall"><b lang="zh">瀑</b>Waterfall</a>
+    <a href="#tour"><b lang="zh">巡</b>Tour</a>
+    <a href="#tree"><b lang="zh">树</b>Proof trees</a>
+    <a href="#instruments"><b lang="zh">器</b>System</a>
+  </nav>
+  <div class="top__tools">
+    <button class="lx-btn lx-btn--ghost top__tool" id="sound-btn" aria-pressed="false"><span lang="zh">声</span><span class="top__tool-label">Sound off</span></button>
+    <button class="lx-btn lx-btn--ghost top__tool" id="cmd-btn" aria-label="Open command palette"><span class="matrix">⌘K</span></button>
+  </div>
+</header>
+
+<main id="top">
+  <!-- 点 hero -->
+  <section class="hero" data-stage aria-labelledby="hero-h">
+    <h1 id="hero-h" class="sr-only">点阵 Lattice</h1>
+    <div class="hero__copy">
+      <p class="hero__thesis"><span lang="zh">万物皆点集，交互即映射。</span><br><em>Everything here is a set of points. Every interaction is a map.</em></p>
+      <p class="hero__sub">A design system for personal sites and WebGL pieces: formal mathematics, data, agent systems and games, each built up from its premises.</p>
+      <ul class="legend" aria-label="Gestures">
+        <li><span class="matrix">MOVE</span> disturb the field</li>
+        <li><span class="matrix">HOLD</span> melt the points</li>
+        <li><span class="matrix">LET GO</span> recrystallise into the next set</li>
+      </ul>
+    </div>
+    <div class="hero__set">
+      <p class="caption" id="set-caption" aria-live="polite"></p>
+      <div class="hero__set-row">
+        <span class="set-index" id="set-index" data-dottext aria-hidden="true">01</span>
+        <button class="lx-btn lx-btn--primary" id="next-set"><svg class="lx-icon" viewBox="0 0 18 18" aria-hidden="true"><circle cx="1.8" cy="9" r="1.2"/><circle cx="5.4" cy="9" r="1.2"/><circle cx="9" cy="9" r="1.2"/><circle cx="12.6" cy="9" r="1.2"/><circle cx="16.2" cy="9" r="1.2"/><circle cx="12.6" cy="5.4" r="1.2"/><circle cx="12.6" cy="12.6" r="1.2"/><circle cx="9" cy="1.8" r="1.2"/><circle cx="9" cy="16.2" r="1.2"/></svg> Next set</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 瀑 waterfall: explore freely -->
+  <section class="fall" id="waterfall" data-stage aria-labelledby="fall-h">
+    <div class="fall__note panel--sticky">
+      <h2 id="fall-h" class="h2 h2--small"><span lang="zh">定理之瀑</span> A waterfall of theorems</h2>
+      <p class="note-text">43 results of real analysis, from ZFC down to existence theorems for differential equations. Each stream falls from a premise into what it proves. Hover a result: <b class="hot">what it needs</b>, <b class="hot2">what it enables</b>. Click to grow its proof.</p>
+      <ul class="kinds" id="kinds" aria-label="Legend"></ul>
+      <details class="index">
+        <summary>All 43 results, in dependency order</summary>
+        <ol id="fall-index"></ol>
+      </details>
+    </div>
+  </section>
+
+  <!-- 巡 tour: the page scroll walks the waterfall, one result at a time -->
+  <section class="tour" id="tour" data-stage aria-labelledby="tour-h">
+    <h2 id="tour-h" class="sr-only">A guided walk down the waterfall, one result per scroll step</h2>
+    <div class="tour__hud" aria-hidden="true">
+      <span class="tour__n" id="tour-n" data-dottext>01</span>
+      <span class="tour__of" id="tour-of">/ 16 · the tour</span>
+    </div>
+    <div class="tour__card" id="tour-card" aria-live="polite">
+      <p class="lx-card__kind"></p>
+      <h3 class="lx-card__title"></h3>
+      <p class="lx-card__zh" lang="zh"></p>
+      <p class="lx-card__st"></p>
+      <p class="lx-card__rel"></p>
+    </div>
+  </section>
+
+  <!-- 树 proof tree -->
+  <section class="tree" id="tree" data-stage aria-labelledby="tree-h">
+    <div class="lx-panel panel--sticky">
+      <h2 id="tree-h" class="h2"><span lang="zh">证明树</span> A proof grows</h2>
+      <p class="lead">A theorem is a seed. Its proof grows upward: every branch reaches for a premise, until the leaves are axioms. Lemmas used twice appear once; later uses are marked ↺.</p>
+      <div class="choose" role="radiogroup" aria-label="Theorem to grow" id="choose"></div>
+      <div class="lx-progress tree-prog" id="tree-prog" aria-label="Proof growth"></div>
+      <p class="status" id="tree-status" aria-live="polite"></p>
+      <p class="hint">Hover a node to trace it down to the conclusion. Click it to grow its own tree. Drag to turn.</p>
+    </div>
+  </section>
+
+  <!-- 树 trees: scrolling turns the stand to the next proof -->
+  <section class="trees" id="trees" data-stage aria-labelledby="trees-h">
+    <div class="trees__hud panel--sticky">
+      <h2 id="trees-h" class="h2 h2--small"><span lang="zh">证明树 · 连播</span> One proof per turn</h2>
+      <div class="trees__row"><span class="trees__n" id="trees-n" data-dottext>01</span><p class="trees__name" id="trees-name" aria-live="polite"></p></div>
+      <div class="lx-progress" id="trees-prog" aria-label="Proof growth"></div>
+      <p class="note-text">Keep scrolling: the stand turns half a revolution, the old proof falls, the next one grows.</p>
+    </div>
+  </section>
+
+  <!-- 器 instruments -->
+  <section class="instruments" id="instruments" aria-labelledby="inst-h">
+    <div class="wrap">
+      <h2 id="inst-h" class="h2"><span lang="zh">器</span> The instruments</h2>
+      <p class="lead lead--wide">The parts this site is made of. Each control keeps its native behaviour; its state is drawn as a set of dots that maps to the next state. Move the pointer over anything you can press: the cursor's points re-form around it.</p>
+
+      <div class="bench">
+        <article class="spec spec--wide">
+          <h3 class="spec__t"><span lang="zh">钮</span> Buttons</h3>
+          <p class="spec__n">Primary, accent, ghost and disabled. Pressing bursts the cursor's points outward.</p>
+          <div class="row">
+            <button class="lx-btn lx-btn--primary">Grow a proof</button>
+            <button class="lx-btn lx-btn--accent"><svg class="lx-icon" viewBox="0 0 18 18" aria-hidden="true"><circle cx="1.8" cy="9" r="1.2"/><circle cx="5.4" cy="9" r="1.2"/><circle cx="9" cy="9" r="1.2"/><circle cx="12.6" cy="9" r="1.2"/><circle cx="16.2" cy="9" r="1.2"/><circle cx="12.6" cy="5.4" r="1.2"/><circle cx="12.6" cy="12.6" r="1.2"/><circle cx="9" cy="1.8" r="1.2"/><circle cx="9" cy="16.2" r="1.2"/></svg> Next set</button>
+            <button class="lx-btn lx-btn--ghost">Read the notes</button>
+            <button class="lx-btn" disabled>Not yet proved</button>
+          </div>
+        </article>
+
+        <article class="spec">
+          <h3 class="spec__t"><span lang="zh">标</span> Tabs</h3>
+          <p class="spec__n">The indicator is a swarm. Change tabs and it pours across to the new one.</p>
+          <div class="lx-tabs" role="tablist" aria-label="Field" id="tabs">
+            <button role="tab" aria-selected="true" data-value="math"><b>数</b>Mathematics</button>
+            <button role="tab" aria-selected="false" data-value="quant"><b>量</b>Quant</button>
+            <button role="tab" aria-selected="false" data-value="agents"><b>智</b>Agents</button>
+            <button role="tab" aria-selected="false" data-value="games"><b>戏</b>Games</button>
+          </div>
+          <p class="tab-out" id="tab-out" aria-live="polite"></p>
+        </article>
+
+        <article class="spec">
+          <h3 class="spec__t"><span lang="zh">相</span> Switches</h3>
+          <p class="spec__n">Off, the points drift free as a gas across the whole track. On, they converge and lock into a crystal. The same points, a different phase.</p>
+          <div class="col">
+            <button class="lx-switch lx-switch--lg" id="sw-demo" aria-checked="false"><span class="lx-switch__track"></span><span>Phase<small>flips itself every few seconds until you press it</small></span></button>
+            <button class="lx-switch" id="sw-sound" aria-checked="false"><span class="lx-switch__track"></span><span>Sound<small>synthesized, quiet</small></span></button>
+            <button class="lx-switch" id="sw-idle" aria-checked="true"><span class="lx-switch__track"></span><span>Hero turns its own pages<small>after 11 s without input</small></span></button>
+          </div>
+        </article>
+
+        <article class="spec">
+          <h3 class="spec__t"><span lang="zh">晶</span> Progress</h3>
+          <p class="spec__n">Unfinished work is free-floating gas. Each newly finished part is built from it: the points converge, lock into the lattice with a flash, and stay. Indeterminate progress is a band of order sweeping through. The bar plays by itself; drag the slider to take over.</p>
+          <div class="lx-progress" id="prog" data-value="0.42" aria-label="Demo progress"></div>
+          <div class="lx-progress" id="prog-i" data-indeterminate aria-label="Working"></div>
+          <div class="lx-range"><span>Progress</span><div class="lx-slider"><input type="range" id="prog-range" min="0" max="100" value="42" aria-label="Progress value"></div><output data-out-for="prog-range">42</output></div>
+        </article>
+
+        <article class="spec">
+          <h3 class="spec__t"><span lang="zh">字</span> Matrix type &amp; loader</h3>
+          <p class="spec__n">5×7 matrix lettering whose dots reflow between strings. The loader is one Lorenz trajectory.</p>
+          <div class="row row--center">
+            <span class="counter" id="counter" data-dottext aria-live="polite">043</span>
+            <div class="lx-loader" id="loader" aria-label="Loading"></div>
+          </div>
+          <div class="row">
+            <button class="lx-btn lx-btn--ghost" id="count-up">+ 1</button>
+            <button class="lx-btn lx-btn--ghost" id="count-word">Say QED</button>
+          </div>
+        </article>
+
+        <article class="spec">
+          <h3 class="spec__t"><span lang="zh">入</span> Text field</h3>
+          <p class="spec__n">A dotted rule that flows while you type and tightens in orange when something is wrong.</p>
+          <form class="lx-field" id="field" novalidate>
+            <label for="email">Email for a copy of the proof book</label>
+            <input id="email" type="email" placeholder="you@example.com" autocomplete="email" required>
+            <p class="lx-field__msg" id="email-msg">Press Enter to check the format.</p>
+          </form>
+        </article>
+
+        <article class="spec">
+          <h3 class="spec__t"><span lang="zh">令</span> Commands &amp; messages</h3>
+          <p class="spec__n">⌘K or Ctrl+K opens every action on the page. Messages arrive with a dot-matrix tag.</p>
+          <div class="row">
+            <button class="lx-btn lx-btn--primary" id="cmd-demo"><span class="matrix" aria-hidden="true">⌘K</span> Commands</button>
+            <button class="lx-btn lx-btn--ghost" id="toast-demo">Send a message</button>
+          </div>
+        </article>
+
+        <article class="spec spec--wide">
+          <h3 class="spec__t"><span lang="zh">元</span> Tokens</h3>
+          <p class="spec__n">Ink for points at rest, signal orange for what a thing needs and for action, ice blue for what it enables. Atkinson Hyperlegible Next for reading (labels sit at 12 px over moving points), Doto for the matrix, Noto Sans SC for Chinese.</p>
+          <div class="tokens">
+            <div class="tok"><i style="--c: var(--bg)"></i><span>bg <code>#07080b</code></span></div>
+            <div class="tok"><i style="--c: var(--ink)"></i><span>ink <code>#ece7da</code></span></div>
+            <div class="tok"><i style="--c: var(--text-dim)"></i><span>dim <code>#9d988c</code></span></div>
+            <div class="tok"><i style="--c: var(--hot)"></i><span>hot <code>#ff5a1f</code></span></div>
+            <div class="tok"><i style="--c: var(--hot-2)"></i><span>hot-2 <code>#7fd8ff</code></span></div>
+          </div>
+          <div class="type-samples">
+            <p class="ts-a">Atkinson Hyperlegible Next — the reading voice, 17 / 1.6.</p>
+            <p class="ts-b matrix">DOTO 900 — THE MATRIX VOICE</p>
+            <p class="ts-c" lang="zh">思源黑体 — 中文，与点阵并排。</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- 毕 close -->
+  <section class="qed" id="contact" data-stage aria-labelledby="qed-h">
+    <div class="wrap">
+      <h2 id="qed-h" class="qed__t"><span lang="zh">证毕</span> Q.E.D.</h2>
+      <p class="lead lead--wide">This page is its own proof: every picture above is a set of points under one clock, and every relation in it is real. If you would like to build something from first principles together, write.</p>
+      <div class="row">
+        <a class="lx-btn lx-btn--accent" href="mailto:you@example.com" data-placeholder="contact email"><svg class="lx-icon" viewBox="0 0 18 18" aria-hidden="true"><g><circle cx="1.8" cy="3.6" r="1.1"/><circle cx="5.4" cy="3.6" r="1.1"/><circle cx="9" cy="3.6" r="1.1"/><circle cx="12.6" cy="3.6" r="1.1"/><circle cx="16.2" cy="3.6" r="1.1"/><circle cx="1.8" cy="14.4" r="1.1"/><circle cx="5.4" cy="14.4" r="1.1"/><circle cx="9" cy="14.4" r="1.1"/><circle cx="12.6" cy="14.4" r="1.1"/><circle cx="16.2" cy="14.4" r="1.1"/><circle cx="1.8" cy="9" r="1.1"/><circle cx="16.2" cy="9" r="1.1"/><circle cx="5.4" cy="7.2" r="1.1"/><circle cx="12.6" cy="7.2" r="1.1"/><circle cx="9" cy="9.6" r="1.1"/></g></svg> Write to me</a>
+        <a class="lx-btn lx-btn--ghost" href="#top">Back to the axioms</a>
+      </div>
+      <p class="foot"><span class="matrix">点阵 LATTICE</span> 0.2 · an open design system · three.js, WebGL2, WebAudio · theorem data: undergraduate real analysis</p>
+    </div>
+  </section>
+</main>
+
+<div class="lx-card" id="card" hidden>
+  <p class="lx-card__kind"></p>
+  <h3 class="lx-card__title"></h3>
+  <p class="lx-card__zh" lang="zh"></p>
+  <p class="lx-card__st"></p>
+  <p class="lx-card__rel"></p>
+</div>
+
+<!--build:js-->
+<script type="module" src="./main.js"></script>
+<!--/build:js-->
+</body>
+</html>

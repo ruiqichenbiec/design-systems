@@ -1,0 +1,12 @@
+{
+  "name": "lens-lab",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "build": "node design-system/build-tokens.mjs && node build.mjs",
+    "check": "node scripts/check.mjs",
+    "test": "node --test --test-isolation=none tests/*.test.mjs"
+  }
+}
