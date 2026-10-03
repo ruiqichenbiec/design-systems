@@ -9,6 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<style>@font-face{font-family:"Bodoni Moda";src:url(overture/dist/assets/fonts/BodoniModa-Regular.ttf) format("truetype");font-display:swap}@font-face{font-family:Manrope;font-weight:600;src:url(overture/dist/assets/fonts/Manrope-Semibold.ttf) format("truetype");font-display:swap}</style>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%2307070a'/%3E%3Ccircle cx='16' cy='16' r='4' fill='%23fff4dc'/%3E%3C/svg%3E">
 <style>
 :root{
@@ -22,7 +23,8 @@
 html{background:var(--ink);color:var(--paper);font:400 16px/1.55 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 body{background:var(--ink);min-height:100vh}
 html{scrollbar-gutter:stable}
-html.playing{overflow:hidden}
+/* only the root: locking body as well would make it a scroll container and unpin the sticky stages */
+html.locked{overflow:hidden}
 a{color:inherit}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:1px solid var(--warm);outline-offset:3px}
@@ -54,7 +56,9 @@ html[data-lang="zh"] [lang="en"],html[data-lang="en"] [lang="zh"]{display:none!i
 html.at-fin .photon i{opacity:0}
 html[data-motion="reduced"] .photon i{animation:none}
 .rim{position:fixed;left:0;top:var(--bar);width:100%;height:calc(100% - var(--bar) - var(--cap));z-index:11;pointer-events:none;overflow:visible}
-.rim circle{fill:none;stroke:rgba(255,236,210,.7);stroke-width:1;filter:drop-shadow(0 0 6px rgba(255,200,140,.7))}
+/* the glow is two plain strokes: a filter here would re-blur the whole viewport on every frame of the aperture */
+.rim circle{fill:none;stroke:rgba(255,236,210,.7);stroke-width:1}
+.rim .rim__glow{stroke:rgba(255,200,140,.16);stroke-width:9}
 
 /* hero */
 .hero{height:100vh;position:relative}
@@ -68,13 +72,25 @@ html[data-motion="reduced"] .photon i{animation:none}
 .cue.gone{opacity:0}
 
 /* systems */
-.sys{height:300vh;position:relative}
+.sys{height:200vh;position:relative}
 .stage{position:sticky;top:var(--bar);height:calc(100vh - var(--bar));overflow:hidden}
-.stage iframe{position:absolute;left:0;top:0;width:100%;height:calc(100% - var(--cap));border:0;background:transparent;pointer-events:none;clip-path:circle(0 at 50% 50%);visibility:hidden}
-.sys.anim iframe{will-change:clip-path,opacity}
-.sys.live iframe,html.playing .sys.open iframe{pointer-events:auto}
-.loading{position:absolute;inset:0 0 var(--cap) 0;display:grid;place-items:center;color:var(--faint);opacity:0;transition:opacity .4s;pointer-events:none}
-.sys.wait .loading{opacity:1}
+/* the aperture holds the system's pages and, over them, its loading animation */
+.aperture{position:absolute;left:0;top:0;width:100%;height:calc(100% - var(--cap));clip-path:circle(0 at 50% 50%);visibility:hidden;overflow:hidden}
+.sys.anim .aperture{will-change:clip-path,opacity}
+.aperture iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;pointer-events:none;visibility:hidden}
+/* composited only from the moment the long loader starts to step aside until the short one covers it again:
+   under an opaque loader the pages are not seen, so they are not composited either */
+.sys.shown .aperture iframe{visibility:visible}
+.sys.live .aperture iframe{pointer-events:auto}
+.veil{position:absolute;inset:0;display:none;pointer-events:none}
+.veil canvas{position:absolute;inset:0;width:100%;height:100%}
+.sys.veiled .veil{display:block}
+/* past a page's edge: three pulls to leave */
+.pull{position:absolute;left:50%;bottom:16px;transform:translate(-50%,6px);display:flex;gap:9px;align-items:center;padding:8px 14px 8px 12px;border-radius:999px;background:rgba(7,7,10,.78);backdrop-filter:blur(10px);color:var(--paper);font:400 11px/1 var(--mono);letter-spacing:.08em;opacity:0;transition:opacity .25s,transform .25s var(--ease);pointer-events:none;white-space:nowrap}
+.pull.show{opacity:1;transform:translate(-50%,0)}
+.pull i{width:6px;height:6px;border-radius:50%;background:rgba(239,233,223,.26);transition:background .15s,transform .2s var(--ease)}
+.pull i.on{background:var(--warm);transform:scale(1.3)}
+.pull span{margin-left:4px}
 .slate{position:absolute;inset:0 0 var(--cap) 0;pointer-events:none;--h:clamp(44px,6vw,92px)}
 .slate__in{position:absolute;inset:0;text-align:center;opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s var(--ease)}
 .sys.slate-on .slate__in{opacity:1;transform:none}
@@ -87,7 +103,6 @@ html[data-motion="reduced"] .photon i{animation:none}
 .bar{position:absolute;left:0;right:0;bottom:0;height:var(--cap);z-index:3;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:center;padding:0 28px;
   background:var(--ink);border-top:1px solid var(--line);opacity:0;transform:translateY(10px);transition:opacity .5s,transform .5s var(--ease);pointer-events:none}
 .sys.open .bar{opacity:1;transform:none;pointer-events:auto}
-html.playing .bar{opacity:0!important;pointer-events:none!important}
 .bar h3{font-weight:400;font-size:26px;line-height:1.1;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
 .bar h3 .mono{color:var(--warm);font-size:11.5px}
 .bar h3 small{font-size:15px;color:var(--dim);font-weight:300}
@@ -96,10 +111,6 @@ html.playing .bar{opacity:0!important;pointer-events:none!important}
 .acts{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
 .acts a,.acts button{font-size:13px;padding:9px 15px;border:1px solid var(--line);border-radius:999px;text-decoration:none;white-space:nowrap;transition:border-color .3s,background .3s}
 .acts a:hover,.acts button:hover{border-color:var(--faint);background:rgba(239,233,223,.05)}
-.acts .play{background:var(--paper);color:var(--ink);border-color:var(--paper)}
-.acts .play:hover{background:#fff}
-.exit{position:fixed;left:50%;bottom:calc(var(--cap)/2);transform:translate(-50%,calc(50% + 8px));z-index:31;padding:9px 16px;border-radius:999px;background:rgba(7,7,10,.86);border:1px solid var(--line);font-size:13px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .3s,transform .3s;backdrop-filter:blur(10px)}
-html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
 
 /* fin */
 .fin{min-height:100vh;display:grid;align-content:center;padding:120px 32px 60px;position:relative}
@@ -150,8 +161,7 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
 </header>
 
 <div class="photon" id="photon" aria-hidden="true"><i></i></div>
-<svg class="rim" aria-hidden="true"><circle id="rim" cx="0" cy="0" r="0"/></svg>
-<button class="exit" id="exit"><span lang="zh">退出试玩 · Esc</span><span lang="en">Exit · Esc</span></button>
+<svg class="rim" aria-hidden="true" id="rim"><circle class="rim__glow" cx="0" cy="0" r="0"/><circle cx="0" cy="0" r="0"/></svg>
 
 <main id="top">
   <section class="hero" aria-labelledby="hero-h">
@@ -159,23 +169,21 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
     <div class="hero__copy">
       <h1 id="hero-h"><span lang="zh">一次曝光</span><span lang="en">One exposure</span>
         <small><span lang="zh">透镜、点阵、序曲：三套原生 Web 设计体系</span><span lang="en">Lens, Lattice, Overture: three native web design systems</span></small></h1>
-      <p><span lang="zh">往下滚动，光点会依次打开它们。窗里每一帧都是体系自己的实时渲染，不是录屏也不是截图；窗口展开后可以直接操作；想独占滚轮和键盘，点“专注试玩”。</span><span lang="en">Scroll and the point of light opens each one in turn. Every frame inside is the system's own live rendering, not a recording or a screenshot. Once a frame is open you can use it right away; press “Focus play” to give it the wheel and keyboard.</span></p>
+      <p><span lang="zh">往下滚动，光点会依次打开它们。窗里每一帧都是体系自己的实时渲染，不是录屏也不是截图；每个体系两页：首屏和组件集成页，展开后直接操作。在页面里滚到底，再向下滚 3 格进入下一站。</span><span lang="en">Scroll and the point of light opens each one in turn. Every frame inside is the system's own live rendering, not a recording or a screenshot. Each system has two pages, a first screen and a kit of its components, ready to use once open. Scroll to the end of the pages, then three more notches to move on.</span></p>
     </div>
     <div class="hero__meta mono"><b>MIT</b> · <span lang="zh">开源</span><span lang="en">Open source</span><br><b>3</b> <span lang="zh">套体系</span><span lang="en">systems</span> · <b>78</b> <span lang="zh">个组件</span><span lang="en">components</span><br><span lang="zh">零框架 · 原生 HTML/CSS/JS</span><span lang="en">No framework · plain HTML/CSS/JS</span></div>
   </section>
 
-  <section class="sys" id="lens" aria-label="透镜 Lens" data-src-zh="lens/lens.html" data-src-en="lens/lens-en.html">
+  <section class="sys" id="lens" aria-label="透镜 Lens" data-sys="lens" data-src="exposure/lens.html">
     <div class="stage">
       <div class="slate" aria-hidden="true"><div class="slate__in"><div class="no mono">01 / 03</div><h2><span lang="zh">透镜</span><span lang="en">Lens</span></h2><div class="sub"><span lang="zh">Lens · </span><span class="mono"><span lang="zh">玻璃 · 液体 · 光</span><span lang="en">Glass · Liquid · Light</span></span></div></div></div>
-      <div class="loading mono"><span lang="zh">正在载入透镜…</span><span lang="en">Loading Lens…</span></div>
-      <iframe title="透镜 Lens · live" tabindex="-1"></iframe>
+      <div class="aperture"><iframe title="透镜 Lens · live" tabindex="-1"></iframe><div class="veil" aria-hidden="true"><canvas></canvas><canvas></canvas></div><div class="pull" aria-hidden="true"><i></i><i></i><i></i><span></span></div></div>
       <div class="bar">
         <div>
           <h3><span class="mono">01</span><span lang="zh">透镜</span><span lang="en">Lens</span><small class="mono"><span lang="zh">玻璃 · 液体 · 光</span><span lang="en">Glass · Liquid · Light</span></small><span class="stats mono"><span lang="zh">18 类组件 · WebGL2 · 13 种合成音效 · 零运行时依赖</span><span lang="en">18 components · WebGL2 · 13 synthesized sounds · zero runtime dependencies</span></span></h3>
           <p><span lang="zh">玻璃承载信息，液体表达连续变化，光表达状态。实时背景折射、弹簧形变和原创合成音；所有可交互的部分都由同一块透镜承载。</span><span lang="en">Glass carries information, liquid shows continuous change, light shows state. Live background refraction, spring deformation and synthesized sound; everything you can touch is carried by one lens.</span></p>
         </div>
         <div class="acts">
-          <button class="play"><span lang="zh">专注试玩</span><span lang="en">Focus play</span></button>
           <a href="lens/lens-showcase.html" data-en="lens/lens-showcase-en.html"><span lang="zh">完整展示</span><span lang="en">Full showcase</span></a>
           <a class="opt" href="lens/lens-showcase-standalone.html"><span lang="zh">单文件版</span><span lang="en">Single file</span></a>
           <a class="opt" href="https://github.com/ruiqichenbiec/design-systems/tree/main/lens" rel="noopener"><span lang="zh">源码</span><span lang="en">Source</span></a>
@@ -184,18 +192,16 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
     </div>
   </section>
 
-  <section class="sys" id="lattice" aria-label="点阵 Lattice" data-src-zh="lattice/dist/lattice-showcase.html" data-src-en="lattice/dist/lattice-showcase.html">
+  <section class="sys" id="lattice" aria-label="点阵 Lattice" data-sys="lattice" data-src="exposure/lattice.html">
     <div class="stage">
       <div class="slate" aria-hidden="true"><div class="slate__in"><div class="no mono">02 / 03</div><h2><span lang="zh">点阵</span><span lang="en">Lattice</span></h2><div class="sub"><span lang="zh">Lattice · </span><span class="mono"><span lang="zh">点 · 集 · 映射</span><span lang="en">Point · Set · Map</span></span></div></div></div>
-      <div class="loading mono"><span lang="zh">正在载入点阵…</span><span lang="en">Loading Lattice…</span></div>
-      <iframe title="点阵 Lattice · live" tabindex="-1"></iframe>
+      <div class="aperture"><iframe title="点阵 Lattice · live" tabindex="-1"></iframe><div class="veil" aria-hidden="true"><canvas></canvas><canvas></canvas></div><div class="pull" aria-hidden="true"><i></i><i></i><i></i><span></span></div></div>
       <div class="bar">
         <div>
           <h3><span class="mono">02</span><span lang="zh">点阵</span><span lang="en">Lattice</span><small class="mono"><span lang="zh">点 · 集 · 映射</span><span lang="en">Point · Set · Map</span></small><span class="stats mono"><span lang="zh">14 类组件 · three.js · WebGL2 · 真实定理依赖数据</span><span lang="en">14 components · three.js · WebGL2 · a real theorem dependency graph</span></span></h3>
           <p><span lang="zh">万物皆点集，交互即映射。文字、吸引子、定理之瀑和证明树都是同一张 GPU 点阵：点先被放进无散度流场，再被弹簧拉进下一个集合。</span><span lang="en">Everything is a point set; every interaction is a map. Lettering, attractors, a theorem waterfall and proof trees are one GPU lattice: points pour through a divergence-free flow, then springs pull them into the next set.</span></p>
         </div>
         <div class="acts">
-          <button class="play"><span lang="zh">专注试玩</span><span lang="en">Focus play</span></button>
           <a href="lattice/dist/lattice-showcase.html"><span lang="zh">完整展示</span><span lang="en">Full showcase</span></a>
           <a class="opt" href="lattice/dist/catalog/index.html"><span lang="zh">组件目录</span><span lang="en">Catalog</span></a>
           <a class="opt" href="https://github.com/ruiqichenbiec/design-systems/tree/main/lattice" rel="noopener"><span lang="zh">源码</span><span lang="en">Source</span></a>
@@ -204,18 +210,16 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
     </div>
   </section>
 
-  <section class="sys" id="overture" aria-label="序曲 Overture" data-src-zh="overture/dist/overture-showcase.html" data-src-en="overture/dist/overture-showcase.html">
+  <section class="sys" id="overture" aria-label="序曲 Overture" data-sys="overture" data-src="exposure/overture.html">
     <div class="stage">
       <div class="slate" aria-hidden="true"><div class="slate__in"><div class="no mono">03 / 03</div><h2><span lang="zh">序曲</span><span lang="en">Overture</span></h2><div class="sub"><span lang="zh">Overture · </span><span class="mono"><span lang="zh">光圈 · 显影 · 弹簧</span><span lang="en">Aperture · Develop · Spring</span></span></div></div></div>
-      <div class="loading mono"><span lang="zh">正在载入序曲（约 7 MB）…</span><span lang="en">Loading Overture (about 7 MB)…</span></div>
-      <iframe title="序曲 Overture · live" tabindex="-1"></iframe>
+      <div class="aperture"><iframe title="序曲 Overture · live" tabindex="-1"></iframe><div class="veil" aria-hidden="true"><canvas></canvas><canvas></canvas></div><div class="pull" aria-hidden="true"><i></i><i></i><i></i><span></span></div></div>
       <div class="bar">
         <div>
           <h3><span class="mono">03</span><span lang="zh">序曲</span><span lang="en">Overture</span><small class="mono"><span lang="zh">光圈 · 显影 · 弹簧</span><span lang="en">Aperture · Develop · Spring</span></small><span class="stats mono"><span lang="zh">46 类组件 · WebGPU / WebGL2 · 品牌工坊 · 示例照片为 AI 生成</span><span lang="en">46 components · WebGPU / WebGL2 · brand studio · sample photos are AI-generated</span></span></h3>
           <p><span lang="zh">摄影、歌剧与时装。开幕是光圈，显影是显影，共振是弹簧：三个运动原语驱动全部交互。暗场、印纸、夜场三套主题，WebGPU / WebGL2 渲染。</span><span lang="en">Photography, opera and fashion. Opening is an aperture, revealing is developing, resonance is a spring: three motion primitives drive every interaction. Three themes, rendered with WebGPU / WebGL2.</span></p>
         </div>
         <div class="acts">
-          <button class="play"><span lang="zh">专注试玩</span><span lang="en">Focus play</span></button>
           <a href="overture/dist/overture-showcase.html?motion=full"><span lang="zh">完整展示</span><span lang="en">Full showcase</span></a>
           <a class="opt" href="overture/dist/components.html"><span lang="zh">46 个组件</span><span lang="en">46 components</span></a>
           <a class="opt" href="overture/dist/catalog/index.html"><span lang="zh">组件目录</span><span lang="en">Catalog</span></a>
@@ -244,11 +248,12 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
   </section>
 </main>
 
+<script src="exposure/loaders.js"></script>
 <script>
 (() => {
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const root = document.documentElement, photon = $("#photon"), rim = $("#rim"), cue = $("#cue"), fin = $(".fin");
-  const secs = $$(".sys"), links = $$(".index a");
+  const secs = $$(".sys"), links = $$(".index a"), rimRings = $$("#rim circle");
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const smooth = (t) => t * t * (3 - 2 * t);
   const expo = (t) => (t <= 0 ? 0 : t >= 1 ? 1 : t < 0.5 ? Math.pow(2, 20 * t - 10) / 2 : (2 - Math.pow(2, -20 * t + 10)) / 2);
@@ -258,7 +263,7 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
   let lang = store.get("exposure.lang") || ((navigator.language || "").toLowerCase().startsWith("zh") ? "zh" : "en");
   let motion = store.get("exposure.motion") || "full"; // showcase default: full motion, regardless of the OS setting
   let soundOn = false;
-  const srcOf = (s) => { const u = s.dataset["src" + (lang === "zh" ? "Zh" : "En")]; return motion === "full" ? u + (u.includes("?") ? "&" : "?") + "motion=full" : u; };
+  const srcOf = (s) => `${s.dataset.src}?lang=${lang}&motion=${motion === "full" ? "full" : "reduced"}`;
   function applyLang() {
     root.dataset.lang = lang; root.lang = lang === "zh" ? "zh-CN" : "en";
     $$("a[data-en]").forEach((a) => { a.dataset.zh ??= a.getAttribute("href"); a.setAttribute("href", lang === "en" ? a.dataset.en : a.dataset.zh); });
@@ -273,10 +278,10 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
     $("[data-sound-label]").textContent = soundOn ? (lang === "zh" ? "开" : "On") : (lang === "zh" ? "关" : "Off");
     $("#t-sound").setAttribute("aria-pressed", String(soundOn));
   }
-  const reloadLoaded = () => secs.forEach((s) => { if ($("iframe", s).dataset.cur) load(s, true); });
+  const reloadLoaded = () => S.forEach((st) => { if (st.frame.dataset.cur) reload(st); });
   $("#t-lang").onclick = () => { lang = lang === "zh" ? "en" : "zh"; store.set("exposure.lang", lang); applyLang(); applyMotion(); applySound(); reloadLoaded(); };
   $("#t-motion").onclick = () => { motion = motion === "full" ? "reduced" : "full"; store.set("exposure.motion", motion); applyMotion(); applyAll(); reloadLoaded(); };
-  $("#t-sound").onclick = () => { soundOn = !soundOn; if (soundOn) audio.init(); applySound(); if (soundOn) audio.tick(); };
+  $("#t-sound").onclick = () => { soundOn = !soundOn; if (soundOn) audio.init(); applySound(); if (soundOn) audio.tick(); S.forEach((st) => { try { st.win?.exposurePage?.sound(soundOn); } catch {} }); };
   applyLang(); applyMotion(); applySound();
 
   /* ---------- sound: synthesized, quiet, off by default ---------- */
@@ -294,142 +299,266 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
   };
 
   /* ---------- one record per system ---------- */
-  // k: how open the aperture is, 0 (the point) … 1 (open).  want: where the scroll position says it should be.
-  // anim: an exposure in flight. It always plays to its end; if the scroll changed its mind meanwhile, the mirror plays next.
-  const S = secs.map((s, i) => ({ i, s, frame: $("iframe", s), k: 0, want: false, anim: null, near: false, ready: false, link: null, warmUntil: 0, parkT: 0 }));
-  const stOf = (s) => S[secs.indexOf(s)];
-  let playing = null;
+  // phase: closed → entering → open → leaving → closed.
+  //   entering: the aperture opens in 0.6 s on the long loading animation, already running from its first frame; the
+  //             loader then stays whole until at least 1.2 s and until the pages say they are ready, and steps aside.
+  //   open:     the pages take the wheel. Past their last (or first) line, three more notches leave.
+  //   leaving:  the short loading animation plays whole for 0.6 s, then the aperture closes on it in 0.6 s.
+  // The outer page is locked from entering to the end of leaving, so every one of these always plays to its end.
+  const APERTURE = 600, LONG_MIN = 1200, OUTRO = 320, SHORT = 600, FADE_IN = 140;
+  const OPEN_AT = 0.3, CLOSE_AT = 0.7, REST_BELOW = 0.92, REST_ABOVE = 0.08, PULL = 300, PULL_LAPSE = 2500; // three notches, each within 2.5 s of the last
+  const NAMES = { lens: ["透镜", "Lens"], lattice: ["点阵", "Lattice"], overture: ["序曲", "Overture"] };
+  const S = secs.map((s, i) => ({
+    i, s, id: s.dataset.sys, frame: $("iframe", s), ap: $(".aperture", s), veil: $(".veil", s), pullEl: $(".pull", s),
+    bgc: $(".veil canvas", s), fgc: $(".veil canvas:last-child", s), lcache: {}, warmed: false,
+    phase: "closed", k: 0, t0: -1, dir: 1, kind: "long", ls: null, outroAt: 0, keepOpen: false, closing: false,
+    progress: 0, shown: 0, ready: false, win: null, hold: null, near: false, lastMove: 0, readyT: 0,
+    pull: { amount: 0, dir: 0, last: 0, timer: 0 },
+  }));
+  const active = () => S.find((st) => st.phase !== "closed");
+  let pendingNav = null, forcedDir = 0, locked = false;
+  // while a system is up the outer page is locked and its input is redirected; these listeners are not passive,
+  // so they exist only then and ordinary scrolling never waits on them
+  function lock(on) {
+    if (on === locked) return; locked = on; root.classList.toggle("locked", on);
+    const f = on ? addEventListener : removeEventListener;
+    f("wheel", onLockedWheel, { passive: false }); f("touchmove", onLockedTouch, { passive: false }); f("keydown", onLockedKey);
+  }
 
-  /* ---------- loading: only systems near the viewport keep a live page ---------- */
-  function load(s, force) {
-    const st = stOf(s), f = st.frame, want = srcOf(s);
+  /* ---------- loading: pages near the viewport load and boot hidden, then park until they are needed ---------- */
+  function load(st, force) {
+    const want = srcOf(st.s), f = st.frame;
     if (!force && f.dataset.cur === want) return;
-    s.classList.add("wait"); st.ready = false; st.link = null; syncLive(st);
-    f.onload = () => { s.classList.remove("wait"); st.ready = true; bridge(st); settle(st); syncLive(st); updateRun(st); };
+    st.ready = false; st.progress = 0.05; st.win = null; st.hold = null; clearTimeout(st.readyT);
+    f.onload = () => {
+      st.progress = Math.max(st.progress, 0.9); bridge(st);
+      // pages that speak the contract say when they are ready; anything else is taken as ready soon after load
+      st.readyT = setTimeout(() => markReady(st), st.win?.exposurePage ? 9000 : 400);
+    };
     f.dataset.cur = want; f.src = want;
   }
-  function unload(s) {
-    const st = stOf(s), f = st.frame;
-    if (f.dataset.cur) { f.onload = null; f.src = "about:blank"; delete f.dataset.cur; }
-    s.classList.remove("wait"); st.ready = false; st.link = null; clearTimeout(st.parkT); syncLive(st);
+  function unload(st) {
+    const f = st.frame; if (!f.dataset.cur || st.phase !== "closed") return;
+    f.onload = null; f.src = "about:blank"; delete f.dataset.cur; st.ready = false; st.win = null; st.hold = null; clearTimeout(st.readyT);
   }
-  const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? load(e.target) : unload(e.target))), { rootMargin: "120% 0px" });
+  // a reload of the system on screen (language or motion switch) shows its long loader again, aperture held open
+  function reload(st) {
+    load(st, true);
+    if (st.phase === "open") { st.phase = "entering"; st.keepOpen = true; st.t0 = -1; st.outroAt = 0; st.kind = "long"; st.ls = null; st.shown = 0; st.s.classList.remove("live", "open"); veil(st, true); wake(); }
+  }
+  function markReady(st) { clearTimeout(st.readyT); st.ready = true; st.progress = 1; park(st); }
+  addEventListener("message", (e) => {
+    const d = e.data; if (!d || d.exposure !== 1) return;
+    const st = S.find((x) => x.frame.contentWindow === e.source); if (!st) return;
+    if (d.type === "progress") st.progress = Math.max(st.progress, Math.min(0.99, +d.value || 0));
+    else if (d.type === "ready") markReady(st);
+  });
+  const io = new IntersectionObserver((es) => es.forEach((e) => { const st = S[secs.indexOf(e.target)]; e.isIntersecting ? load(st) : unload(st); }), { rootMargin: "120% 0px" });
   secs.forEach((s) => io.observe(s));
 
   /* ---------- the bridge into a same-origin system page ---------- */
-  // Two things need a hand inside the page. Previewing: its own scrolling is switched off, so the wheel and touch swipes
-  // chain up to this page and keep driving the exposure while clicks, hover and drags still reach the page.
-  // Parking: browsers keep running the frame loop of a hidden same-origin frame, so a closed system holds it here instead.
-  // From file:// the page is cross-origin and there is no bridge; "Focus play" is then the only way in.
-  const WARM = 1500; // let a fresh page finish booting before it may be parked
+  // Browsers keep running hidden same-origin frames, so a closed system's frame loop is held here; the page is also
+  // told, so it can pause its own video and nested frames. From file:// there is no bridge and the page just runs.
+  function gateFrames(win) {
+    const raf = win.requestAnimationFrame.bind(win), caf = win.cancelAnimationFrame.bind(win);
+    const queued = new Map(), flying = new Map();
+    let seq = 1e9, holding = false; // ids start high so they never collide with the browser's own
+    const fly = (id, cb) => flying.set(id, raf((t) => { flying.delete(id); cb(t); }));
+    win.requestAnimationFrame = (cb) => { const id = ++seq; holding ? queued.set(id, cb) : fly(id, cb); return id; };
+    win.cancelAnimationFrame = (id) => { if (queued.delete(id)) return; if (flying.has(id)) { caf(flying.get(id)); flying.delete(id); } else caf(id); };
+    return (h) => { if (h === holding) return; holding = h; if (!h) { queued.forEach((cb, id) => fly(id, cb)); queued.clear(); } };
+  }
+  const KEYS = { ArrowDown: 1, PageDown: 1, " ": 1, End: 1, ArrowUp: -1, PageUp: -1, Home: -1 };
+  const typing = (el) => el && el.closest && el.closest("input,textarea,select,[contenteditable]");
+  const wheelDelta = (e, w) => (e.ctrlKey ? 0 : e.deltaY * (e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? w.innerHeight : 1));
   function bridge(st) {
     let win, doc;
     try { win = st.frame.contentWindow; doc = win.document; void doc.documentElement; } catch { return; }
-    win.addEventListener("keydown", (e) => { if (e.key === "Escape") stop(); });
-    const lock = doc.createElement("style");
-    lock.textContent = "html,body{overflow:hidden!important}";
-    lock.media = playing === st.s ? "not all" : "all";
-    (doc.head || doc.documentElement).append(lock);
-
-    const raf = win.requestAnimationFrame.bind(win), caf = win.cancelAnimationFrame.bind(win);
-    const held = new Map(), flying = new Map(), media = new Set();
-    let seq = 1e9, parked = false; // ids start high so they never collide with the browser's own
-    const fly = (id, cb) => flying.set(id, raf((t) => { flying.delete(id); cb(t); }));
-    win.requestAnimationFrame = (cb) => { const id = ++seq; parked ? held.set(id, cb) : fly(id, cb); return id; };
-    win.cancelAnimationFrame = (id) => { if (held.delete(id)) return; if (flying.has(id)) { caf(flying.get(id)); flying.delete(id); } else caf(id); };
-    const pause = (p) => {
-      if (p === parked) return; parked = p;
-      if (p) doc.querySelectorAll("video,audio").forEach((m) => { if (!m.paused) { m.pause(); media.add(m); } });
-      else { held.forEach((cb, id) => fly(id, cb)); held.clear(); media.forEach((m) => m.play().catch(() => {})); media.clear(); }
-    };
-    st.link = { lock, pause };
-    st.warmUntil = performance.now() + WARM;
+    st.win = win; st.hold = gateFrames(win);
+    win.exposurePage?.sound(soundOn);
+    win.addEventListener("scroll", () => { st.lastMove = performance.now(); resetPull(st); }, { passive: true });
+    win.addEventListener("wheel", (e) => pullBy(st, wheelDelta(e, win)), { passive: true });
+    win.addEventListener("keydown", (e) => { const d = KEYS[e.key]; if (d && !e.defaultPrevented && !typing(e.target) && edge(st, d)) pullBy(st, d * 100, true); });
+    let ty = null;
+    const touch = (type, y) => { if (type === "touchstart") ty = y; else if (type === "touchmove" && ty !== null) { pullBy(st, (ty - y) * 1.5); ty = y; } else ty = null; };
+    for (const type of ["touchstart", "touchmove", "touchend"]) win.addEventListener(type, (e) => touch(type, e.touches[0]?.clientY ?? 0), { passive: true });
+    win.addEventListener("exposure:touch", (e) => touch(e.detail.type, e.detail.y));
+    if (st.phase !== "closed") place(st);
+    park(st);
   }
-  // pointer events reach a system only once it is fully open
-  function syncLive(st) { st.s.classList.toggle("live", !!st.link && st.want && st.k >= 1 && !st.anim); }
-  // run while the system is open, opening, closing or about to; park it otherwise
-  function updateRun(st) {
-    const l = st.link; if (!l) return;
-    clearTimeout(st.parkT);
-    if (st.want || st.anim || st.k > 0 || st.near) { l.pause(false); return; }
-    const wait = st.warmUntil - performance.now();
-    if (wait > 0) st.parkT = setTimeout(() => updateRun(st), wait); else l.pause(true);
+  // Run while seen or about to be; hold otherwise, but never before the page has finished booting. Behind an opaque
+  // loader the pages are not seen either: once ready they wait there, so the loader and the aperture have the main
+  // thread to themselves, and they resume as the loader steps aside.
+  function park(st) {
+    const behind = (st.phase === "entering" && !st.outroAt) || (st.phase === "leaving" && st.covered);
+    const hold = st.ready && (st.phase === "closed" ? !st.near : behind);
+    st.hold?.(hold);
+    try { st.win?.exposurePage?.park(hold); } catch {}
+  }
+  // a system entered from above starts at its first page, from below at the end of its last
+  function place(st) {
+    const w = st.win; if (!w) return;
+    const se = w.document.scrollingElement || w.document.documentElement;
+    w.scrollTo({ top: st.dir > 0 ? 0 : se.scrollHeight, behavior: "instant" });
   }
 
-  /* ---------- focus play: optional; the page takes the wheel and the keyboard ---------- */
-  const setLock = (st) => { if (st.link) st.link.lock.media = playing === st.s ? "not all" : "all"; };
-  function play(s) {
-    const st = stOf(s); if (st.k < 1 || st.anim) return;
-    playing = s; root.classList.add("playing"); setLock(st); st.frame.tabIndex = 0; st.frame.focus(); audio.tick();
+  /* ---------- pulling past the edge: three notches leave ---------- */
+  function edge(st, dir) {
+    const w = st.win; if (!w) return true;
+    const se = w.document.scrollingElement || w.document.documentElement;
+    return dir > 0 ? w.scrollY + w.innerHeight >= se.scrollHeight - 2 : w.scrollY <= 1;
   }
-  function stop() {
-    if (!playing) return;
-    const st = stOf(playing); st.frame.tabIndex = -1; playing = null; root.classList.remove("playing"); setLock(st); audio.tick();
+  function pullBy(st, dy, discrete = false) {
+    if (st.phase !== "open" || !dy) return;
+    const dir = Math.sign(dy), now = performance.now(), P = st.pull;
+    if (!edge(st, dir)) { resetPull(st); return; }
+    // the gesture that carried the page into its edge does not count, only the ones after it
+    if (!discrete && now - st.lastMove < 250) return;
+    if (P.dir !== dir || now - P.last > PULL_LAPSE) { P.amount = 0; P.dir = dir; }
+    P.amount += discrete ? 100 : Math.min(Math.abs(dy), 120); P.last = now;
+    showPull(st);
+    clearTimeout(P.timer);
+    if (P.amount >= PULL) leave(st, dir); else P.timer = setTimeout(() => resetPull(st), PULL_LAPSE);
   }
-  secs.forEach((s) => $(".play", s).addEventListener("click", () => play(s)));
-  $("#exit").onclick = stop;
-  addEventListener("keydown", (e) => { if (e.key === "Escape") stop(); });
+  const placeName = (i, dir) => {
+    const zh = lang === "zh", j = i + dir;
+    if (j >= 0 && j < S.length) return (zh ? (dir > 0 ? "下一站 · " : "返回 · ") : (dir > 0 ? "Next · " : "Back · ")) + NAMES[S[j].id][zh ? 0 : 1];
+    return zh ? (dir > 0 ? "下一站 · 拿去用" : "返回 · 开头") : (dir > 0 ? "Next · Take it" : "Back · The start");
+  };
+  function showPull(st) {
+    const n = Math.min(3, Math.floor(st.pull.amount / 100)), el = st.pullEl;
+    [...el.querySelectorAll("i")].forEach((d, j) => d.classList.toggle("on", j < n));
+    el.querySelector("span").textContent = (lang === "zh" ? (st.pull.dir > 0 ? "继续向下 · " : "继续向上 · ") : (st.pull.dir > 0 ? "Keep going · " : "Keep going up · ")) + placeName(st.i, st.pull.dir).replace(/^.*· /, "");
+    el.classList.add("show");
+  }
+  function resetPull(st) { const P = st.pull; if (!P.amount && !st.pullEl.classList.contains("show")) return; clearTimeout(P.timer); P.amount = 0; P.dir = 0; st.pullEl.classList.remove("show"); }
+  // input that lands on this page (the caption bar, the header) while a system is up goes to its pages
+  function onLockedWheel(e) {
+    const st = active(); if (!st) return;
+    e.preventDefault();
+    const dy = wheelDelta(e, window); if (!dy || st.phase !== "open") return;
+    if (edge(st, Math.sign(dy))) pullBy(st, dy); else st.win?.scrollBy(0, dy);
+  }
+  function onLockedKey(e) {
+    const st = active(), d = KEYS[e.key]; if (!st || !d || typing(e.target)) return;
+    e.preventDefault(); if (st.phase !== "open") return;
+    if (edge(st, d)) pullBy(st, d * 100, true);
+    else st.win?.scrollBy(0, d * (e.key.startsWith("Arrow") ? 80 : st.win.innerHeight * 0.9));
+  }
+  const onLockedTouch = (e) => e.preventDefault();
 
   /* ---------- geometry: measured on resize, never per frame ---------- */
   const M = { secs: secs.map(() => ({})) };
   function measure() {
-    const y = scrollY, stage = $(".stage"), fh = stage.offsetHeight - $(".bar").offsetHeight;
-    // the stage's own width, not the window's: it is what the frame, the clip and the rim are centred in
-    M.vw = stage.clientWidth; M.vh = innerHeight; M.bar = $(".top").offsetHeight; M.fh = fh;
-    M.R = Math.hypot(M.vw, fh) / 2 + 2; M.cx = M.vw / 2; M.cy = M.bar + fh / 2;
+    const y = scrollY, stage = $(".stage"), ap = $(".aperture");
+    // the stage's own width, not the window's: it is what the aperture, the clip and the rim are centred in
+    M.vw = stage.clientWidth; M.vh = innerHeight; M.bar = $(".top").offsetHeight; M.fh = ap.offsetHeight;
+    M.R = Math.hypot(M.vw, M.fh) / 2 + 2; M.cx = M.vw / 2; M.cy = M.bar + M.fh / 2;
     secs.forEach((s, i) => { const top = s.getBoundingClientRect().top + y, m = M.secs[i]; m.top = top; m.start = top - M.bar; m.span = s.offsetHeight - stage.offsetHeight; m.end = top + s.offsetHeight; });
     M.finTop = fin.getBoundingClientRect().top + y;
-    rim.setAttribute("cx", String(M.cx)); rim.setAttribute("cy", String(fh / 2));
+    rimRings.forEach((c) => { c.setAttribute("cx", String(M.cx)); c.setAttribute("cy", String(M.fh / 2)); });
+    S.forEach((st) => { st.warmed = false; if (st.ls) sizeVeil(st); });
   }
-  const visible = (st) => { const m = M.secs[st.i], y = scrollY; return m.end > y + M.bar && m.top < y + M.vh; };
-  const openY = (i) => M.secs[i].start + 0.5 * M.secs[i].span;
-  links.forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); stop(); scrollTo({ top: openY(+a.dataset.go), behavior: "auto" }); }));
+  const restY = (i, q) => M.secs[i].start + q * M.secs[i].span;
 
-  /* ---------- the exposure ---------- */
-  // Scroll only sets a target. Per system, with p the progress through its section:
-  //   p < OPEN_AT: the point and the slate · OPEN_AT ≤ p < CLOSE_AT: open · p ≥ CLOSE_AT: back to the point.
-  // HYST makes each edge a band, so hovering on a threshold cannot flip it back and forth.
-  const OPEN_AT = 0.16, CLOSE_AT = 0.86, HYST = 0.06;
-  const DUR = () => (motion === "full" ? { open: 1000, close: 800 } : { open: 350, close: 350 });
-  const ease = (k) => expo(k) * 0.7 + smooth(k) * 0.3;
+  /* ---------- enter, leave ---------- */
+  function enter(st, dir) {
+    st.phase = "entering"; st.dir = dir; st.t0 = -1; st.outroAt = 0; st.kind = "long"; st.ls = null; st.shown = 0; st.keepOpen = false; st.closing = false;
+    lock(true); scrollTo(0, restY(st.i, 0.5)); lastY = scrollY;
+    load(st);
+    st.s.classList.add("active", "anim"); st.s.classList.remove("slate-on");
+    veil(st, true); place(st); park(st); resetPull(st);
+    audio.shutter(true); wake();
+  }
+  function leave(st, dir) {
+    if (st.phase !== "open") return;
+    st.phase = "leaving"; st.dir = dir; st.t0 = -1; st.kind = "short"; st.ls = null; st.closing = false; st.covered = false;
+    resetPull(st); st.s.classList.remove("open", "live"); st.s.classList.add("anim");
+    veil(st, true); wake();
+  }
+  function opened(st) {
+    st.phase = "open"; st.keepOpen = false; veil(st, false);
+    // without a bridge the page's own scrolling cannot be watched, so it stays view-only and the wheel always counts
+    // toward leaving; nobody is ever trapped inside a page
+    st.s.classList.remove("anim"); st.s.classList.add("open"); st.s.classList.toggle("live", !!st.win);
+    if (pendingNav !== null) leave(st, pendingNav === "top" || pendingNav < st.i ? -1 : 1);
+  }
+  function closed(st) {
+    st.phase = "closed"; st.k = 0; st.covered = false; apply(st); veil(st, false);
+    st.s.classList.remove("active", "anim", "open", "live", "shown");
+    lock(false); scrollTo(0, restY(st.i, st.dir > 0 ? REST_BELOW : REST_ABOVE)); lastY = scrollY;
+    park(st);
+    if (pendingNav !== null) { const to = pendingNav; pendingNav = null; navTo(to); }
+  }
+  function navTo(to) {
+    const st = active();
+    if (st) { if (to === st.i) return; pendingNav = to; if (st.phase === "open") leave(st, to === "top" || to < st.i ? -1 : 1); return; }
+    if (to === "top") { scrollTo(0, 0); return; }
+    forcedDir = 1; scrollTo(0, restY(to, 0.5));
+  }
+  links.forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); navTo(+a.dataset.go); }));
+  $$('a[href="#top"]').forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); navTo("top"); }));
 
+  /* ---------- the aperture and the loading animations ---------- */
+  const ease = (k) => smooth(k) * 0.7 + k * 0.3; // the centre shows first and the frame keeps growing all the way
   function apply(st) {
-    const f = st.frame, k = st.k;
-    if (motion === "full") { f.style.clipPath = k >= 1 ? "none" : `circle(${(ease(k) * M.R).toFixed(1)}px at 50% 50%)`; f.style.opacity = "1"; }
-    else { f.style.clipPath = "none"; f.style.opacity = String(smooth(k)); }
-    f.style.visibility = k > 0 ? "visible" : "hidden";
+    const a = st.ap, k = st.k;
+    if (motion === "full") { a.style.clipPath = k >= 1 ? "none" : `circle(${(ease(k) * M.R).toFixed(1)}px at 50% 50%)`; a.style.opacity = "1"; }
+    else { a.style.clipPath = "none"; a.style.opacity = String(smooth(k)); }
+    a.style.visibility = k > 0 ? "visible" : "hidden";
   }
-  function begin(st, goal) {
-    const d = DUR();
-    st.anim = { from: 1 - goal, to: goal, t0: -1, dur: goal ? d.open : d.close };
-    st.s.classList.add("anim");
-    if (goal) audio.shutter(true); else { st.s.classList.remove("open"); audio.shutter(false); }
-    syncLive(st); updateRun(st); wake();
+  // two canvases: the still backdrop, painted once per run, and the frame, cleared and drawn each tick; the
+  // compositor layers them, so a frame never repaints the whole screen. Soft art needs no more than 1.25× pixels.
+  const veilSize = () => { const dpr = Math.min(1.25, devicePixelRatio || 1); return { dpr, w: Math.max(1, Math.round(M.vw * dpr)), h: Math.max(1, Math.round(M.fh * dpr)) }; };
+  function sizeVeil(st) {
+    const { dpr, w, h } = veilSize();
+    for (const c of [st.bgc, st.fgc]) if (c.width !== w || c.height !== h) { c.width = w; c.height = h; }
+    if (st.ls) { Object.assign(st.ls, { w, h, dpr }); st.ls.bgDrawn = false; }
   }
-  function landed(st, played) {
-    const open = st.k >= 1;
-    st.s.classList.remove("anim"); st.s.classList.toggle("open", open);
-    if (open && played) audio.swell();
-    if (!open && playing === st.s) stop();
-    syncLive(st); updateRun(st);
+  function veil(st, on) {
+    st.s.classList.toggle("veiled", on);
+    if (!on) { st.ls = null; for (const c of [st.bgc, st.fgc]) c.width = c.height = 1; return; } // give the bitmaps back
+    st.veil.style.opacity = st.phase === "leaving" ? "0" : "1";
   }
-  function settle(st, instant) {
-    if (st.anim) return;
-    const goal = st.want ? 1 : 0;
-    if (st.k === goal || (goal && !st.ready)) return; // an unloaded page opens as soon as it has loaded
-    if (instant || !visible(st)) { st.k = goal; apply(st); landed(st, false); } else begin(st, goal);
+  function paint(st, t, dt, alpha) {
+    if (!st.ls) { st.ls = { t: 0, dt: 0, p: 0, cache: st.lcache, run: {} }; sizeVeil(st); }
+    const ls = st.ls, L = window.ExposureLoaders?.[st.id];
+    Object.assign(ls, { t: t / 1000, dt: dt / 1000, p: st.kind === "long" ? st.shown : 1, reduced: motion !== "full", lang, next: placeName(st.i, st.dir) });
+    st.veil.style.opacity = alpha.toFixed(3);
+    if (!ls.bgDrawn) { const b = st.bgc.getContext("2d"); if (L?.bg) L.bg(b, ls); else { b.fillStyle = "#07070a"; b.fillRect(0, 0, ls.w, ls.h); } ls.bgDrawn = true; }
+    const ctx = st.fgc.getContext("2d"); ctx.clearRect(0, 0, ls.w, ls.h); L?.[st.kind]?.(ctx, ls);
   }
-  function stepAnims(now) {
-    let busy = false;
-    for (const st of S) {
-      const a = st.anim; if (!a) continue;
-      if (a.t0 < 0) a.t0 = now;
-      const t = clamp((now - a.t0) / a.dur);
-      if (t >= 1 || !visible(st)) { st.anim = null; st.k = a.to; apply(st); landed(st, t >= 1); settle(st); }
-      else { st.k = a.from + (a.to - a.from) * t; apply(st); }
-      if (st.anim) busy = true;
+  // build a system's cached layers in idle time once its slate is up, so its first loader frame only composites
+  function warm(st) {
+    const L = window.ExposureLoaders?.[st.id]; if (st.warmed || !L?.warm) return; st.warmed = true;
+    const idle = window.requestIdleCallback || ((f) => setTimeout(f, 50));
+    const face = st.id === "overture" && document.fonts ? document.fonts.load('400 64px "Bodoni Moda"').catch(() => 0) : Promise.resolve();
+    face.then(() => idle(() => L.warm({ ...veilSize(), t: 0, dt: 0, p: 0, lang, cache: st.lcache, run: {} })));
+  }
+  function step(st, now, dt) {
+    if (st.phase !== "entering" && st.phase !== "leaving") return false;
+    if (st.t0 < 0) { st.t0 = now; dt = 0; }
+    const t = now - st.t0;
+    if (st.phase === "entering") {
+      st.k = st.keepOpen ? 1 : clamp(t / APERTURE);
+      // the shown progress chases what the pages report and reaches the end only once they are ready
+      const target = st.ready ? 1 : Math.min(0.95, st.progress);
+      st.shown += (target - st.shown) * (1 - Math.exp(-(dt / 1000) * 4.2));
+      if (!st.ready && t > 15000) markReady(st); // a page that never reports still opens
+      if (!st.outroAt && t >= LONG_MIN && st.ready && st.shown > 0.985) { st.outroAt = t; st.s.classList.add("shown"); park(st); place(st); audio.swell(); }
+      const out = st.outroAt ? clamp((t - st.outroAt) / OUTRO) : 0;
+      paint(st, t, dt, 1 - smooth(out));
+      apply(st);
+      if (out >= 1) opened(st);
+    } else {
+      st.k = t < SHORT ? 1 : 1 - clamp((t - SHORT) / APERTURE);
+      if (t >= FADE_IN && !st.covered) { st.covered = true; st.s.classList.remove("shown"); park(st); }
+      if (t >= SHORT && !st.closing) { st.closing = true; audio.shutter(false); }
+      paint(st, t, dt, smooth(clamp(t / FADE_IN)));
+      apply(st);
+      if (t >= SHORT + APERTURE) closed(st);
     }
-    return busy;
+    return st.phase === "entering" || st.phase === "leaving";
   }
 
   /* ---------- the point of light and the rim ---------- */
@@ -440,10 +569,10 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
     for (const st of S) {
       if (st.k <= 0) continue;
       a = Math.min(a, 1 - smooth(clamp(st.k * 3)));
-      if (st.anim && motion === "full") { rr = Math.max(rr, ease(st.k) * M.R); ra = Math.max(ra, Math.sin(Math.PI * st.k) * 0.9); }
+      if (st.k < 1 && motion === "full") { rr = Math.max(rr, ease(st.k) * M.R); ra = Math.max(ra, Math.sin(Math.PI * st.k) * 0.9); }
     }
     if (a !== alpha) { alpha = a; photon.style.opacity = String(a); photon.classList.toggle("off", a < 0.01); }
-    rimA = ra; rim.setAttribute("r", rr.toFixed(1)); rim.style.opacity = String(ra);
+    rimA = ra; rimRings.forEach((c) => c.setAttribute("r", rr.toFixed(1))); rim.style.opacity = String(ra);
     shown = alpha >= 0.01 && !atFin;
   }
   // eases toward the pointer; returns whether it still needs frames
@@ -451,7 +580,6 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
     const tx = M.cx + mx * 14, ty = M.cy + my * 10, dx = tx - px, dy = ty - py;
     const moving = shown && (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05);
     if (moving) { const f = 1 - Math.pow(0.94, clamp((now - lastNow) / 16.67, 0, 4)); px += dx * f; py += dy * f; } else if (!shown) { px = tx; py = ty; }
-    lastNow = now;
     const t = `translate(${px.toFixed(1)}px,${py.toFixed(1)}px) scale(${(1 + rimA * 0.6).toFixed(3)})`;
     if (t !== lastT) photon.style.transform = lastT = t;
     return moving;
@@ -462,35 +590,50 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
   const wake = () => { if (!raf) raf = requestAnimationFrame(tick); };
   function tick(now) {
     raf = 0;
-    const a = stepAnims(now); globals();
-    if (stepPhoton(now) || a) wake();
+    const dt = lastNow ? Math.min(100, now - lastNow) : 16;
+    let busy = false;
+    for (const st of S) busy = step(st, now, dt) || busy;
+    globals();
+    busy = stepPhoton(now) || busy;
+    lastNow = now;
+    if (busy) wake();
   }
 
-  /* ---------- scroll: decide targets, nothing else ---------- */
-  let bootUntil = performance.now() + 900; // a restored scroll position at load should land open, not play
-  function evaluate(instant) {
-    const y = scrollY, vh = M.vh;
+  /* ---------- scroll: decide which system to enter, nothing else ---------- */
+  let lastY = scrollY;
+  function evaluate() {
+    const y = scrollY, dy = y - lastY, vh = M.vh; lastY = y;
     cue.classList.toggle("gone", y > 24);
     atFin = M.finTop - y < vh * 0.5; root.classList.toggle("at-fin", atFin);
     let current = -1;
+    const up = active();
     S.forEach((st, i) => {
-      const m = M.secs[i], p = clamp((y - m.start) / m.span);
-      st.want = st.want ? p > OPEN_AT - HYST && p < CLOSE_AT : p >= OPEN_AT && p < CLOSE_AT - HYST;
-      st.near = !st.want && p < 0.5 && m.top - y < vh * 0.45; // the slate is up and the page should be warm
+      const m = M.secs[i], p = clamp((y - m.start) / m.span), was = clamp((y - dy - m.start) / m.span);
+      st.near = st.phase === "closed" && p < 0.5 && m.top - y < vh * 0.45; // the slate is up and the page should be warm
       st.s.classList.toggle("slate-on", st.near);
-      if (p > 0.05 && p < 0.98 && visible(st)) current = i;
-      settle(st, instant); updateRun(st);
+      if (st.near) warm(st);
+      if (up ? st === up : current < 0 && p > 0.02 && p < 0.98 && m.end > y + M.bar && m.top < y + vh) current = i;
+      if (!up && st.phase === "closed") {
+        const inside = p >= OPEN_AT && p < CLOSE_AT;
+        // a fling that carries straight across a system is caught by it; a jump (a link, a restored position) is not
+        const across = Math.abs(dy) < vh * 1.5 && ((was < OPEN_AT && p >= CLOSE_AT) || (was >= CLOSE_AT && p < OPEN_AT));
+        if (inside || across) enter(st, forcedDir || (dy >= 0 ? 1 : -1));
+      }
+      park(st);
     });
+    forcedDir = 0;
     if (current !== currentNav) { currentNav = current; links.forEach((a, i) => a.setAttribute("aria-current", String(i === current))); }
     globals();
   }
   const applyAll = () => { S.forEach(apply); globals(); };
   let rz = 0;
-  function onResize() { if (!rz) rz = requestAnimationFrame(() => { rz = 0; measure(); px = M.cx; py = M.cy; applyAll(); evaluate(false); }); }
+  function onResize() { if (!rz) rz = requestAnimationFrame(() => { rz = 0; measure(); px = M.cx; py = M.cy; applyAll(); if (!locked) evaluate(); else { const st = active(); if (st) scrollTo(0, restY(st.i, 0.5)), (lastY = scrollY); } }); }
 
   measure(); px = M.cx; py = M.cy;
-  evaluate(true);
-  addEventListener("scroll", () => evaluate(performance.now() < bootUntil), { passive: true });
+  evaluate();
+  // a link can jump straight into any system, so every loader's layers are built once the page has settled
+  addEventListener("load", () => S.forEach(warm), { once: true });
+  addEventListener("scroll", () => { if (!locked) evaluate(); else lastY = scrollY; }, { passive: true });
   addEventListener("resize", onResize);
   new ResizeObserver(onResize).observe(root);
 })();

@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="stage">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>序曲 Overture · 一次曝光</title>
+<link rel="stylesheet" href="../overture/dist/overture.css">
+<style>
+html{background:var(--ov-bg)}
+body.dm{margin:0;background:var(--ov-bg);color:var(--ov-text);font-size:14px;overflow-x:clip}
+html[data-lang="zh"] [lang="en"],html[data-lang="en"] [lang="zh"]{display:none!important}
+
+/* page 1 · the prologue of the single-file showcase (overture/src/demo.html, demo.css), without its act bar */
+.dm-prologue{--title:min(13vw,230px);position:relative;height:100vh;min-height:520px;max-height:1200px;overflow:hidden;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.42fr);grid-template-rows:auto minmax(0,1fr) auto;column-gap:clamp(28px,4vw,64px);padding:34px max(16px,3.2vw) 26px;background:radial-gradient(ellipse 58% 60% at 34% 62%,#2a1b1266,transparent 70%),#090706;color:#f1ebdf}
+.dm-title{grid-column:1/-1;margin:0 0 34px -.04em;font:400 var(--title)/.84 var(--font-display);letter-spacing:-.05em;white-space:nowrap}
+.dm-screen{margin:0;min-height:0;display:flex;flex-direction:column}
+.dm-screen__frame{position:relative;width:min(100%,calc((100vh - var(--title) * .84 - 140px) * 16 / 9));min-width:min(100%,420px);aspect-ratio:16/9;background:#000;box-shadow:0 34px 80px -30px #000,0 0 0 1px #f1ebdf1f}
+.dm-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.dm-screen .ov-focus-corners{inset:-12px;opacity:.85;transform:none;color:#9dbcff}
+.dm-screen figcaption{display:flex;justify-content:space-between;gap:20px;max-width:min(100%,calc((100vh - var(--title) * .84 - 140px) * 16 / 9));margin-top:14px;font-size:11px;letter-spacing:.12em;color:#b9ada0}
+.dm-screen__state{color:#9dbcff}
+.dm-prologue__side{align-self:end;display:grid;justify-items:start;gap:30px;padding-bottom:30px}
+.dm-prologue__lede{margin:0;font-size:15px;line-height:1.85;color:#e6ddcd;max-width:30ch}
+.dm-enter .ov-button{--ov-text:#f1ebdf;--ov-bg:#0c0a09;--ov-line:#b9ada0}
+.dm-enter .ov-help{display:none}
+.dm-film-sound{display:flex;align-items:center;gap:12px;border:0;border-bottom:1px solid #b9ada080;background:none;color:#f1ebdf;padding:10px 0;font-size:12px;letter-spacing:.08em;min-height:44px;cursor:pointer}
+.dm-film-sound__icon{display:grid;place-items:center;width:32px;height:32px;border:1px solid #b9ada0;border-radius:50%}.dm-film-sound__icon .ov-icon{width:13px;height:13px}
+.dm-film-sound[aria-pressed=true]{border-color:#9dbcff}.dm-film-sound[aria-pressed=true] .dm-film-sound__icon{border-color:#9dbcff;color:#9dbcff}
+.dm-prologue__foot{grid-column:1/-1;display:flex;justify-content:space-between;gap:20px;margin:22px 0 0;padding-top:14px;border-top:1px solid #f1ebdf2e;font-size:11px;letter-spacing:.14em;color:#b9ada0}
+@media(max-width:860px){.dm-prologue{height:auto;max-height:none;grid-template-columns:minmax(0,1fr);grid-template-rows:auto;padding-top:48px}.dm-screen__frame,.dm-screen figcaption{width:100%;max-width:none}.dm-prologue__side{grid-template-columns:1fr auto;align-items:center;padding:30px 0 0}.dm-film-sound{grid-column:1/-1}}
+@media(max-width:560px){.dm-prologue{--title:17vw}.dm-prologue__side{grid-template-columns:1fr;gap:22px}.dm-prologue__lede{font-size:13px}.dm-prologue__foot{font-size:9px;letter-spacing:.08em;flex-wrap:wrap}}
+
+/* page 2 · the kit, laid out like the Lens sheet. Overture's own rules: square paper, samples are open blocks
+   under a hairline, serif for the title and numbers, sans for controls, vermilion only for action and choice. */
+.kit{position:relative;min-height:100vh;padding:clamp(22px,3.4vh,36px) max(16px,3.6vw) clamp(28px,5vh,52px);background:var(--ov-bg);color:var(--ov-text)}
+.kit-head{display:flex;justify-content:space-between;align-items:start;gap:24px}
+.kit-mark{font:400 18px/1 var(--font-display);letter-spacing:.02em;padding-top:12px}
+.kit-mark span{font:600 10px var(--font-sans);letter-spacing:.2em;margin-left:12px;opacity:.7}
+.kit-ver{display:grid;justify-items:end;gap:8px;width:min(330px,56vw)}
+.kit-ver .ov-tabs{width:100%}
+.kit-ver [role=tabpanel]{display:none}
+.kit-ver code,.label{font:600 10px/1.4 var(--font-sans);letter-spacing:.16em;text-transform:uppercase;color:var(--ov-muted)}
+.kit-ver code{text-transform:none;letter-spacing:.06em}
+.kit h2{margin:clamp(10px,2vh,22px) 0 0;font:400 clamp(44px,6.6vw,104px)/.94 var(--font-display);letter-spacing:-.03em}
+.kit-sub{margin:22px 0 0;font-size:clamp(14px,1.3vw,17px);line-height:1.75;color:var(--ov-muted);max-width:60ch}
+.kit-sub b{color:var(--ov-text);font-weight:600}
+.grid{margin-top:clamp(26px,5vh,56px);display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:clamp(28px,4.4vh,46px) clamp(16px,2.4vw,36px);align-items:start}
+.cell{min-width:0;display:grid;gap:16px;align-content:start;padding-top:12px;border-top:1px solid var(--ov-line-soft)}
+.c-cue{grid-column:span 3}.c-switch{grid-column:span 3}.c-choice{grid-column:span 6}
+.c-range{grid-column:span 6}.c-stepper{grid-column:span 3}.c-check{grid-column:span 3}
+.c-compare{grid-column:span 7}.c-tags{grid-column:span 5}
+.c-progress{grid-column:1/-1}
+.c-compare .ov-compare{max-height:340px}
+.c-progress .ov-demo-actions{display:none}
+.kit-foot{margin-top:clamp(28px,5vh,56px);display:flex;justify-content:space-between;gap:16px;padding-top:14px;border-top:1px solid var(--ov-line-soft)}
+@media (max-width:980px){.c-choice,.c-range,.c-compare,.c-tags{grid-column:1/-1}.c-cue,.c-switch,.c-stepper,.c-check{grid-column:span 6}}
+@media (max-width:620px){.grid>.cell{grid-column:1/-1}.kit-head{flex-direction:column}.kit-ver{justify-items:start;width:100%}}
+</style>
+</head>
+<body class="ov dm">
+<section class="dm-prologue" id="prologue" aria-label="序曲 Overture">
+  <h1 class="dm-title">OVERTURE</h1>
+  <figure class="dm-screen">
+    <div class="dm-screen__frame"><video class="dm-film" muted loop playsinline preload="auto" aria-label="Overture 15 秒宣传片，静音循环"></video><span class="ov-focus-corners" aria-hidden="true"></span></div>
+    <figcaption><span><span lang="zh">15 秒宣传片 · 配乐 A</span><span lang="en">15-second film · score A</span></span><span class="dm-screen__state"></span></figcaption>
+  </figure>
+  <div class="dm-prologue__side">
+    <p class="dm-prologue__lede"><span lang="zh">三个动作语法，一个运动核心。<br>开幕是光圈，显影是显影，共振是弹簧。</span><span lang="en">Three grammars of motion, one kernel.<br>Opening is an aperture, revealing is developing, resonance is a spring.</span></p>
+    <div id="dm-enter" class="dm-enter"></div>
+    <button type="button" class="dm-film-sound" id="dm-film-sound"><span class="dm-film-sound__icon"></span><span class="dm-film-sound__label"></span></button>
+  </div>
+  <p class="dm-prologue__foot"><span><span lang="zh">光圈 · 显影 · 弹簧</span><span lang="en">Aperture · Develop · Spring</span></span><span><span lang="zh">向下滚动，或按 ENTER 开幕</span><span lang="en">Scroll down, or press ENTER to open</span></span></p>
+</section>
+
+<section class="kit" id="kit" aria-labelledby="kit-h">
+  <div class="kit-head">
+    <div class="kit-mark">OVERTURE<span>序曲 1.3</span></div>
+    <div class="kit-ver"><div id="ver"></div><code id="ver-code"></code></div>
+  </div>
+  <h2 id="kit-h"><span lang="zh">按下，是一次开幕。</span><span lang="en">A press is an opening.</span></h2>
+  <p class="kit-sub" id="kit-sub"></p>
+  <div class="grid">
+    <div class="cell c-cue"><span class="label">CueButton</span><div id="c-cue"></div></div>
+    <div class="cell c-switch"><span class="label">Switch</span><div id="c-switch"></div></div>
+    <div class="cell c-choice"><span class="label">ChoiceGroup</span><div id="c-choice"></div></div>
+    <div class="cell c-range"><span class="label">Range</span><div id="c-range"></div></div>
+    <div class="cell c-stepper"><span class="label">Stepper</span><div id="c-stepper"></div></div>
+    <div class="cell c-check"><span class="label">Check</span><div id="c-check"></div></div>
+    <div class="cell c-compare"><span class="label">CompareLens</span><div id="c-compare"></div></div>
+    <div class="cell c-tags"><span class="label">TagInput</span><div id="c-tags"></div></div>
+    <div class="cell c-progress"><span class="label">Progress</span><div id="c-progress"></div></div>
+  </div>
+  <div class="kit-foot label"><span><span lang="zh">全部为实时组件，可直接操作</span><span lang="en">Every piece is a live component; use it</span></span><span>Overture.mount · 46 components</span></div>
+</section>
+
+<script src="../overture/dist/overture.js"></script>
+<script type="module">
+import {lang,fullMotion,progress,ready,on} from './page.js';
+const O=window.Overture,M=O.motion,S=O.sound,zh=lang==='zh',t=(a,b)=>zh?a:b,$=s=>document.querySelector(s);
+O.configure({assetBase:'../overture/dist/assets/'});
+O.setMotion(fullMotion?'full':'reduce');
+const parts=[],mount=(name,host,props={})=>{const c=O.mount(name,$(host),props);parts.push(c);return c;};
+progress(.45);
+
+/* ---------- page 1 · the prologue: the film loops muted while in view; ENTER closes it into the button ---------- */
+const section=$('#prologue'),film=$('.dm-film'),filmButton=$('#dm-film-sound'),icon=filmButton.querySelector('.dm-film-sound__icon'),filmLabel=filmButton.querySelector('.dm-film-sound__label'),state=$('.dm-screen__state');
+let inView=true,withSound=false,parked=false;
+// the 3 MB 720p cut the single-file showcase embeds, not the 8.6 MB master
+film.src='../overture/src/embed/video/overture-promo-15s-720p.mp4';
+const still=()=>{film.pause();const seek=()=>{film.currentTime=5.2;};if(film.readyState>=1)seek();else film.addEventListener('loadedmetadata',seek,{once:true});};
+const run=()=>{if(withSound&&!parked)return;if(O.reduced())still();else if(!inView||document.hidden||parked)film.pause();else film.play().catch(()=>{});};
+new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;run();},{threshold:.05}).observe(section);
+document.addEventListener('visibilitychange',run);addEventListener('ov:motion',run);
+const ui=onAir=>{filmButton.setAttribute('aria-pressed',String(onAir));icon.innerHTML=O.icon(onAir?'pause':'play');filmLabel.textContent=onAir?t('停止有声播放','Stop the sound'):t('有声观看宣传片 · 0:15','Watch with sound · 0:15');state.textContent=onAir?t('有声播放','With sound'):O.reduced()?t('静帧','Still'):t('静音循环','Muted loop');};ui(false);
+const quiet=()=>{withSound=false;film.muted=true;film.loop=true;ui(false);run();};
+filmButton.addEventListener('click',()=>{if(withSound){quiet();return;}withSound=true;film.loop=false;film.muted=false;film.currentTime=0;ui(true);film.play().catch(quiet);});
+film.addEventListener('ended',()=>{film.currentTime=0;quiet();});
+// ENTER: as in the showcase, the scene closes into the button; here the curtain opens on the kit
+mount('CueButton','#dm-enter',{label:'ENTER',variant:'circle',onActivate:async()=>{
+  const button=$('#dm-enter button');
+  if(!O.reduced()){S.play('iris',{at:button});await M.iris(section,{open:false,origin:button,duration:680,easing:'cubic-bezier(.62,0,.84,.3)'});}
+  $('#kit').scrollIntoView({behavior:'instant',block:'start'});M.release(section);
+  const h=$('#kit-h');h.tabIndex=-1;h.focus({preventScroll:true});if(!O.reduced())M.develop(h,{duration:640});
+}});
+const filmReady=new Promise(r=>{if(film.readyState>=2)r();else{film.addEventListener('loadeddata',r,{once:true});film.addEventListener('error',r,{once:true});setTimeout(r,6000);}});
+
+/* ---------- page 2 · the kit ---------- */
+mount('CueButton','#c-cue',{label:t('开幕','OPEN'),variant:'circle'});
+mount('Switch','#c-switch',{label:t('显示取景标记','Show focus marks'),value:true});
+mount('ChoiceGroup','#c-choice',{label:t('画面的情绪','Mood of the frame'),items:t(['暗场 Stage','印纸 Paper','朱红 Accent'].join('|'),'Stage|Paper|Accent').split('|')});
+mount('Range','#c-range',{label:t('曝光','Exposure'),min:-3,max:3,step:.5,value:.5,unit:'EV'});
+mount('Stepper','#c-stepper',{label:t('印刷份数','Prints'),min:1,max:12,value:3});
+mount('Check','#c-check',{label:t('保留胶片颗粒','Keep the film grain'),value:true});
+mount('CompareLens','#c-compare',{src:'../overture/src/embed/photos/red-silk.webp'});
+mount('TagInput','#c-tags',{label:t('标签','Tags'),value:t('歌剧|时装|摄影','opera|fashion|photography').split('|')});
+const bar=mount('Progress','#c-progress',{value:0});
+
+// the versions are the system's three themes; the switch lands inside an iris view transition from the tab
+const THEMES=[
+  {id:'stage',name:t('暗场','Stage'),sub:t('<b>暗场 stage</b> · 暖光照亮内容，冷光勾出焦点，朱红只指向动作与选择','<b>Stage</b> · warm light on the content, cold light on the focus, vermilion only for action and choice')},
+  {id:'paper',name:t('印纸','Paper'),sub:t('<b>印纸 paper</b> · 同一套组件印在相纸上：墨色文字，朱红变深','<b>Paper</b> · the same kit printed on photographic paper: ink text, a deeper vermilion')},
+  {id:'nocturne',name:t('夜场','Nocturne'),sub:t('<b>夜场 nocturne</b> · 靛蓝夜色里，冷光更亮，朱红仍是唯一的动作色','<b>Nocturne</b> · in indigo night the cold light is brighter; vermilion is still the only action colour')},
+];
+const label=th=>{$('#kit-sub').innerHTML=th.sub;$('#ver-code').textContent=`Overture.setTheme('${th.id}')`;};
+const ver=mount('StageTabs','#ver',{label:t('主题','Theme'),items:THEMES.map(x=>x.name)});
+let theme=0;label(THEMES[0]);
+$('#ver').addEventListener('ov:change',e=>{
+  const i=e.detail?.index;if(i===undefined||i===theme)return;theme=i;
+  O.setTheme(THEMES[i].id,document.documentElement,{origin:$('#ver [aria-selected=true]')});label(THEMES[i]);
+});
+
+// the progress develops once it is seen
+let developing=0;
+new IntersectionObserver(([e])=>{clearInterval(developing);if(!e.isIntersecting){bar.setValue(0);return;}let v=0;developing=setInterval(()=>{v=Math.min(100,v+4);bar.setValue(v);if(v>=100)clearInterval(developing);},60);},{threshold:.6}).observe($('#c-progress'));
+
+on('park',p=>{parked=p;run();if(p)clearInterval(developing);});
+on('sound',v=>O.setSound(v));
+progress(.7);
+await filmReady;
+progress(.95);
+ready();
+addEventListener('pagehide',()=>parts.forEach(c=>c.destroy()),{once:true});
+</script>
+</body>
+</html>
