@@ -54,6 +54,10 @@ node serve.mjs          # http://127.0.0.1:4300/
 
 Only Node.js is needed; the single-file showcases also open straight from disk. Build and test commands are in each system's README. `ds-viewer/` is the zero-dependency catalog generator: `node ds-viewer/build.mjs <system>`.
 
+展示网站上每个体系有两页：首屏和组件集成页，放在 `exposure/`（透镜的首屏与组件页为新设计，可在基础版与扁平版之间切换；点阵与序曲的首屏取自各自的完整展示页）。滚到一页的末尾后再滚 3 格进入下一站；加载动画按体系风格绘制，在 `exposure/loaders.js`。
+
+Each system has two pages on the site, a first screen and a kit of its components, in `exposure/` (Lens gets a new first screen and a kit with base and flat versions; Lattice and Overture reuse the first screen of their full showcases). Scroll past the end of a page by three notches to move on; the loading animations, drawn in each system's style, are in `exposure/loaders.js`.
+
 展示页默认播放完整动效，即使系统开启了“减弱动态”；页面右上角可以切换。`?motion=full` 对三套体系的展示页都有效。
 
 The site plays full motion by default even when the OS asks for reduced motion; switch it at the top right. `?motion=full` works on all three showcases.
