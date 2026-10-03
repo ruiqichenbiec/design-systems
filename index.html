@@ -21,6 +21,7 @@
 *{box-sizing:border-box;margin:0;padding:0}
 html{background:var(--ink);color:var(--paper);font:400 16px/1.55 var(--sans);-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 body{background:var(--ink);min-height:100vh}
+html{scrollbar-gutter:stable}
 html.playing{overflow:hidden}
 a{color:inherit}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
@@ -44,8 +45,14 @@ html[data-lang="zh"] [lang="en"],html[data-lang="en"] [lang="zh"]{display:none!i
 .tool b{font-weight:500;color:var(--paper)}
 
 /* photon + aperture */
-.photon{position:fixed;left:0;top:0;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:var(--photon);z-index:12;pointer-events:none;will-change:transform,opacity;
+.photon{position:fixed;left:0;top:0;width:8px;height:8px;margin:-4px 0 0 -4px;z-index:12;pointer-events:none;will-change:transform,opacity}
+.photon i{display:block;width:100%;height:100%;border-radius:50%;background:var(--photon);transition:opacity .6s;animation:breath 3.7s ease-in-out infinite;
   box-shadow:0 0 4px 1px #fff,0 0 22px 6px rgba(255,214,160,.42),0 0 90px 26px rgba(255,190,130,.13)}
+@keyframes breath{0%,100%{transform:scale(1)}25%{transform:scale(1.18)}75%{transform:scale(.82)}}
+.photon.off{visibility:hidden}
+.photon.off i,html.at-fin .photon i{animation-play-state:paused}
+html.at-fin .photon i{opacity:0}
+html[data-motion="reduced"] .photon i{animation:none}
 .rim{position:fixed;left:0;top:var(--bar);width:100%;height:calc(100% - var(--bar) - var(--cap));z-index:11;pointer-events:none;overflow:visible}
 .rim circle{fill:none;stroke:rgba(255,236,210,.7);stroke-width:1;filter:drop-shadow(0 0 6px rgba(255,200,140,.7))}
 
@@ -58,16 +65,19 @@ html[data-lang="zh"] [lang="en"],html[data-lang="en"] [lang="zh"]{display:none!i
 .hero__meta{position:absolute;right:32px;bottom:44px;text-align:right;color:var(--faint);line-height:2}
 .hero__meta b{color:var(--dim);font-weight:400}
 .cue{position:absolute;left:50%;top:calc(var(--bar) + (100vh - var(--bar) - var(--cap))/2 + 40px);transform:translateX(-50%);color:var(--faint);transition:opacity .6s}
+.cue.gone{opacity:0}
 
 /* systems */
-.sys{height:360vh;position:relative}
+.sys{height:300vh;position:relative}
 .stage{position:sticky;top:var(--bar);height:calc(100vh - var(--bar));overflow:hidden}
 .stage iframe{position:absolute;left:0;top:0;width:100%;height:calc(100% - var(--cap));border:0;background:transparent;pointer-events:none;clip-path:circle(0 at 50% 50%);visibility:hidden}
-html.playing .sys.active iframe{pointer-events:auto}
+.sys.anim iframe{will-change:clip-path,opacity}
+.sys.live iframe,html.playing .sys.open iframe{pointer-events:auto}
 .loading{position:absolute;inset:0 0 var(--cap) 0;display:grid;place-items:center;color:var(--faint);opacity:0;transition:opacity .4s;pointer-events:none}
 .sys.wait .loading{opacity:1}
 .slate{position:absolute;inset:0 0 var(--cap) 0;pointer-events:none;--h:clamp(44px,6vw,92px)}
-.slate__in{position:absolute;inset:0;text-align:center}
+.slate__in{position:absolute;inset:0;text-align:center;opacity:0;transform:translateY(6px);transition:opacity .45s,transform .45s var(--ease)}
+.sys.slate-on .slate__in{opacity:1;transform:none}
 .slate .no{position:absolute;left:0;right:0;bottom:calc(50% + 40px);color:var(--warm)}
 .slate h2{position:absolute;left:0;right:0;top:calc(50% + 30px);font-weight:300;font-size:var(--h);line-height:1;letter-spacing:-.01em}
 .slate .sub{position:absolute;left:0;right:0;top:calc(50% + 30px + var(--h) + 16px);color:var(--dim)}
@@ -139,7 +149,7 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
   </div>
 </header>
 
-<div class="photon" id="photon" aria-hidden="true"></div>
+<div class="photon" id="photon" aria-hidden="true"><i></i></div>
 <svg class="rim" aria-hidden="true"><circle id="rim" cx="0" cy="0" r="0"/></svg>
 <button class="exit" id="exit"><span lang="zh">退出试玩 · Esc</span><span lang="en">Exit · Esc</span></button>
 
@@ -149,7 +159,7 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
     <div class="hero__copy">
       <h1 id="hero-h"><span lang="zh">一次曝光</span><span lang="en">One exposure</span>
         <small><span lang="zh">透镜、点阵、序曲：三套原生 Web 设计体系</span><span lang="en">Lens, Lattice, Overture: three native web design systems</span></small></h1>
-      <p><span lang="zh">往下滚动，光点会依次打开它们。窗里每一帧都是体系自己的实时渲染，不是录屏也不是截图；点“在此试玩”可以直接上手。</span><span lang="en">Scroll and the point of light opens each one in turn. Every frame inside is the system's own live rendering, not a recording or a screenshot. Press “Play here” to try it in place.</span></p>
+      <p><span lang="zh">往下滚动，光点会依次打开它们。窗里每一帧都是体系自己的实时渲染，不是录屏也不是截图；窗口展开后可以直接操作；想独占滚轮和键盘，点“专注试玩”。</span><span lang="en">Scroll and the point of light opens each one in turn. Every frame inside is the system's own live rendering, not a recording or a screenshot. Once a frame is open you can use it right away; press “Focus play” to give it the wheel and keyboard.</span></p>
     </div>
     <div class="hero__meta mono"><b>MIT</b> · <span lang="zh">开源</span><span lang="en">Open source</span><br><b>3</b> <span lang="zh">套体系</span><span lang="en">systems</span> · <b>78</b> <span lang="zh">个组件</span><span lang="en">components</span><br><span lang="zh">零框架 · 原生 HTML/CSS/JS</span><span lang="en">No framework · plain HTML/CSS/JS</span></div>
   </section>
@@ -165,7 +175,7 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
           <p><span lang="zh">玻璃承载信息，液体表达连续变化，光表达状态。实时背景折射、弹簧形变和原创合成音；所有可交互的部分都由同一块透镜承载。</span><span lang="en">Glass carries information, liquid shows continuous change, light shows state. Live background refraction, spring deformation and synthesized sound; everything you can touch is carried by one lens.</span></p>
         </div>
         <div class="acts">
-          <button class="play"><span lang="zh">在此试玩</span><span lang="en">Play here</span></button>
+          <button class="play"><span lang="zh">专注试玩</span><span lang="en">Focus play</span></button>
           <a href="lens/lens-showcase.html" data-en="lens/lens-showcase-en.html"><span lang="zh">完整展示</span><span lang="en">Full showcase</span></a>
           <a class="opt" href="lens/lens-showcase-standalone.html"><span lang="zh">单文件版</span><span lang="en">Single file</span></a>
           <a class="opt" href="https://github.com/ruiqichenbiec/design-systems/tree/main/lens" rel="noopener"><span lang="zh">源码</span><span lang="en">Source</span></a>
@@ -185,7 +195,7 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
           <p><span lang="zh">万物皆点集，交互即映射。文字、吸引子、定理之瀑和证明树都是同一张 GPU 点阵：点先被放进无散度流场，再被弹簧拉进下一个集合。</span><span lang="en">Everything is a point set; every interaction is a map. Lettering, attractors, a theorem waterfall and proof trees are one GPU lattice: points pour through a divergence-free flow, then springs pull them into the next set.</span></p>
         </div>
         <div class="acts">
-          <button class="play"><span lang="zh">在此试玩</span><span lang="en">Play here</span></button>
+          <button class="play"><span lang="zh">专注试玩</span><span lang="en">Focus play</span></button>
           <a href="lattice/dist/lattice-showcase.html"><span lang="zh">完整展示</span><span lang="en">Full showcase</span></a>
           <a class="opt" href="lattice/dist/catalog/index.html"><span lang="zh">组件目录</span><span lang="en">Catalog</span></a>
           <a class="opt" href="https://github.com/ruiqichenbiec/design-systems/tree/main/lattice" rel="noopener"><span lang="zh">源码</span><span lang="en">Source</span></a>
@@ -205,7 +215,7 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
           <p><span lang="zh">摄影、歌剧与时装。开幕是光圈，显影是显影，共振是弹簧：三个运动原语驱动全部交互。暗场、印纸、夜场三套主题，WebGPU / WebGL2 渲染。</span><span lang="en">Photography, opera and fashion. Opening is an aperture, revealing is developing, resonance is a spring: three motion primitives drive every interaction. Three themes, rendered with WebGPU / WebGL2.</span></p>
         </div>
         <div class="acts">
-          <button class="play"><span lang="zh">在此试玩</span><span lang="en">Play here</span></button>
+          <button class="play"><span lang="zh">专注试玩</span><span lang="en">Focus play</span></button>
           <a href="overture/dist/overture-showcase.html?motion=full"><span lang="zh">完整展示</span><span lang="en">Full showcase</span></a>
           <a class="opt" href="overture/dist/components.html"><span lang="zh">46 个组件</span><span lang="en">46 components</span></a>
           <a class="opt" href="overture/dist/catalog/index.html"><span lang="zh">组件目录</span><span lang="en">Catalog</span></a>
@@ -237,7 +247,7 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
 <script>
 (() => {
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
-  const root = document.documentElement, photon = $("#photon"), rim = $("#rim"), cue = $("#cue");
+  const root = document.documentElement, photon = $("#photon"), rim = $("#rim"), cue = $("#cue"), fin = $(".fin");
   const secs = $$(".sys"), links = $$(".index a");
   const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
   const smooth = (t) => t * t * (3 - 2 * t);
@@ -265,7 +275,7 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
   }
   const reloadLoaded = () => secs.forEach((s) => { if ($("iframe", s).dataset.cur) load(s, true); });
   $("#t-lang").onclick = () => { lang = lang === "zh" ? "en" : "zh"; store.set("exposure.lang", lang); applyLang(); applyMotion(); applySound(); reloadLoaded(); };
-  $("#t-motion").onclick = () => { motion = motion === "full" ? "reduced" : "full"; store.set("exposure.motion", motion); applyMotion(); reloadLoaded(); };
+  $("#t-motion").onclick = () => { motion = motion === "full" ? "reduced" : "full"; store.set("exposure.motion", motion); applyMotion(); applyAll(); reloadLoaded(); };
   $("#t-sound").onclick = () => { soundOn = !soundOn; if (soundOn) audio.init(); applySound(); if (soundOn) audio.tick(); };
   applyLang(); applyMotion(); applySound();
 
@@ -283,94 +293,206 @@ html.playing .exit{opacity:1;transform:translate(-50%,50%);pointer-events:auto}
     swell() { if (!soundOn || !this.ctx) return; const c = this.ctx, t = c.currentTime, n = this.noise(1.6), f = c.createBiquadFilter(), g = c.createGain(); f.type = "bandpass"; f.frequency.setValueAtTime(500, t); f.frequency.exponentialRampToValueAtTime(2600, t + 1.2); f.Q.value = 0.6; g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.07, t + 0.35); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.5); n.connect(f).connect(g).connect(this.out); n.start(t); },
   };
 
+  /* ---------- one record per system ---------- */
+  // k: how open the aperture is, 0 (the point) … 1 (open).  want: where the scroll position says it should be.
+  // anim: an exposure in flight. It always plays to its end; if the scroll changed its mind meanwhile, the mirror plays next.
+  const S = secs.map((s, i) => ({ i, s, frame: $("iframe", s), k: 0, want: false, anim: null, near: false, ready: false, link: null, warmUntil: 0, parkT: 0 }));
+  const stOf = (s) => S[secs.indexOf(s)];
+  let playing = null;
+
   /* ---------- loading: only systems near the viewport keep a live page ---------- */
   function load(s, force) {
-    const f = $("iframe", s), want = srcOf(s);
+    const st = stOf(s), f = st.frame, want = srcOf(s);
     if (!force && f.dataset.cur === want) return;
-    s.classList.add("wait"); f.onload = () => s.classList.remove("wait"); f.dataset.cur = want; f.src = want;
+    s.classList.add("wait"); st.ready = false; st.link = null; syncLive(st);
+    f.onload = () => { s.classList.remove("wait"); st.ready = true; bridge(st); settle(st); syncLive(st); updateRun(st); };
+    f.dataset.cur = want; f.src = want;
   }
-  function unload(s) { const f = $("iframe", s); if (f.dataset.cur) { f.onload = null; f.src = "about:blank"; delete f.dataset.cur; } s.classList.remove("wait"); }
+  function unload(s) {
+    const st = stOf(s), f = st.frame;
+    if (f.dataset.cur) { f.onload = null; f.src = "about:blank"; delete f.dataset.cur; }
+    s.classList.remove("wait"); st.ready = false; st.link = null; clearTimeout(st.parkT); syncLive(st);
+  }
   const io = new IntersectionObserver((es) => es.forEach((e) => (e.isIntersecting ? load(e.target) : unload(e.target))), { rootMargin: "120% 0px" });
   secs.forEach((s) => io.observe(s));
 
-  /* ---------- play in place ---------- */
-  let playing = null;
-  function play(s) { playing = s; root.classList.add("playing"); const f = $("iframe", s); f.tabIndex = 0; f.focus(); audio.tick(); }
-  function stop() { if (!playing) return; $("iframe", playing).tabIndex = -1; playing = null; root.classList.remove("playing"); audio.tick(); }
+  /* ---------- the bridge into a same-origin system page ---------- */
+  // Two things need a hand inside the page. Previewing: its own scrolling is switched off, so the wheel and touch swipes
+  // chain up to this page and keep driving the exposure while clicks, hover and drags still reach the page.
+  // Parking: browsers keep running the frame loop of a hidden same-origin frame, so a closed system holds it here instead.
+  // From file:// the page is cross-origin and there is no bridge; "Focus play" is then the only way in.
+  const WARM = 1500; // let a fresh page finish booting before it may be parked
+  function bridge(st) {
+    let win, doc;
+    try { win = st.frame.contentWindow; doc = win.document; void doc.documentElement; } catch { return; }
+    win.addEventListener("keydown", (e) => { if (e.key === "Escape") stop(); });
+    const lock = doc.createElement("style");
+    lock.textContent = "html,body{overflow:hidden!important}";
+    lock.media = playing === st.s ? "not all" : "all";
+    (doc.head || doc.documentElement).append(lock);
+
+    const raf = win.requestAnimationFrame.bind(win), caf = win.cancelAnimationFrame.bind(win);
+    const held = new Map(), flying = new Map(), media = new Set();
+    let seq = 1e9, parked = false; // ids start high so they never collide with the browser's own
+    const fly = (id, cb) => flying.set(id, raf((t) => { flying.delete(id); cb(t); }));
+    win.requestAnimationFrame = (cb) => { const id = ++seq; parked ? held.set(id, cb) : fly(id, cb); return id; };
+    win.cancelAnimationFrame = (id) => { if (held.delete(id)) return; if (flying.has(id)) { caf(flying.get(id)); flying.delete(id); } else caf(id); };
+    const pause = (p) => {
+      if (p === parked) return; parked = p;
+      if (p) doc.querySelectorAll("video,audio").forEach((m) => { if (!m.paused) { m.pause(); media.add(m); } });
+      else { held.forEach((cb, id) => fly(id, cb)); held.clear(); media.forEach((m) => m.play().catch(() => {})); media.clear(); }
+    };
+    st.link = { lock, pause };
+    st.warmUntil = performance.now() + WARM;
+  }
+  // pointer events reach a system only once it is fully open
+  function syncLive(st) { st.s.classList.toggle("live", !!st.link && st.want && st.k >= 1 && !st.anim); }
+  // run while the system is open, opening, closing or about to; park it otherwise
+  function updateRun(st) {
+    const l = st.link; if (!l) return;
+    clearTimeout(st.parkT);
+    if (st.want || st.anim || st.k > 0 || st.near) { l.pause(false); return; }
+    const wait = st.warmUntil - performance.now();
+    if (wait > 0) st.parkT = setTimeout(() => updateRun(st), wait); else l.pause(true);
+  }
+
+  /* ---------- focus play: optional; the page takes the wheel and the keyboard ---------- */
+  const setLock = (st) => { if (st.link) st.link.lock.media = playing === st.s ? "not all" : "all"; };
+  function play(s) {
+    const st = stOf(s); if (st.k < 1 || st.anim) return;
+    playing = s; root.classList.add("playing"); setLock(st); st.frame.tabIndex = 0; st.frame.focus(); audio.tick();
+  }
+  function stop() {
+    if (!playing) return;
+    const st = stOf(playing); st.frame.tabIndex = -1; playing = null; root.classList.remove("playing"); setLock(st); audio.tick();
+  }
   secs.forEach((s) => $(".play", s).addEventListener("click", () => play(s)));
   $("#exit").onclick = stop;
   addEventListener("keydown", (e) => { if (e.key === "Escape") stop(); });
-  // Esc pressed inside a same-origin system page
-  secs.forEach((s) => $("iframe", s).addEventListener("load", (ev) => { try { ev.target.contentWindow.addEventListener("keydown", (e) => { if (e.key === "Escape") stop(); }); } catch {} }));
 
-  /* ---------- navigation: jump to the fully open frame ---------- */
-  const H = () => innerHeight, css = (n, d) => parseFloat(getComputedStyle(root).getPropertyValue(n)) || d, BAR = () => css("--bar", 64), CAP = () => css("--cap", 112);
-  const openY = (s) => s.offsetTop + 0.56 * (s.offsetHeight - (H() - BAR()));
-  links.forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); stop(); scrollTo({ top: openY(secs[+a.dataset.go]), behavior: motion === "full" ? "smooth" : "auto" }); }));
+  /* ---------- geometry: measured on resize, never per frame ---------- */
+  const M = { secs: secs.map(() => ({})) };
+  function measure() {
+    const y = scrollY, stage = $(".stage"), fh = stage.offsetHeight - $(".bar").offsetHeight;
+    // the stage's own width, not the window's: it is what the frame, the clip and the rim are centred in
+    M.vw = stage.clientWidth; M.vh = innerHeight; M.bar = $(".top").offsetHeight; M.fh = fh;
+    M.R = Math.hypot(M.vw, fh) / 2 + 2; M.cx = M.vw / 2; M.cy = M.bar + fh / 2;
+    secs.forEach((s, i) => { const top = s.getBoundingClientRect().top + y, m = M.secs[i]; m.top = top; m.start = top - M.bar; m.span = s.offsetHeight - stage.offsetHeight; m.end = top + s.offsetHeight; });
+    M.finTop = fin.getBoundingClientRect().top + y;
+    rim.setAttribute("cx", String(M.cx)); rim.setAttribute("cy", String(fh / 2));
+  }
+  const visible = (st) => { const m = M.secs[st.i], y = scrollY; return m.end > y + M.bar && m.top < y + M.vh; };
+  const openY = (i) => M.secs[i].start + 0.5 * M.secs[i].span;
+  links.forEach((a) => a.addEventListener("click", (e) => { e.preventDefault(); stop(); scrollTo({ top: openY(+a.dataset.go), behavior: "auto" }); }));
 
   /* ---------- the exposure ---------- */
-  // per system: .00–.10 slate (the point alone) · .10–.34 aperture opens from the point · .34–.80 open · .80–.98 closes back to the point
-  const OPEN0 = 0.1, OPEN1 = 0.34, CLOSE0 = 0.8, CLOSE1 = 0.98;
-  let px = innerWidth / 2, py = innerHeight / 2, tx = 0, ty = 0, mx = 0, my = 0;
-  addEventListener("pointermove", (e) => { mx = (e.clientX / innerWidth - 0.5) * 2; my = (e.clientY / innerHeight - 0.5) * 2; }, { passive: true });
-  const state = secs.map(() => ({ phase: "dark" }));
+  // Scroll only sets a target. Per system, with p the progress through its section:
+  //   p < OPEN_AT: the point and the slate · OPEN_AT ≤ p < CLOSE_AT: open · p ≥ CLOSE_AT: back to the point.
+  // HYST makes each edge a band, so hovering on a threshold cannot flip it back and forth.
+  const OPEN_AT = 0.16, CLOSE_AT = 0.86, HYST = 0.06;
+  const DUR = () => (motion === "full" ? { open: 1000, close: 800 } : { open: 350, close: 350 });
+  const ease = (k) => expo(k) * 0.7 + smooth(k) * 0.3;
 
-  function frame(now) {
-    const vh = H(), bar = BAR(), sh = vh - bar, fh = sh - CAP(), cx = innerWidth / 2, cy = bar + fh / 2;
-    const R = Math.hypot(innerWidth, fh) / 2 + 2;
-    let photonAlpha = 1, rimR = 0, rimA = 0, current = -1;
-
-    // hero: the point waits in the middle; the cue fades as you begin
-    const hp = clamp(scrollY / vh);
-    cue.style.opacity = String(1 - smooth(clamp(hp * 4)));
-
-    secs.forEach((s, i) => {
-      const r = s.getBoundingClientRect(), span = s.offsetHeight - sh, p = clamp((bar - r.top) / span);
-      const f = $("iframe", s), slate = $(".slate", s), st = state[i];
-      const inView = r.top < vh && r.bottom > bar;
-      let k = 0; // how open, 0..1
-      if (p > OPEN0 && p < CLOSE1) k = p < OPEN1 ? (p - OPEN0) / (OPEN1 - OPEN0) : p < CLOSE0 ? 1 : 1 - (p - CLOSE0) / (CLOSE1 - CLOSE0);
-      k = clamp(k);
-      const e = motion === "full" ? expo(k) * 0.7 + smooth(k) * 0.3 : k;
-      if (motion === "full") {
-        const rad = e * R;
-        f.style.clipPath = k >= 1 ? "none" : `circle(${rad.toFixed(1)}px at 50% 50%)`;
-        f.style.opacity = "1";
-        if (inView && k > 0 && k < 1) { rimR = rad; rimA = Math.max(rimA, Math.sin(Math.PI * clamp(k)) * 0.9); }
-      } else {
-        f.style.clipPath = "none"; f.style.opacity = String(smooth(k));
-      }
-      f.style.visibility = k > 0 && inView ? "visible" : "hidden";
-      // the slate belongs to the dark: it fades as the frame opens and returns as it closes
-      // the slate belongs to the dark before the frame opens; it rises toward the point as the section arrives
-      const slateA = !inView ? 0 : p <= 0 ? smooth(clamp(1 - (r.top - bar) / (vh * 0.7))) : p < OPEN1 ? 1 - smooth(clamp(k * 4)) : 0;
-      slate.style.opacity = String(slateA);
-      slate.firstElementChild.style.transform = `translateY(${(6 - 6 * slateA).toFixed(1)}px)`;
-      const open = k > 0.985 && inView;
-      s.classList.toggle("open", open); s.classList.toggle("active", inView && k > 0);
-      if (inView && k > 0.02) photonAlpha = Math.min(photonAlpha, 1 - smooth(clamp(k * 3)));
-      if (inView && p > OPEN0 * 0.5 && p < CLOSE1) current = i;
-      // sounds on phase changes
-      const phase = k <= 0 ? "dark" : k >= 1 ? "open" : st.phase === "dark" ? "opening" : st.phase === "open" ? "closing" : st.phase;
-      if (phase !== st.phase) { if (phase === "opening") audio.shutter(true); if (phase === "open") audio.swell(); if (phase === "closing") audio.shutter(false); st.phase = phase; }
-    });
-    if (playing && !playing.classList.contains("open")) stop();
-
-    links.forEach((a, i) => a.setAttribute("aria-current", String(i === current)));
-
-    // photon: a slow breath, a little pull toward the pointer, gone while a frame is open
-    const t = now / 1000, breath = motion === "full" ? 1 + 0.18 * Math.sin(t * 1.7) : 1;
-    tx = cx + mx * 14; ty = cy + my * 10;
-    px += (tx - px) * 0.06; py += (ty - py) * 0.06;
-    const fin = $(".fin").getBoundingClientRect(), finA = 1 - smooth(clamp((vh - fin.top) / (vh * 0.5)));
-    photon.style.opacity = String(photonAlpha * finA);
-    photon.style.transform = `translate(${px.toFixed(1)}px,${py.toFixed(1)}px) scale(${(breath * (1 + rimA * 0.6)).toFixed(3)})`;
-    rim.setAttribute("cx", String(cx)); rim.setAttribute("cy", String(fh / 2)); rim.setAttribute("r", rimR.toFixed(1));
-    rim.style.opacity = String(motion === "full" ? rimA : 0);
-    requestAnimationFrame(frame);
+  function apply(st) {
+    const f = st.frame, k = st.k;
+    if (motion === "full") { f.style.clipPath = k >= 1 ? "none" : `circle(${(ease(k) * M.R).toFixed(1)}px at 50% 50%)`; f.style.opacity = "1"; }
+    else { f.style.clipPath = "none"; f.style.opacity = String(smooth(k)); }
+    f.style.visibility = k > 0 ? "visible" : "hidden";
   }
-  requestAnimationFrame(frame);
-  addEventListener("resize", () => { px = innerWidth / 2; py = innerHeight / 2; });
+  function begin(st, goal) {
+    const d = DUR();
+    st.anim = { from: 1 - goal, to: goal, t0: -1, dur: goal ? d.open : d.close };
+    st.s.classList.add("anim");
+    if (goal) audio.shutter(true); else { st.s.classList.remove("open"); audio.shutter(false); }
+    syncLive(st); updateRun(st); wake();
+  }
+  function landed(st, played) {
+    const open = st.k >= 1;
+    st.s.classList.remove("anim"); st.s.classList.toggle("open", open);
+    if (open && played) audio.swell();
+    if (!open && playing === st.s) stop();
+    syncLive(st); updateRun(st);
+  }
+  function settle(st, instant) {
+    if (st.anim) return;
+    const goal = st.want ? 1 : 0;
+    if (st.k === goal || (goal && !st.ready)) return; // an unloaded page opens as soon as it has loaded
+    if (instant || !visible(st)) { st.k = goal; apply(st); landed(st, false); } else begin(st, goal);
+  }
+  function stepAnims(now) {
+    let busy = false;
+    for (const st of S) {
+      const a = st.anim; if (!a) continue;
+      if (a.t0 < 0) a.t0 = now;
+      const t = clamp((now - a.t0) / a.dur);
+      if (t >= 1 || !visible(st)) { st.anim = null; st.k = a.to; apply(st); landed(st, t >= 1); settle(st); }
+      else { st.k = a.from + (a.to - a.from) * t; apply(st); }
+      if (st.anim) busy = true;
+    }
+    return busy;
+  }
+
+  /* ---------- the point of light and the rim ---------- */
+  let px = 0, py = 0, mx = 0, my = 0, lastNow = 0, lastT = "", alpha = 1, rimA = 0, atFin = false, shown = true, currentNav = -2;
+  addEventListener("pointermove", (e) => { mx = (e.clientX / innerWidth - 0.5) * 2; my = (e.clientY / innerHeight - 0.5) * 2; if (shown) wake(); }, { passive: true });
+  function globals() {
+    let a = 1, ra = 0, rr = 0;
+    for (const st of S) {
+      if (st.k <= 0) continue;
+      a = Math.min(a, 1 - smooth(clamp(st.k * 3)));
+      if (st.anim && motion === "full") { rr = Math.max(rr, ease(st.k) * M.R); ra = Math.max(ra, Math.sin(Math.PI * st.k) * 0.9); }
+    }
+    if (a !== alpha) { alpha = a; photon.style.opacity = String(a); photon.classList.toggle("off", a < 0.01); }
+    rimA = ra; rim.setAttribute("r", rr.toFixed(1)); rim.style.opacity = String(ra);
+    shown = alpha >= 0.01 && !atFin;
+  }
+  // eases toward the pointer; returns whether it still needs frames
+  function stepPhoton(now) {
+    const tx = M.cx + mx * 14, ty = M.cy + my * 10, dx = tx - px, dy = ty - py;
+    const moving = shown && (Math.abs(dx) > 0.05 || Math.abs(dy) > 0.05);
+    if (moving) { const f = 1 - Math.pow(0.94, clamp((now - lastNow) / 16.67, 0, 4)); px += dx * f; py += dy * f; } else if (!shown) { px = tx; py = ty; }
+    lastNow = now;
+    const t = `translate(${px.toFixed(1)}px,${py.toFixed(1)}px) scale(${(1 + rimA * 0.6).toFixed(3)})`;
+    if (t !== lastT) photon.style.transform = lastT = t;
+    return moving;
+  }
+
+  /* ---------- the loop runs only while something moves ---------- */
+  let raf = 0;
+  const wake = () => { if (!raf) raf = requestAnimationFrame(tick); };
+  function tick(now) {
+    raf = 0;
+    const a = stepAnims(now); globals();
+    if (stepPhoton(now) || a) wake();
+  }
+
+  /* ---------- scroll: decide targets, nothing else ---------- */
+  let bootUntil = performance.now() + 900; // a restored scroll position at load should land open, not play
+  function evaluate(instant) {
+    const y = scrollY, vh = M.vh;
+    cue.classList.toggle("gone", y > 24);
+    atFin = M.finTop - y < vh * 0.5; root.classList.toggle("at-fin", atFin);
+    let current = -1;
+    S.forEach((st, i) => {
+      const m = M.secs[i], p = clamp((y - m.start) / m.span);
+      st.want = st.want ? p > OPEN_AT - HYST && p < CLOSE_AT : p >= OPEN_AT && p < CLOSE_AT - HYST;
+      st.near = !st.want && p < 0.5 && m.top - y < vh * 0.45; // the slate is up and the page should be warm
+      st.s.classList.toggle("slate-on", st.near);
+      if (p > 0.05 && p < 0.98 && visible(st)) current = i;
+      settle(st, instant); updateRun(st);
+    });
+    if (current !== currentNav) { currentNav = current; links.forEach((a, i) => a.setAttribute("aria-current", String(i === current))); }
+    globals();
+  }
+  const applyAll = () => { S.forEach(apply); globals(); };
+  let rz = 0;
+  function onResize() { if (!rz) rz = requestAnimationFrame(() => { rz = 0; measure(); px = M.cx; py = M.cy; applyAll(); evaluate(false); }); }
+
+  measure(); px = M.cx; py = M.cy;
+  evaluate(true);
+  addEventListener("scroll", () => evaluate(performance.now() < bootUntil), { passive: true });
+  addEventListener("resize", onResize);
+  new ResizeObserver(onResize).observe(root);
 })();
 </script>
 </body>
