@@ -14,6 +14,8 @@ addEventListener('error',function(e){parent.postMessage({dsFrame:"DotText",err:S
 (function(){
   var L = window.Lattice; var n = 43; var d = L.mountDotText(document.getElementById('d'), { pitch: 7 }); document.getElementById('u').onclick = function(){ n = (n + 1) % 1000; d.set(String(n).padStart(3, '0')); }; document.getElementById('q').onclick = function(){ d.set('QED'); };
 })();
+// the system's cursor: over any control the set of points re-forms along its outline
+window.Lattice.mountCursor();
 </script>
 
 </body></html>

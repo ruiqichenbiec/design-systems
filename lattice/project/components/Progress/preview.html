@@ -4,4 +4,6 @@
 (function(){
   var L = window.Lattice; var p = L.mountProgress(document.getElementById('p')); document.querySelectorAll('[data-indeterminate]').forEach(L.mountProgress); var manual = false; document.getElementById('a').onclick = function(){ manual = true; p.set(0); }; document.getElementById('b').onclick = function(){ manual = true; p.set(1); }; (function tick(){ if (!manual) { var v = p.value >= 1 ? 0 : Math.min(1, p.value + 0.07 + Math.random() * 0.09); p.set(v); } setTimeout(tick, p.value >= 1 ? 2600 : p.value === 0 ? 1400 : 1050); })();
 })();
+// the system's cursor: over any control the set of points re-forms along its outline
+window.Lattice.mountCursor();
 </script>
