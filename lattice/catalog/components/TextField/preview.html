@@ -4,4 +4,6 @@
 (function(){
   var f = document.getElementById('f'), e = document.getElementById('e'); f.addEventListener('submit', function(ev){ ev.preventDefault(); var ok = e.checkValidity(); f.toggleAttribute('data-invalid', !ok); document.getElementById('m').textContent = ok ? 'Looks right.' : 'That is not an email address yet: it needs a name, an @ and a domain.'; });
 })();
+// the system's cursor: over any control the set of points re-forms along its outline
+window.Lattice.mountCursor();
 </script>

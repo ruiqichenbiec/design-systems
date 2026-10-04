@@ -4,4 +4,6 @@
 (function(){
   document.querySelectorAll('.lx-switch').forEach(window.Lattice.mountSwitch); var d = document.getElementById('demo'); setInterval(function(){ if (!d._touched) d._switch.set(!d._switch.on, { quiet: true }); }, 2600);
 })();
+// the system's cursor: over any control the set of points re-forms along its outline
+window.Lattice.mountCursor();
 </script>

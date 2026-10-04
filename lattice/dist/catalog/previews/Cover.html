@@ -21,6 +21,8 @@ addEventListener('error',function(e){parent.postMessage({dsFrame:"Cover",err:Str
   f.keep(function(Lt){ return Lt.rest(); }, {dur:0.001});
   setTimeout(function(){ f.keep(function(Lt){ var m = L.sets.matrixText('LATTICE', 2); return Lt.lit([{map:m, col:Math.floor((Lt.cols-m.w)/2), row:Math.floor(Lt.rows*0.2)}]); }, {sweep:[1,0,0], span:9, dur:1.5, lit:1.6, flow:2.4, alpha:0.42}); }, 400);
 })();
+// the system's cursor: over any control the set of points re-forms along its outline
+window.Lattice.mountCursor();
 </script>
 
 </body></html>

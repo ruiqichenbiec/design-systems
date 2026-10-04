@@ -14,6 +14,8 @@ addEventListener('error',function(e){parent.postMessage({dsFrame:"Tabs",err:Stri
 (function(){
   var t = document.getElementById('t'); window.Lattice.mountTabs(t); t.addEventListener('tabs:change', function(e){ document.getElementById('o').textContent = 'Selected: ' + e.detail.value; });
 })();
+// the system's cursor: over any control the set of points re-forms along its outline
+window.Lattice.mountCursor();
 </script>
 
 </body></html>

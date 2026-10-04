@@ -14,6 +14,8 @@ addEventListener('error',function(e){parent.postMessage({dsFrame:"CommandPalette
 (function(){
   var c = window.Lattice.mountCommands([{id:'a', key:'下', en:'Next set', run:function(){ document.getElementById('r').textContent = 'Ran: Next set'; }}, {id:'b', key:'树', en:'Grow the proof of Picard–Lindelöf', run:function(){ document.getElementById('r').textContent = 'Ran: Grow a proof'; }}, {id:'c', key:'声', en:'Toggle sound', run:function(){ document.getElementById('r').textContent = 'Ran: Toggle sound'; }}]); document.getElementById('o').onclick = c.open;
 })();
+// the system's cursor: over any control the set of points re-forms along its outline
+window.Lattice.mountCursor();
 </script>
 
 </body></html>

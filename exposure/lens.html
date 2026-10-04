@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
 <title>透镜 Lens · 一次曝光</title>
 <link rel="stylesheet" href="../lens/lab/design-system/tokens.css">
 <link rel="stylesheet" href="../lens/lab/design-system/components.css">
@@ -57,24 +58,28 @@ html[data-lang="zh"] [lang="en"],html[data-lang="en"] [lang="zh"]{display:none!i
   .hero-foot{flex-direction:column;align-items:start}.hero-foot .hint{text-align:left}
 }
 
-/* flat: the same components with refraction switched off — solid sheets, colour and outline carry selection */
-.kit-stage.flat{background:#dfe6f2 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' preserveAspectRatio='none'%3E%3Crect width='100' height='100' fill='%23d3e8e3'/%3E%3Cpath d='M-10 67C13 8 48 55 110-63V140H-10Z' fill='%23badde8'/%3E%3Cpath d='M-10 88C13 29 48 76 110-42V140H-10Z' fill='%239db7dc'/%3E%3Cpath d='M-10 116C13 57 48 104 110-14V140H-10Z' fill='%23aeb4e6'/%3E%3Cpath d='M-10 142C13 83 48 130 110 12V140H-10Z' fill='%23e3c9d3'/%3E%3C/svg%3E") center/100% 100% no-repeat}
-.flat .lg-surface{background:#fbfcfe;backdrop-filter:none;box-shadow:0 0 0 1px #1d243314,0 1px 2px #1d24330f}
-.flat .lg-segment-bar{background:#ffffff8c;box-shadow:inset 0 0 0 1px #1d243314}
-.flat .lg-segment-indicator{background:#fff;box-shadow:0 1px 3px #1d243326}
-/* without the glass system nothing springs these into place, so the flat sheet positions them itself */
-.flat .lg-segment-indicator{transform:translateX(var(--lg-segment-x,0))!important;transition:transform var(--lg-duration-normal) var(--lg-ease-spring)}
-.flat .lg-switch-thumb{transform:none!important;transition:transform var(--lg-duration-normal) var(--lg-ease-spring)}
-.flat .lg-switch[aria-checked=true] .lg-switch-thumb{transform:translateX(30px)!important}
-.flat :is(.lg-optic-rim,.lg-progress-fiber,.lg-progress-emitter){display:none}
-.flat .lg-choice[aria-pressed=true]{background:#2d6fdf;color:#fff;outline:none}
-.flat .lg-choice[aria-pressed=true]>.lg-icon{color:#fff}
-.flat .lg-icon-button[aria-pressed=true]{background:#e4f4ec;color:#1f7a4d}
-.flat .lg-toggle-tile[aria-checked=true]{background:#2f9e6a;color:#fff}
-.flat .lg-switch-track{background:#c5ccd8}.flat .lg-switch[aria-checked=true] .lg-switch-track{background:#2f9e6a}
-.flat .lg-progress-track{background:#ffffffb3;box-shadow:inset 0 0 0 1px #1d243314}
-.flat .lg-progress-fill{background:#2d6fdf}.flat .lg-progress[data-complete=true] .lg-progress-fill{background:#2f9e6a}
-.flat .lg-progress[data-complete=true] .lg-progress-track{box-shadow:inset 0 0 0 1px #2f9e6a66}
+/* flat: what is unselected or still moving stays liquid glass; once a choice settles, or a task completes, it
+   flattens into a solid sheet that covers the glass beneath it. Moving again (pressed, dragged, sliding) melts the
+   sheet back into glass. The glass system keeps running in both versions, so switching is instant. */
+.kit-stage :is(.lg-segment-indicator,.lg-choice,.lg-icon-button,.lg-toggle-tile,.lg-switch-thumb,.lg-switch-track,.lg-drop-well,.lg-progress-track){transition:background-color .16s ease,color .16s ease,box-shadow .16s ease}
+.kit-stage.flat :is(
+  .lg-segment-indicator,
+  .lg-choice[aria-pressed=true],
+  .lg-icon-button[aria-pressed=true],
+  .lg-toggle-tile[aria-checked=true],
+  .lg-switch[aria-checked=true] .lg-switch-thumb,
+  .lg-drop-select[data-phase=rest] .lg-drop-well[data-selected=true],
+  .lg-progress[data-complete=true] .lg-progress-track
+):not(.jelly-moving):not([data-held=true]){transition-duration:.38s;box-shadow:0 1px 2px #1d24331f,0 0 0 1px #1d243312}
+.kit-stage.flat .lg-segment-indicator:not(.jelly-moving):not([data-held=true]),
+.kit-stage.flat .lg-switch[aria-checked=true] .lg-switch-thumb:not(.jelly-moving),
+.kit-stage.flat .lg-drop-select[data-phase=rest] .lg-drop-well[data-selected=true]{background:#fff}
+.kit-stage.flat .lg-drop-select[data-phase=rest] .lg-drop-well[data-selected=true]{color:#1f7a4d}
+.kit-stage.flat .lg-choice[aria-pressed=true]:not(.jelly-moving):not([data-held=true]){background:#2d6fdf;color:#fff}
+.kit-stage.flat :is(.lg-icon-button[aria-pressed=true],.lg-toggle-tile[aria-checked=true]):not(.jelly-moving):not([data-held=true]){background:#2f9e6a;color:#fff}
+.kit-stage.flat .lg-switch[aria-checked=true]:not(:has(.jelly-moving)) .lg-switch-track{background:#2f9e6a;transition-duration:.38s}
+.kit-stage.flat .lg-progress[data-complete=true] .lg-progress-track{background:#2f9e6a}
+.kit-stage.flat .lg-progress[data-complete=true] :is(.lg-optic-rim,.lg-progress-fiber,.lg-progress-emitter){display:none}
 </style>
 </head>
 <body>
@@ -163,13 +168,13 @@ make('choices',{label:t('分组','Group'),value:'work',options:[{value:'all',lab
 make('button',{label:t('保存此刻','Save this moment'),sound:'success'},'#c-button');
 const bar=make('progress',{label:t('当前进度','Current progress'),value:0,max:100,completionColor:'green',completeLabel:t('已完成','Complete')},'#c-progress');
 
-// two versions of one kit: base refracts the scene, flat draws solid sheets
-const VERSIONS={base:t('基础版 base · 全玻璃，选中以发光、反光与液体表达','Base · all glass; selection shown with glow, reflection and liquid'),flat:t('扁平版 flat · 不折射的实色平面，选中以颜色与描边表达','Flat · solid sheets without refraction; selection shown with colour and outline')};
+// two versions of one kit, one glass system: base keeps everything glass; flat flattens what is chosen or done
+const VERSIONS={base:t('基础版 base · 全玻璃，选中以发光、反光与液体表达','Base · all glass; selection shown with glow, reflection and liquid'),flat:t('扁平版 flat · 未选中与移动中的仍是液态玻璃，选中或完成后平化为实色','Flat · unselected and moving parts stay liquid glass; chosen or finished ones flatten into solid colour')};
 let kit=null,version=null,ver=null;
 function use(next){
   if(next===version)return;version=next;
-  if(next==='base'){kitStage.classList.remove('flat');kit=createGlassSystem(kitStage,{scene:'aurora',artwork:paintAurora,motion:fullMotion});quiet(kit);}
-  else{kit?.destroy();kit=null;kitStage.classList.remove('fallback');kitStage.classList.add('flat');}
+  kit||=(()=>{const k=createGlassSystem(kitStage,{scene:'aurora',artwork:paintAurora,motion:fullMotion});quiet(k);return k;})();
+  kitStage.classList.toggle('flat',next==='flat');kit.renderer?.invalidate(500);
   ver?.setValue(next);$('#kit-sub').textContent=VERSIONS[next];$('#ver-code').textContent=`Lens.use('${next}')`;
   kitStage.dispatchEvent(new CustomEvent('lg:sync',{bubbles:true}));
 }

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="icon" href="data:,">
 <title>序曲 Overture · 一次曝光</title>
 <link rel="stylesheet" href="../overture/dist/overture.css">
 <style>
@@ -10,25 +11,28 @@ html{background:var(--ov-bg)}
 body.dm{margin:0;background:var(--ov-bg);color:var(--ov-text);font-size:14px;overflow-x:clip}
 html[data-lang="zh"] [lang="en"],html[data-lang="en"] [lang="zh"]{display:none!important}
 
-/* page 1 · the prologue of the single-file showcase (overture/src/demo.html, demo.css), without its act bar */
-.dm-prologue{--title:min(13vw,230px);position:relative;height:100vh;min-height:520px;max-height:1200px;overflow:hidden;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(250px,.42fr);grid-template-rows:auto minmax(0,1fr) auto;column-gap:clamp(28px,4vw,64px);padding:34px max(16px,3.2vw) 26px;background:radial-gradient(ellipse 58% 60% at 34% 62%,#2a1b1266,transparent 70%),#090706;color:#f1ebdf}
-.dm-title{grid-column:1/-1;margin:0 0 34px -.04em;font:400 var(--title)/.84 var(--font-display);letter-spacing:-.05em;white-space:nowrap}
-.dm-screen{margin:0;min-height:0;display:flex;flex-direction:column}
-.dm-screen__frame{position:relative;width:min(100%,calc((100vh - var(--title) * .84 - 140px) * 16 / 9));min-width:min(100%,420px);aspect-ratio:16/9;background:#000;box-shadow:0 34px 80px -30px #000,0 0 0 1px #f1ebdf1f}
-.dm-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.dm-screen .ov-focus-corners{inset:-12px;opacity:.85;transform:none;color:#9dbcff}
-.dm-screen figcaption{display:flex;justify-content:space-between;gap:20px;max-width:min(100%,calc((100vh - var(--title) * .84 - 140px) * 16 / 9));margin-top:14px;font-size:11px;letter-spacing:.12em;color:#b9ada0}
-.dm-screen__state{color:#9dbcff}
-.dm-prologue__side{align-self:end;display:grid;justify-items:start;gap:30px;padding-bottom:30px}
-.dm-prologue__lede{margin:0;font-size:15px;line-height:1.85;color:#e6ddcd;max-width:30ch}
-.dm-enter .ov-button{--ov-text:#f1ebdf;--ov-bg:#0c0a09;--ov-line:#b9ada0}
+/* page 1 · the prologue: the promo film fills the frame as a backdrop and the type is the subject. On scroll the
+   film rises at about half the speed of the type, a slower plane behind it (transform only, no layout). */
+.dm-prologue{--title:min(17vw,300px);position:relative;height:100vh;min-height:520px;overflow:hidden;isolation:isolate;background:#090706;color:#f1ebdf}
+.dm-backdrop{position:absolute;inset:0;z-index:-2;will-change:transform}
+.dm-film{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:saturate(.9) contrast(1.05)}
+/* warm black over the film: deep at the top for the title, open in the middle, deep again at the foot */
+.dm-shade{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,#090706e6 0%,#09070680 26%,#0907062e 52%,#090706b3 80%,#090706f5 100%),radial-gradient(ellipse 80% 70% at 30% 40%,#09070600 40%,#09070699 100%)}
+.dm-front{position:relative;height:100%;display:grid;grid-template-rows:auto minmax(0,1fr) auto auto;padding:30px max(16px,3.6vw) 24px}
+.dm-title{margin:0 0 0 -.05em;font:400 var(--title)/.8 var(--font-display);letter-spacing:-.05em;white-space:nowrap;text-shadow:0 2px 40px #09070680}
+.dm-state{align-self:start;justify-self:end;margin-top:14px;font-size:11px;letter-spacing:.14em;color:#9dbcff}
+.dm-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:28px;padding-bottom:26px}
+.dm-prologue__lede{margin:0;font:400 clamp(20px,2.3vw,34px)/1.35 var(--font-display);letter-spacing:-.01em;color:#f1ebdf;max-width:26ch}
+html[data-lang="zh"] .dm-prologue__lede{max-width:none}
+.dm-side{display:grid;justify-items:end;gap:22px}
+.dm-enter .ov-button{--ov-text:#f1ebdf;--ov-bg:#0c0a09;--ov-line:#f1ebdf}
 .dm-enter .ov-help{display:none}
 .dm-film-sound{display:flex;align-items:center;gap:12px;border:0;border-bottom:1px solid #b9ada080;background:none;color:#f1ebdf;padding:10px 0;font-size:12px;letter-spacing:.08em;min-height:44px;cursor:pointer}
 .dm-film-sound__icon{display:grid;place-items:center;width:32px;height:32px;border:1px solid #b9ada0;border-radius:50%}.dm-film-sound__icon .ov-icon{width:13px;height:13px}
 .dm-film-sound[aria-pressed=true]{border-color:#9dbcff}.dm-film-sound[aria-pressed=true] .dm-film-sound__icon{border-color:#9dbcff;color:#9dbcff}
-.dm-prologue__foot{grid-column:1/-1;display:flex;justify-content:space-between;gap:20px;margin:22px 0 0;padding-top:14px;border-top:1px solid #f1ebdf2e;font-size:11px;letter-spacing:.14em;color:#b9ada0}
-@media(max-width:860px){.dm-prologue{height:auto;max-height:none;grid-template-columns:minmax(0,1fr);grid-template-rows:auto;padding-top:48px}.dm-screen__frame,.dm-screen figcaption{width:100%;max-width:none}.dm-prologue__side{grid-template-columns:1fr auto;align-items:center;padding:30px 0 0}.dm-film-sound{grid-column:1/-1}}
-@media(max-width:560px){.dm-prologue{--title:17vw}.dm-prologue__side{grid-template-columns:1fr;gap:22px}.dm-prologue__lede{font-size:13px}.dm-prologue__foot{font-size:9px;letter-spacing:.08em;flex-wrap:wrap}}
+.dm-prologue__foot{display:flex;justify-content:space-between;gap:20px;margin:0;padding-top:14px;border-top:1px solid #f1ebdf2e;font-size:11px;letter-spacing:.14em;color:#b9ada0}
+@media(max-width:860px){.dm-row{grid-template-columns:1fr}.dm-side{justify-items:start;grid-auto-flow:column;align-items:center;justify-content:space-between}}
+@media(max-width:560px){.dm-prologue{--title:19vw}.dm-side{grid-auto-flow:row}.dm-prologue__foot{font-size:9px;letter-spacing:.08em;flex-wrap:wrap}}
 
 /* page 2 · the kit, laid out like the Lens sheet. Overture's own rules: square paper, samples are open blocks
    under a hairline, serif for the title and numbers, sans for controls, vermilion only for action and choice. */
@@ -59,17 +63,20 @@ html[data-lang="zh"] [lang="en"],html[data-lang="en"] [lang="zh"]{display:none!i
 </head>
 <body class="ov dm">
 <section class="dm-prologue" id="prologue" aria-label="序曲 Overture">
-  <h1 class="dm-title">OVERTURE</h1>
-  <figure class="dm-screen">
-    <div class="dm-screen__frame"><video class="dm-film" muted loop playsinline preload="auto" aria-label="Overture 15 秒宣传片，静音循环"></video><span class="ov-focus-corners" aria-hidden="true"></span></div>
-    <figcaption><span><span lang="zh">15 秒宣传片 · 配乐 A</span><span lang="en">15-second film · score A</span></span><span class="dm-screen__state"></span></figcaption>
-  </figure>
-  <div class="dm-prologue__side">
-    <p class="dm-prologue__lede"><span lang="zh">三个动作语法，一个运动核心。<br>开幕是光圈，显影是显影，共振是弹簧。</span><span lang="en">Three grammars of motion, one kernel.<br>Opening is an aperture, revealing is developing, resonance is a spring.</span></p>
-    <div id="dm-enter" class="dm-enter"></div>
-    <button type="button" class="dm-film-sound" id="dm-film-sound"><span class="dm-film-sound__icon"></span><span class="dm-film-sound__label"></span></button>
+  <div class="dm-backdrop" aria-hidden="true"><video class="dm-film" muted loop playsinline preload="auto" poster="../overture/src/embed/photos/stage-bow.webp"></video></div>
+  <div class="dm-shade"></div>
+  <div class="dm-front">
+    <h1 class="dm-title">OVERTURE</h1>
+    <span class="dm-state" aria-live="polite"></span>
+    <div class="dm-row">
+      <p class="dm-prologue__lede"><span lang="zh">三个动作语法，一个运动核心。<br>开幕是光圈，显影是显影，共振是弹簧。</span><span lang="en">Three grammars of motion, one kernel. Opening is an aperture, revealing is developing, resonance is a spring.</span></p>
+      <div class="dm-side">
+        <div id="dm-enter" class="dm-enter"></div>
+        <button type="button" class="dm-film-sound" id="dm-film-sound"><span class="dm-film-sound__icon"></span><span class="dm-film-sound__label"></span></button>
+      </div>
+    </div>
+    <p class="dm-prologue__foot"><span><span lang="zh">光圈 · 显影 · 弹簧 · 15 秒宣传片</span><span lang="en">Aperture · Develop · Spring · 15-second film</span></span><span><span lang="zh">向下滚动，或按 ENTER 开幕</span><span lang="en">Scroll down, or press ENTER to open</span></span></p>
   </div>
-  <p class="dm-prologue__foot"><span><span lang="zh">光圈 · 显影 · 弹簧</span><span lang="en">Aperture · Develop · Spring</span></span><span><span lang="zh">向下滚动，或按 ENTER 开幕</span><span lang="en">Scroll down, or press ENTER to open</span></span></p>
 </section>
 
 <section class="kit" id="kit" aria-labelledby="kit-h">
@@ -99,32 +106,12 @@ import {lang,fullMotion,progress,ready,on} from './page.js';
 const O=window.Overture,M=O.motion,S=O.sound,zh=lang==='zh',t=(a,b)=>zh?a:b,$=s=>document.querySelector(s);
 O.configure({assetBase:'../overture/dist/assets/'});
 O.setMotion(fullMotion?'full':'reduce');
-const parts=[],mount=(name,host,props={})=>{const c=O.mount(name,$(host),props);parts.push(c);return c;};
+// every mount stands alone: one component failing never empties the rest of the page
+const parts=[],mount=(name,host,props={})=>{try{const c=O.mount(name,$(host),props);parts.push(c);return c;}catch(error){console.error(`Overture: ${name} failed to mount`,error);return null;}};
+const guard=(what,fn)=>{try{return fn();}catch(error){console.error(`Overture: ${what} failed`,error);}};
 progress(.45);
 
-/* ---------- page 1 · the prologue: the film loops muted while in view; ENTER closes it into the button ---------- */
-const section=$('#prologue'),film=$('.dm-film'),filmButton=$('#dm-film-sound'),icon=filmButton.querySelector('.dm-film-sound__icon'),filmLabel=filmButton.querySelector('.dm-film-sound__label'),state=$('.dm-screen__state');
-let inView=true,withSound=false,parked=false;
-// the 3 MB 720p cut the single-file showcase embeds, not the 8.6 MB master
-film.src='../overture/src/embed/video/overture-promo-15s-720p.mp4';
-const still=()=>{film.pause();const seek=()=>{film.currentTime=5.2;};if(film.readyState>=1)seek();else film.addEventListener('loadedmetadata',seek,{once:true});};
-const run=()=>{if(withSound&&!parked)return;if(O.reduced())still();else if(!inView||document.hidden||parked)film.pause();else film.play().catch(()=>{});};
-new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;run();},{threshold:.05}).observe(section);
-document.addEventListener('visibilitychange',run);addEventListener('ov:motion',run);
-const ui=onAir=>{filmButton.setAttribute('aria-pressed',String(onAir));icon.innerHTML=O.icon(onAir?'pause':'play');filmLabel.textContent=onAir?t('停止有声播放','Stop the sound'):t('有声观看宣传片 · 0:15','Watch with sound · 0:15');state.textContent=onAir?t('有声播放','With sound'):O.reduced()?t('静帧','Still'):t('静音循环','Muted loop');};ui(false);
-const quiet=()=>{withSound=false;film.muted=true;film.loop=true;ui(false);run();};
-filmButton.addEventListener('click',()=>{if(withSound){quiet();return;}withSound=true;film.loop=false;film.muted=false;film.currentTime=0;ui(true);film.play().catch(quiet);});
-film.addEventListener('ended',()=>{film.currentTime=0;quiet();});
-// ENTER: as in the showcase, the scene closes into the button; here the curtain opens on the kit
-mount('CueButton','#dm-enter',{label:'ENTER',variant:'circle',onActivate:async()=>{
-  const button=$('#dm-enter button');
-  if(!O.reduced()){S.play('iris',{at:button});await M.iris(section,{open:false,origin:button,duration:680,easing:'cubic-bezier(.62,0,.84,.3)'});}
-  $('#kit').scrollIntoView({behavior:'instant',block:'start'});M.release(section);
-  const h=$('#kit-h');h.tabIndex=-1;h.focus({preventScroll:true});if(!O.reduced())M.develop(h,{duration:640});
-}});
-const filmReady=new Promise(r=>{if(film.readyState>=2)r();else{film.addEventListener('loadeddata',r,{once:true});film.addEventListener('error',r,{once:true});setTimeout(r,6000);}});
-
-/* ---------- page 2 · the kit ---------- */
+/* ---------- page 2 · the kit (mounted first: it never waits on the film) ---------- */
 mount('CueButton','#c-cue',{label:t('开幕','OPEN'),variant:'circle'});
 mount('Switch','#c-switch',{label:t('显示取景标记','Show focus marks'),value:true});
 mount('ChoiceGroup','#c-choice',{label:t('画面的情绪','Mood of the frame'),items:t(['暗场 Stage','印纸 Paper','朱红 Accent'].join('|'),'Stage|Paper|Accent').split('|')});
@@ -142,19 +129,47 @@ const THEMES=[
   {id:'nocturne',name:t('夜场','Nocturne'),sub:t('<b>夜场 nocturne</b> · 靛蓝夜色里，冷光更亮，朱红仍是唯一的动作色','<b>Nocturne</b> · in indigo night the cold light is brighter; vermilion is still the only action colour')},
 ];
 const label=th=>{$('#kit-sub').innerHTML=th.sub;$('#ver-code').textContent=`Overture.setTheme('${th.id}')`;};
-const ver=mount('StageTabs','#ver',{label:t('主题','Theme'),items:THEMES.map(x=>x.name)});
+mount('StageTabs','#ver',{label:t('主题','Theme'),items:THEMES.map(x=>x.name)});
 let theme=0;label(THEMES[0]);
 $('#ver').addEventListener('ov:change',e=>{
-  const i=e.detail?.index;if(i===undefined||i===theme)return;theme=i;
-  O.setTheme(THEMES[i].id,document.documentElement,{origin:$('#ver [aria-selected=true]')});label(THEMES[i]);
+  const i=e.detail?.index;if(i===undefined||i===theme)return;theme=i;label(THEMES[i]);
+  guard('theme switch',()=>O.setTheme(THEMES[i].id,document.documentElement,{origin:$('#ver [aria-selected=true]')}));
 });
-
 // the progress develops once it is seen
 let developing=0;
-new IntersectionObserver(([e])=>{clearInterval(developing);if(!e.isIntersecting){bar.setValue(0);return;}let v=0;developing=setInterval(()=>{v=Math.min(100,v+4);bar.setValue(v);if(v>=100)clearInterval(developing);},60);},{threshold:.6}).observe($('#c-progress'));
+if(bar)new IntersectionObserver(([e])=>{clearInterval(developing);if(!e.isIntersecting){bar.setValue(0);return;}let v=0;developing=setInterval(()=>{v=Math.min(100,v+4);bar.setValue(v);if(v>=100)clearInterval(developing);},60);},{threshold:.6}).observe($('#c-progress'));
+progress(.6);
+
+/* ---------- page 1 · the prologue: the film is the backdrop, the type is the subject ---------- */
+const section=$('#prologue'),backdrop=$('.dm-backdrop'),film=$('.dm-film'),filmButton=$('#dm-film-sound'),icon=filmButton.querySelector('.dm-film-sound__icon'),filmLabel=filmButton.querySelector('.dm-film-sound__label'),state=$('.dm-state');
+let inView=true,withSound=false,parked=false;
+// the 3 MB 720p cut the single-file showcase embeds, not the 8.6 MB master
+film.src='../overture/src/embed/video/overture-promo-15s-720p.mp4';
+const still=()=>{film.pause();const seek=()=>{film.currentTime=5.2;};if(film.readyState>=1)seek();else film.addEventListener('loadedmetadata',seek,{once:true});};
+const run=()=>{if(withSound&&!parked)return;if(O.reduced())still();else if(!inView||document.hidden||parked)film.pause();else film.play().catch(()=>{});};
+new IntersectionObserver(entries=>{inView=entries[0].isIntersecting;run();},{threshold:.05}).observe(section);
+document.addEventListener('visibilitychange',run);addEventListener('ov:motion',run);
+const ui=onAir=>guard('film controls',()=>{filmButton.setAttribute('aria-pressed',String(onAir));icon.innerHTML=O.icon(onAir?'pause':'play');filmLabel.textContent=onAir?t('停止有声播放','Stop the sound'):t('有声观看宣传片 · 0:15','Watch with sound · 0:15');state.textContent=onAir?t('有声播放','WITH SOUND'):O.reduced()?t('静帧','STILL'):t('静音循环','MUTED LOOP');});
+ui(false);
+const quiet=()=>{withSound=false;film.muted=true;film.loop=true;ui(false);run();};
+filmButton.addEventListener('click',()=>{if(withSound){quiet();return;}withSound=true;film.loop=false;film.muted=false;film.currentTime=0;ui(true);film.play().catch(quiet);});
+film.addEventListener('ended',()=>{film.currentTime=0;quiet();});
+// ENTER: as in the showcase, the scene closes into the button; here the curtain opens on the kit
+mount('CueButton','#dm-enter',{label:'ENTER',variant:'circle',onActivate:async()=>{
+  const button=$('#dm-enter button');
+  if(!O.reduced())await guard('iris',()=>{S.play('iris',{at:button});return M.iris(section,{open:false,origin:button,duration:680,easing:'cubic-bezier(.62,0,.84,.3)'});});
+  $('#kit').scrollIntoView({behavior:'instant',block:'start'});guard('release',()=>M.release(section));
+  const h=$('#kit-h');h.tabIndex=-1;h.focus({preventScroll:true});if(!O.reduced())guard('develop',()=>M.develop(h,{duration:640}));
+}});
+// parallax: the film sits on a slower plane, rising at a little under half the speed of the type
+let frame=0;
+const drift=()=>{frame=0;const y=Math.min(scrollY,section.offsetHeight);backdrop.style.transform=O.reduced()?'':`translate3d(0,${(y*.55).toFixed(1)}px,0)`;};
+addEventListener('scroll',()=>{if(!frame)frame=requestAnimationFrame(drift);},{passive:true});
+addEventListener('ov:motion',drift);drift();
+const filmReady=new Promise(r=>{if(film.readyState>=2)r();else{film.addEventListener('loadeddata',r,{once:true});film.addEventListener('error',r,{once:true});setTimeout(r,6000);}});
 
 on('park',p=>{parked=p;run();if(p)clearInterval(developing);});
-on('sound',v=>O.setSound(v));
+on('sound',v=>guard('sound',()=>O.setSound(v)));
 progress(.7);
 await filmReady;
 progress(.95);
